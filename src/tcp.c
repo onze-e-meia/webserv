@@ -1,17 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tcp.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tforster <tfforster@student.42sp.org.br    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/15 11:57:47 by tforster          #+#    #+#             */
+/*   Updated: 2025/04/15 15:13:31 by tforster         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <stdio.h>
 #include <errno.h>
-#include "tcp.h"
-#include "main.h"
+#include "../include/tcp.h"
+#include "../lib/color.h"
 
 void	debug_log(const char *msg) {
-	char buffer[256];
-	snprintf(buffer, sizeof(buffer), "%s: %s", msg, strerror(errno));
+	char	buffer[256];
+	snprintf(buffer, sizeof(buffer), BOLD "%s:" RST " %s", msg, strerror(errno));
 	printf("%s", buffer);
 	printf("\n");
 }
 
 
-server_status_e	bind_tcp_port(tcp_server *server, int port) {
+server_status_e	bind_tcp_port(tcp_server_t *server, int port) {
 	memset(server, 0, sizeof(*server));
 	server->socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 	// server->socket_fd = socket(AF_UNSPEC, SOCK_STREAM, 0);
