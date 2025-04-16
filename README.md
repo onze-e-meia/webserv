@@ -12,3 +12,4 @@ https://datatracker.ietf.org/doc/html/rfc7230
 
 https://datatracker.ietf.org/doc/html/rfc7231
 
+https://www.codequoi.com/en/sockets-and-network-programming-in-c/
