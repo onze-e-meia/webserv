@@ -6,19 +6,28 @@
 /*   By: tforster <tfforster@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 11:58:04 by tforster          #+#    #+#             */
-/*   Updated: 2025/04/15 17:20:43 by tforster         ###   ########.fr       */
+/*   Updated: 2025/04/16 16:37:28 by tforster         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HTTP_H
 # define HTTP_H
 
+#include <stdbool.h>
 # include <stddef.h>
 
 # define HTTP_MAX_REQUEST_LEN	8192*4	// Apache
 # define HTTP_METHOD_MAX_LEN	8		// Based on maximum method length in HTTP/1.1
 # define HTTP_PATH_MAX_LEN		2048	// Practical limit for URIs
 # define HTTP_PROTOCOL_MAX_LEN	16		// Standard protocol length (e.g., HTTP/1.1)
+
+typedef enum {
+	GET,
+	PUT,
+	DELETE,
+	POST,
+	HEAD,
+}	http_method_e;
 
 typedef enum {
 	HTTP_PARSE_OK,
@@ -33,6 +42,7 @@ typedef struct {
 typedef struct {
 	char			buffer[HTTP_MAX_REQUEST_LEN];
 	char			method[HTTP_METHOD_MAX_LEN];
+	http_method_e	method_e;
 	char			path[HTTP_PATH_MAX_LEN];
 	char			protocol[HTTP_PROTOCOL_MAX_LEN];
 	http_header_t	*headers;
@@ -47,6 +57,8 @@ typedef struct {
 	char			*body;				// Response body content
 	size_t			body_length;		// Length of the response body
 }	http_response_t;
+
+bool			handle_request(http_request_t *req, http_response_t *res);
 
 int				read_http_request_t(int socket_fd, http_request_t *request);
 http_parse_e	parse_http_headers(const char *raw_request, http_request_t *request);

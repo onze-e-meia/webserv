@@ -6,20 +6,35 @@
 /*   By: tforster <tfforster@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 12:56:18 by tforster          #+#    #+#             */
-/*   Updated: 2025/04/15 17:29:02 by tforster         ###   ########.fr       */
+/*   Updated: 2025/04/16 16:48:16 by tforster         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-// #include <ctype.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 #include "../include/http.h"
+#include "../include/route.h"
 
 // http_parse_e parse_http_request_t(char *buff, http_request_t *request);
+
+extern Route	routes[];
+extern int		route_count;
+
+bool	handle_request(http_request_t *req, http_response_t *res) {
+	for (int i = 0; i < route_count; i++) {
+		printf(" >>> ROUTE: %s | path: %s\n", routes[i].path, req->path);
+		if (strcmp(routes[i].path, req->path) == 0 && routes[i].method == req->method_e) {
+			routes[i].handler(req, res);
+			return true;
+		}
+	}
+	return false;
+}
 
 int	read_http_request_t(int socket_fd, http_request_t *request) {
 	// char	buffer[8192] = {0};
@@ -40,7 +55,6 @@ int	read_http_request_t(int socket_fd, http_request_t *request) {
 	}
 	return HTTP_PARSE_OK;
 }
-
 
 http_parse_e	parse_http_headers(const char *raw_request, http_request_t *request) {
 	const char	*line_start = strstr(raw_request, "\r\n");

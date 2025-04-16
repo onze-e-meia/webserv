@@ -6,7 +6,7 @@
 #    By: tforster <tfforster@student.42sp.org.br    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/15 12:14:39 by tforster          #+#    #+#              #
-#    Updated: 2025/04/15 16:52:41 by tforster         ###   ########.fr        #
+#    Updated: 2025/04/16 16:34:32 by tforster         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,9 @@ SRC_DIR		:=	src
 SRC_FILES	:=	\
 	main.c	\
 	tcp.c	\
-	http.c
+	http.c	\
+	route.c	\
+	filesystem.c
 
 SRC_FILES	:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 
@@ -44,7 +46,7 @@ OBJ_DIR		:=	obj
 OBJ_FILES	:=	$(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC_FILES))
 
 CC			:=	cc
-CFLAGS		:=	-Wall -Wextra -Werror -Iinclude -g3
+CFLAGS		:=	-Wextra -Werror
 INCLUDE		:=	$(addprefix -I , $(INC_DIR)) -MMD -MP
 LIB			:=	$(addprefix -I , $(LIB_DIR)) -MMD -MP
 
@@ -101,6 +103,7 @@ loose:	## Build the program ignoring warnings
 	$(MAKE) TITLE="$(TITLE_LOOSE)" FLAGS="$(filter-out -Werror,$(FLAGS))"
 
 debug:	## Build the program with Debug symbols
+	$(MAKE) fclean
 	$(MAKE) TITLE="$(TITLE_DEBUG)" DEBUG=-"g3"
 
 msg:	## Build the program with Constructor messages enabled
