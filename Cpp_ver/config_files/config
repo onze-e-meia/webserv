@@ -1,0 +1,62 @@
+# /etc/nginx/nginx.conf or custom .conf included in nginx.conf
+
+# Define a default MIME types and other general settings
+
+http {
+
+	include			mime.types;
+	default_type	application/octet-stream;
+
+	# Size limit for client requests
+	client_max_body_size	10M;
+
+	# Default error pages
+	error_page 404				/custom_404.html;
+	error_page 500 502 503 504	/custom_50x.html;
+
+	sendfile			on;
+	keepalive_timeout	65;
+
+	#http {}
+	#location {}
+	#server { location {new new;} server {} }
+
+	server { location {new new;} }
+
+	# First server on host:port acts as default for unmatched requests
+	server {
+
+		lah blah;
+
+		#http {}
+		#server {}
+		#location {}
+
+		listen		8080;
+		server_name	default.local;
+		include			mime.types;
+
+		root		/var/www/default;
+		index		index.html;
+
+		location	/ {
+			autoindex	on; # Enable directory listing
+			include			mime.types;
+			#server {}
+			#http {}
+			#location {}
+		}
+
+		location	/custom_404.html {
+			root		/var/www/errors;
+		}
+
+		location	/custom_50x.html {
+			root		/var/www/errors;
+		}
+	}
+	#server {test1 test1;} server {} server {}
+	#server { location {} location {teste2;} location {} location {}}
+	#server {}
+}
+#http {}

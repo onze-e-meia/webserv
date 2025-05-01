@@ -1,0 +1,104 @@
+# /etc/nginx/nginx.conf or custom .conf included in nginx.conf
+
+# Define a default MIME types and other general settings
+http {
+	include			mime.types;
+	default_type	application/octet-stream;
+
+	# Size limit for client requests
+	client_max_body_size	10M;
+
+	# Default error pages
+	error_page 404				/custom_404.html;
+	error_page 500 502 503 504	/custom_50x.html;
+
+	sendfile			on;
+	keepalive_timeout	65;
+
+	location {}
+
+	# First server on host:port acts as default for unmatched requests
+	server {
+		listen		8080;
+		server_name	default.local;
+
+		root		/var/www/default;
+		index		index.html;
+
+		location	/ {
+			autoindex	on; # Enable directory listing
+		}
+
+		location	/custom_404.html {
+			root		/var/www/errors;
+		}
+
+		location	/custom_50x.html {
+			root		/var/www/errors;
+		}
+	}
+
+	# Another server block on same or different host/port
+	server {
+		listen		8080;
+		server_name	example.com www.example.com;
+
+		root		/var/www/example;
+		index		index.html index.php;
+
+		# Restrict to GET and POST methods
+		location	/secure-area {
+			limit_except	GET POST {
+				deny	all;
+			}
+			root	/var/www/secure;
+		}
+
+		# Route with HTTP redirect
+		location	/old-path {
+			return 301 /new-path;
+		}
+
+		# File serving and directory listing control
+		location /files {
+			root /tmp/www;
+			autoindex off;
+			index default.html;
+		}
+
+		# Upload handling (uploads to /tmp/uploads)
+		location /upload {
+			client_body_temp_path /tmp/uploads;
+			client_max_body_size 20M;
+			root /tmp/uploads;
+			index index.html;
+			limit_except POST {
+				deny all;
+			}
+		}
+
+		# CGI for .php using fastcgi (adjust socket or port as needed)
+		location ~ \.php$ {
+			root /var/www/example;
+			include fastcgi_params;
+
+			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+			fastcgi_param PATH_INFO $fastcgi_script_name;
+			fastcgi_param QUERY_STRING $query_string;
+
+			fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+			fastcgi_index index.php;
+		}
+
+		# CGI for .py (example using fcgiwrap)
+		location ~ \.py$ {
+			root /var/www/example;
+			include fastcgi_params;
+
+			fastcgi_pass unix:/var/run/fcgiwrap.socket;
+			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+			fastcgi_param PATH_INFO $fastcgi_script_name;
+			fastcgi_param QUERY_STRING $query_string;
+		}
+	}
+}
