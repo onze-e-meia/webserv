@@ -1,7 +1,6 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-#include "Location.hpp"
 #include <bitset>
 #include <map>
 #include <ostream>
@@ -9,18 +8,16 @@
 #include <string>
 #include <vector>
 
-class Server {
-	private:
-		std::vector<std::string> _host;
-		std::vector<std::string> _port;
-		std::vector<std::string> _listen;
-		std::vector<std::string> _server_name;
+#include "Core.hpp"
+#include "Location.hpp"
 
-		std::string _root;
-		std::set<std::string> _index;
-		std::bitset<2> _autoindex;
-		std::map<std::string, std::string> _error_page;
-		std::size_t _client_max_body_size;
+
+class	Server: public	Core {
+	private:
+		std::string		_server_name;
+		std::string		_host;
+		std::string		_port;
+		std::string		_listen;
 
 		std::map<std::string, Location> _locations;
 
@@ -30,6 +27,15 @@ class Server {
 
 
 	public:
+		Server(void): Core(Name::SERVER) {
+			std::cout << YLW "SERVER ADDED TO HTTP " << _blockType  << RENDL;
+		}
+
+		BlockType	getBlockType(void) { return _blockType; }
+		void		setName(const std::string &name) {_server_name = name; }
+		std::string	getName(void) { return (_server_name); }
 };
+
+// Server::Server(void): Core(Name::SERVER) {}
 
 #endif // SERVER_HPP

@@ -52,11 +52,14 @@ private:
 	static Http	&instance(void);
 	std::string	getRoot() const;
 
+	void	addServer(void);
+	void	addLocation(void);
+
 public:
 	~Http(void);
 
 	static void	buildConfig(std::ifstream &file);
-	static void	addBlock(const std::string &name);
+	static void	addBlock(const BlockType &block);
 
 
 

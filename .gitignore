@@ -34,3 +34,6 @@
 #dir
 .vscode
 bin
+tests
+dep
+obj

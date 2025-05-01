@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 	// parse(configFile);
 	// Http::instantiate(configFile);
 	Http::buildConfig(configFile);
-	Http::buildConfig(configFile);
+	// Http::buildConfig(configFile);
 
 	// std::string line;
 	// while (std::getline(file, line)) {

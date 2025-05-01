@@ -75,6 +75,8 @@ void parseDirective(Token &token) {
 		// std::cout << TEAL "[" << directive << "] " << atcualBlock << " | " << previusBlock << RENDL;
 		// std::cout << TEAL "[" << directive << "] " << atcualBlock.to_ulong() << " | " << previusBlock.to_ulong() << RENDL;
 
+		handleDirectiveStart(directive, args);
+
 		if (atcualBlock.to_ulong() >= previusBlock.to_ulong()) {
 			std::ostringstream	oss;
 			oss << atcualBlock << " | " << previusBlock <<" SAME BLOCK CONTEXTBlock!!!!!!!!!!!\n";
@@ -85,7 +87,8 @@ void parseDirective(Token &token) {
 			throw (std::runtime_error(oss.str()));
 		}
 
-		handleDirectiveStart(directive, args);
+		Http::addBlock(atcualBlock);
+
 		token.nextToken();
 		parseBlock(token);
 		handleDirectiveEnd(directive, args);
