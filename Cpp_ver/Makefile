@@ -38,7 +38,8 @@ SRC_LOGGER	:= \
 SRC_MODULE	:= \
 	module.cpp \
 	Core.cpp \
-	Http.cpp
+	Http.cpp \
+	Server.cpp
 
 SRC_FILES	:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 LOG_FILES	:= $(addprefix $(LOGGER_DIR)/, $(SRC_LOGGER))

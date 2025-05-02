@@ -11,7 +11,7 @@
 
 Http::status	Http::_status(0);
 
-Http::Http(void): Core(Name::HTTP) {}
+Http::Http(void): Core(Block::HTTP) {}
 
 Http &Http::operator=(const Http &other) {
 	if (this != &other) {
@@ -46,14 +46,14 @@ void	Http::addLocation(void) {
 
 
 void	Http::buildConfig(std::ifstream &file) {
-	std::cout
-		<< "TYPES" ENDL
-		<< Block::getType(Name::EMPTY) << ENDL
-		<< Block::getType(Name::CORE) << ENDL
-		<< Block::getType(Name::HTTP) << ENDL
-		<< Block::getType(Name::SERVER) << ENDL
-		<< Block::getType(Name::LOCATION) << ENDL
-		<< "END" ENDL;
+	// std::cout
+	// 	<< "TYPES" ENDL
+	// 	// << Block::getType(Name::EMPTY) << ENDL
+	// 	// << Block::getType(Name::CORE) << ENDL
+	// 	<< Block::getType(Name::HTTP) << ENDL
+	// 	<< Block::getType(Name::SERVER) << ENDL
+	// 	<< Block::getType(Name::LOCATION) << ENDL
+	// 	<< "END" ENDL;
 
 	try {
 		if (_status.test(CONFING)) {
@@ -72,16 +72,16 @@ void	Http::buildConfig(std::ifstream &file) {
 		std::cerr << "HHHHAAAAALLLLTTTT!!!!\n";
 		std::cerr << exception.what();
 	}
-	Http	&http = Http::instance();
-	http._servers[0].setName("Some name! 0 ");
-	http._servers[1].setName("Some name! 1 ");
-	http._servers[2].setName("Some name! 2 ");
 
+	// Http	&http = Http::instance();
+	// http._servers[0].setName("Some name! 0 ");
+	// http._servers[1].setName("Some name! 1 ");
+	// http._servers[2].setName("Some name! 2 ");
+	// std::cout << "Servers Name: " ENDL
+	// 	<< http._servers[0].getName() << ENDL
+	// 	<< http._servers[1].getName() << ENDL
+	// 	<< http._servers[2].getName() << ENDL;
 
-	std::cout << "Servers Name: " ENDL
-		<< http._servers[0].getName() << ENDL
-		<< http._servers[1].getName() << ENDL
-		<< http._servers[2].getName() << ENDL;
 	// All InitError, LogicError, etc., inherit from MainModule::Exception, so you can:
 	// catch (const MainModule::Exception& e) { /* fallback */ }
 }
@@ -89,15 +89,13 @@ void	Http::buildConfig(std::ifstream &file) {
 void	Http::addBlock(const BlockType &block) {
 	Http	&http = Http::instance();
 
-	if (block == Block::getType(Name::SERVER)) {
+	if (block == Block::SERVER) {
 		http.addServer();
 	}
-	if (block == Block::getType(Name::LOCATION)) {
+	if (block == Block::LOCATION) {
 		http.addLocation();
 	}
 }
-
-
 
 // Http		Http::getHttp(void) {
 // 	return (*this);

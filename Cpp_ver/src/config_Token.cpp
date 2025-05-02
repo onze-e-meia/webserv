@@ -1,10 +1,10 @@
 
 
 #include "config_Token.hpp"
-#include "module_def.hpp"
+#include "module.hpp"
 
 Token::Token(std::ifstream	&file):
-	_blockType(BlockType().set(Module::EMPTY)), _tokenType(EMPTY), _file(file),
+	_blockType(Block::EMPTY), _tokenType(EMPTY), _file(file),
 	_pos(0), _line(1) { _word.reserve(64); }
 
 Token::Token(const Token &other):

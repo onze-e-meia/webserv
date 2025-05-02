@@ -3,9 +3,13 @@
 # Define a default MIME types and other general settings
 
 http {
-
 	include			mime.types;
 	default_type	application/octet-stream;
+
+	# Fix bellow:
+	dir#;
+	directive# arg#;#
+	server { wrong_synbol#; one# two#;}
 
 	# Size limit for client requests
 	client_max_body_size	10M;
@@ -17,20 +21,19 @@ http {
 	sendfile			on;
 	keepalive_timeout	65;
 
-	#http {}
-	#location {}
-	#server { location {new new;} server {} }
-
-	server { location {new new;} }
+	# http {}
+	# location {}
+	# server { location {new new;} server {} }
+	# server { location {new new;} }
 
 	# First server on host:port acts as default for unmatched requests
 	server {
 
 		lah blah;
 
-		#http {}
-		#server {}
-		#location {}
+		# http {}
+		# server {}
+		# location {}
 
 		listen		8080;
 		server_name	default.local;
@@ -42,9 +45,9 @@ http {
 		location	/ {
 			autoindex	on; # Enable directory listing
 			include			mime.types;
-			#server {}
-			#http {}
-			#location {}
+			# server {}
+			# http {}
+			# location {}
 		}
 
 		location	/custom_404.html {
@@ -55,8 +58,10 @@ http {
 			root		/var/www/errors;
 		}
 	}
-	#server {test1 test1;} server {} server {}
-	#server { location {} location {teste2;} location {} location {}}
+	# server {test1 test1;} server {} server {}
+	# server { location {} location {teste2;} location {} location {}}
 	server {}
 }
-#http {}
+# root	/var;
+# {}
+# http {}

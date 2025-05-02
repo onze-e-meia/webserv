@@ -27,13 +27,11 @@ class	Server: public	Core {
 
 
 	public:
-		Server(void): Core(Name::SERVER) {
-			std::cout << YLW "SERVER ADDED TO HTTP " << _blockType  << RENDL;
-		}
+		Server(void);
 
-		BlockType	getBlockType(void) { return _blockType; }
-		void		setName(const std::string &name) {_server_name = name; }
-		std::string	getName(void) { return (_server_name); }
+		BlockType	getBlockType(void);
+		void		setName(const std::string &name);
+		std::string	getName(void);
 };
 
 // Server::Server(void): Core(Name::SERVER) {}

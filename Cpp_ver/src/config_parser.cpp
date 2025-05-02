@@ -47,9 +47,9 @@ void parseBlock(Token &token) {
 }
 
 void parseDirective(Token &token) {
-	Token		contextToken(token);
-	BlockType	previusBlock = contextToken.getBlock();
-	std::string directive = contextToken.getWord();
+	// Token		contextToken(token);
+	BlockType	previusBlock = token.getBlock();
+	std::string directive = token.getWord();
 	token.nextToken();
 
 	// collect args until ';' or '{'
@@ -76,25 +76,25 @@ void parseDirective(Token &token) {
 		// std::cout << TEAL "[" << directive << "] " << atcualBlock.to_ulong() << " | " << previusBlock.to_ulong() << RENDL;
 
 		handleDirectiveStart(directive, args);
-
-		if (atcualBlock.to_ulong() >= previusBlock.to_ulong()) {
+		if (atcualBlock <= previusBlock) {
 			std::ostringstream	oss;
 			oss << atcualBlock << " | " << previusBlock <<" SAME BLOCK CONTEXTBlock!!!!!!!!!!!\n";
 			throw (std::runtime_error(oss.str()));
-		} else if (atcualBlock.test(Module::LOCATION) && previusBlock.test(Module::HTTP)) {
+		} else if (atcualBlock == Block::LOCATION && previusBlock == Block::HTTP) {
 			std::ostringstream	oss;
 			oss << atcualBlock << " | " << previusBlock <<" OUT OF PALCE LOCATION CONTEXTBlock!!!!!!!!!!!\n";
 			throw (std::runtime_error(oss.str()));
 		}
-
 		Http::addBlock(atcualBlock);
 
 		token.nextToken();
 		parseBlock(token);
 		handleDirectiveEnd(directive, args);
+
 		token.setBlock(previusBlock);
 
-		if (contextToken.getWord() == "http") {
+		// if (contextToken.getWord() == "http") {
+		if (previusBlock == Block::EMPTY) {
 			if (token.getType() != Token::END_FILE) {
 				std::ostringstream	oss;
 				oss << "HTTP IS CLOSED/n" << token.getWord() << "\n";
