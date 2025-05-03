@@ -9,6 +9,17 @@
 
 #include "color.hpp"
 
+// #include "../Exception/Exception.cpp"
+
+// Http::Exception::Exception(const std::string &msg):
+// 	_errMsg(msg) {}
+
+// 	Http::Exception::~Exception(void)  throw() {}
+
+// const char	*Http::Exception::what(void) const throw() {
+// 	return (_errMsg.c_str());
+// }
+
 Http::status	Http::_status(0);
 
 Http::Http(void): Core(Block::HTTP) {}
@@ -34,7 +45,7 @@ Http	&Http::instance(void) {
 void	Http::addServer(void) {
 	_servers.push_back(Server());
 
-	std::cout << YLW "SERVER ADDED TO HTTP " << _servers.back().getBlockType()  << RENDL;
+	// std::cout << YLW "SERVER ADDED TO HTTP " << _servers.back().getBlockType()  << RENDL;
 	// std::cout << YLW "SERVER ADDED TO HTTP " << _servers[0].getBlockType() << RENDL;
 }
 
@@ -55,6 +66,8 @@ void	Http::buildConfig(std::ifstream &file) {
 	// 	<< Block::getType(Name::LOCATION) << ENDL
 	// 	<< "END" ENDL;
 
+	std::string	path = "src/somefile";
+
 	try {
 		if (_status.test(CONFING)) {
 			std::ostringstream	oss;
@@ -62,14 +75,19 @@ void	Http::buildConfig(std::ifstream &file) {
 			throw (std::runtime_error(oss.str()));
 		}
 		Http	&http = Http::instance();
-		std::cout << "DIRECTIVE NAME: " << http._root << "\n";
-		parse(file);
+		// std::cout << "DIRECTIVE NAME: " << http._root << "\n";
+		Parser	config(file);
+		config.parseConfigFile();
+		// parse(file);
 		_status.set(CONFING);
 		// Logger	log("some_name.txt");
 		// _status = EXIT_SUCCESS;
-	} catch (std::exception &exception) {
+	// } catch (std::exception &exception) {
+	} catch (const std::exception &exception) {
 		_status.set(FAIL);
-		std::cerr << "HHHHAAAAALLLLTTTT!!!!\n";
+		std::ostringstream	oss;
+		std::cerr << RED "HHHHAAAAALLLLTTTT!!!!" RENDL;
+		std::cerr << path << ":";
 		std::cerr << exception.what();
 	}
 
@@ -91,6 +109,7 @@ void	Http::addBlock(const BlockType &block) {
 
 	if (block == Block::SERVER) {
 		http.addServer();
+		// http._servers.push_back(Server());
 	}
 	if (block == Block::LOCATION) {
 		http.addLocation();

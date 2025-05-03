@@ -14,7 +14,6 @@
 # define COLOR_HPP
 
 # include <sstream>
-# include <cmath>
 
 // Font Color
 // Standard
@@ -119,32 +118,6 @@ inline std::string C_VERT(int n) {
 	std::ostringstream oss;
 	oss << "\033[" << std::abs(n) << (n > 0 ? "A" : "B");
 	return (oss.str());
-}
-
-// Integer to subscript Unicode characters
-inline std::string subscript(int n) {
-	const std::string subscripts[] = {
-		"\u2080", "\u2081", "\u2082", "\u2083", "\u2084",
-		"\u2085", "\u2086", "\u2087", "\u2088", "\u2089"
-	};
-	std::string result;
-
-	if (n < 0) {
-		result += "-";
-		n = -n;
-	}
-
-	if (n == 0) {
-		result = subscripts[0];
-	} else {
-		std::string tempResult;
-		while (n > 0) {
-			tempResult = subscripts[n % 10] + tempResult;
-			n /= 10;
-		}
-	result += tempResult;
-	}
-	return result;
 }
 
 #endif

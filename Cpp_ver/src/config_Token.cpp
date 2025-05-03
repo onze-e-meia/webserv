@@ -1,16 +1,43 @@
 
 
+
+
+
+#include <stdexcept>
 #include "config_Token.hpp"
 #include "module.hpp"
 
-Token::Token(std::ifstream	&file):
-	_blockType(Block::EMPTY), _tokenType(EMPTY), _file(file),
-	_pos(0), _line(1) { _word.reserve(64); }
+// =============================================================================
+// PRIVATE
+// =============================================================================
 
-Token::Token(const Token &other):
-	_blockType(other._blockType), _tokenType(other._tokenType), _word(other._word),
-	_file(other._file), _pos(other._pos), _line(other._line) {}
+/* Member Functions */
+void Token::skipWhiteSpaceAndComments(void) {
+	char	ch;
+	while ((ch = _file.peek()) != EOF) {
+		if (std::isspace(ch)) {
+			_file.get();
+			continue;
+		}
+		if (ch == '#') {
+			while (ch != EOF && ch != '\n')
+				ch = _file.get();
+			continue;
+		}
+		break;
+	}
+}
 
+// =============================================================================
+// PUBLIC
+// =============================================================================
+
+/* Contsructor */
+Token::Token(std::ifstream &file):
+	_tokenType(EMPTY), _blockType(Block::EMPTY), _wordStartPos(0),
+	_file(file) { _word.reserve(64); }
+
+/* Setters */
 void	Token::setType(tokenType_e tokenType) {
 	_tokenType = tokenType;
 }
@@ -19,6 +46,7 @@ void	Token::setBlock(BlockType blockType) {
 	_blockType = blockType;
 }
 
+/* Getters */
 Token::tokenType_e	Token::getType() const {
 	return (_tokenType);
 }
@@ -29,4 +57,44 @@ BlockType	Token::getBlock() const {
 
 const	std::string &Token::getWord() const {
 	return (_word);
+}
+
+size_t	Token::getWordStartPos(void) const {
+	 return (_wordStartPos);
+}
+
+size_t	Token::getLine(void) const {
+	return (_file.getLine());
+}
+
+/* Member Functions */
+void	Token::nextToken(void) {
+	skipWhiteSpaceAndComments();
+	_word.clear();
+	char	ch = _file.get();
+	_wordStartPos = _file.getPos();
+	if (ch == EOF)
+		return (setType(END_FILE));
+	else if (ch == '{')
+		return (setType(BEGIN_BLOCK));
+	else if (ch == '}')
+		return (setType(END_BLOCK));
+	else if (ch == ';')
+		return (setType(END_STATEMENT));
+
+	// NEED TO CHECK FOR '#' HERE !!!!
+	_word = ch;
+	ch = _file.peek();
+	while (ch != EOF && !std::isspace(ch) && ch != '{' && ch != '}' && ch != ';') {
+		_word += static_cast<char>(_file.get());
+		ch = _file.peek();
+		if (_word.length() > DIRECTIVE_LEN) {
+			std::ostringstream	oss;
+			oss << _file.getLine() << ":" << _wordStartPos << " In directive '" << _word
+				<< "' lenght must be of size " << DIRECTIVE_LEN << " or less." ENDL;
+			throw (std::length_error(oss.str().c_str()));
+		}
+	}
+
+	return (setType(WORD));
 }

@@ -1,81 +1,79 @@
 
 
+
+
+
 #include <iostream>
 #include <string>
 #include <sstream>
+
 #include "config_parser.hpp"
-
 #include "module.hpp"
-
-#include "config_directives.hpp"
-#include "config_Token.hpp"
-
+// #include "config_directives.hpp"
 #include "Http.hpp"
 
-void	parse(std::ifstream	&file) {
-	Token	token(file);
-	token.nextToken();
+// =============================================================================
+// PRIVATE
+// =============================================================================
 
-	if (token.getType() == Token::BEGIN_BLOCK || token.getWord() != Name::HTTP) {
-		std::ostringstream	oss;
-		oss << "NOT HTTP AND EMPTY DIRECTIVE!!!!!!!!!!!\n";
-		throw (std::runtime_error(oss.str()));
-	}
-	// token.setBlock(Block::getType(token.getWord()));
-	parseBlock(token);
-}
-
-void parseBlock(Token &token) {
-	while (token.getType() != Token::END_BLOCK && token.getType() != Token::END_FILE) {
-		if (token.getType() == Token::WORD) {
-			parseDirective(token);
-		} else if (token.getType() == Token::BEGIN_BLOCK) {
+/* Member Functions */
+void	Parser::parseBlock(void) {
+	Token::tokenType_e	tokenType = _token.getType();
+	// while (_token.getType() != Token::END_BLOCK && _token.getType() != Token::END_FILE) {
+	while (tokenType != Token::END_BLOCK && tokenType != Token::END_FILE) {
+		if (tokenType == Token::WORD) {
+			parseDirective();
+		} else if (tokenType == Token::BEGIN_BLOCK) {
 			std::ostringstream	oss;
 			oss << H_BLU "THE VERY GRAND NEW EMPTY DIRECTIVE!!!!!!!!!!!\n" RST;
 			throw (std::runtime_error(oss.str()));
+		} else if (tokenType == Token::END_STATEMENT) {
+			_token.nextToken();
 		} else {
 			std::ostringstream	oss;
-			oss << "Unexpected token " << token.getType() << " in block: {"
-				<< token.getWord() << "}\n";
+			oss << "Unexpected token " << tokenType << " in block: {"
+				<< _token.getWord() << "}\n";
 			throw (std::runtime_error(oss.str()));
 		}
+		tokenType = _token.getType();
 	}
-
 	// consume the closing '}'
-	if (token.getType() == Token::END_BLOCK)
-		token.nextToken();
+	if (tokenType == Token::END_BLOCK)
+		_token.nextToken();
 }
 
-void parseDirective(Token &token) {
-	// Token		contextToken(token);
-	BlockType	previusBlock = token.getBlock();
-	std::string directive = token.getWord();
-	token.nextToken();
+void Parser::parseDirective(void) {
+	BlockType	previusBlock = _token.getBlock();
+	std::string	directiveName = _token.getWord();
+
+	_wordStartPos = _token.getWordStartPos();
+	_token.nextToken();
 
 	// collect args until ';' or '{'
+	// CAN BE A FUNCTION
 	std::vector<std::string> args;
-	while (token.getType() == Token::WORD) {
-		args.push_back(token.getWord());
-		token.nextToken();
+	while (_token.getType() == Token::WORD) {
+		args.push_back(_token.getWord());
+		_token.nextToken();
 	}
 
-	if (token.getType() == Token::END_STATEMENT) {
+	if (_token.getType() == Token::END_STATEMENT) {
 		// simple directive
 		// REVIEW DISPATCH DIRECTIVE FUNC
 		// handler_t	handle = Handle::dispatch(contextToken);
 		// (void)handle;
 
-		handleDirective(directive, args);
-		token.nextToken();
-	} else if (token.getType() == Token::BEGIN_BLOCK) {
+		handleDirective(directiveName, args);
+		_token.nextToken();
+	} else if (_token.getType() == Token::BEGIN_BLOCK) {
 		// directive with nested block
-		token.setBlock(Block::getType(directive));
-		BlockType atcualBlock = token.getBlock();
+		_token.setBlock(Block::getType(directiveName));
+		BlockType atcualBlock = _token.getBlock();
 
 		// std::cout << TEAL "[" << directive << "] " << atcualBlock << " | " << previusBlock << RENDL;
 		// std::cout << TEAL "[" << directive << "] " << atcualBlock.to_ulong() << " | " << previusBlock.to_ulong() << RENDL;
 
-		handleDirectiveStart(directive, args);
+		handleBlockStart(directiveName, args);
 		if (atcualBlock <= previusBlock) {
 			std::ostringstream	oss;
 			oss << atcualBlock << " | " << previusBlock <<" SAME BLOCK CONTEXTBlock!!!!!!!!!!!\n";
@@ -87,47 +85,62 @@ void parseDirective(Token &token) {
 		}
 		Http::addBlock(atcualBlock);
 
-		token.nextToken();
-		parseBlock(token);
-		handleDirectiveEnd(directive, args);
+		_token.nextToken();
+		parseBlock();
+		handleBlockEnd(directiveName, args);
 
-		token.setBlock(previusBlock);
+		_token.setBlock(previusBlock);
 
-		// if (contextToken.getWord() == "http") {
 		if (previusBlock == Block::EMPTY) {
-			if (token.getType() != Token::END_FILE) {
+			if (_token.getType() != Token::END_FILE) {
 				std::ostringstream	oss;
-				oss << "HTTP IS CLOSED/n" << token.getWord() << "\n";
+				oss << "HTTP IS CLOSED/n" << _token.getWord() << "\n";
 				throw (std::runtime_error(oss.str()));
 			}
 		}
 	} else {
 		std::ostringstream	oss;
 		oss << "Expected ';' or '{' after directive '"
-				  << directive << "'\n";
+				  << directiveName << "'\n";
 		throw (std::runtime_error(oss.str()));
 	}
 }
 
-void	handleDirective(const std::string &directive,
-	const std::vector<std::string> &args) {
+void	Parser::handleDirective(std::string name,const std::vector<std::string> &args) {
 	(void)args;
-	std::cout << "Directive: " << directive;
+	std::cout << "Directive: " << name;
 	for (size_t i = 0; i < args.size(); ++i) {
 		std::cout << " [" << args[i] << "]";
 	}
-	std::cout << "\n";
+	std::cout << YLW " { on line: " << _token.getLine() << " : " << _wordStartPos << " }" RENDL;
 }
 
-void handleDirectiveStart(const std::string &directive,
-	const std::vector<std::string> &args) {
+void Parser::handleBlockStart(std::string name,const std::vector<std::string> &args) {
 		// DO SOMETHING??
-		std::cout << BOLD BLU "BEGIN BLOCK: " GRN << directive << RENDL;
+		std::cout << BOLD BLU "BEGIN BLOCK: " GRN << name << RENDL;
 		(void)args;
 }
 
-void handleDirectiveEnd(const std::string &directive,
-	const std::vector<std::string> &args) {
+void Parser::handleBlockEnd(std::string name, const std::vector<std::string> &args) {
+		// DO SOMETHING??
 		(void)args;
-		std::cout << RED "End Block: " << directive << RENDL;
+		std::cout << RED "End Block: " << name << RENDL;
+}
+
+// =============================================================================
+// PUBLIC
+// =============================================================================
+
+/* Contsructor */
+Parser::Parser(std::ifstream &file): _token(file), _wordStartPos(0) {}
+
+/* Member Functions */
+void	Parser::parseConfigFile(void) {
+	_token.nextToken();
+	if (_token.getWord() != Name::HTTP) {
+		if (_token.getType() == Token::BEGIN_BLOCK)
+			throw (Http::EmptyBlock(_token.getLine(), _token.getWordStartPos()));
+		throw (Http::WrongBlock(_token.getWord(), _token.getLine(), _token.getWordStartPos()));
+	}
+	parseBlock();
 }

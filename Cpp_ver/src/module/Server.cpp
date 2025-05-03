@@ -5,7 +5,7 @@
 
 
 Server::Server(void): Core(Block::SERVER) {
-	std::cout << YLW "SERVER ADDED TO HTTP " << _blockType  << RENDL;
+	// std::cout << YLW "SERVER ADDED TO HTTP " << _blockType  << RENDL;
 }
 
 BlockType	Server::getBlockType(void) { return _blockType; }

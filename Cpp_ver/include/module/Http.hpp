@@ -61,24 +61,15 @@ public:
 	static void	buildConfig(std::ifstream &file);
 	static void	addBlock(const BlockType &block);
 
-
-
-	class	Exception: public	std::exception {
-	protected:
-		std::string	_errMsg;
-
-	public:
-		explicit	Exception(const std::string &msg): _errMsg(msg) {}
-		virtual const char	*what() const throw() { return (_errMsg.c_str()); }
-	};
-
-	class	InitError: public	Exception {
-		public:
-			InitError(const std::string& detail)
-				: Exception("InitError: " + detail) {}
-	};
-
-
+	class	Exception;
+	class	EmptyBlock;
+	class	WrongBlock;
 };
+
+# include "Exception.hpp"
+
+// class Http::Exception {
+
+// };
 
 #endif		// HTTP_HPP

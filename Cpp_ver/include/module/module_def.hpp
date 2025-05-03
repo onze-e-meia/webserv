@@ -29,7 +29,7 @@ namespace Module {
 	};
 } // Module;
 
-typedef int	BlockType;
+typedef int	BlockType; // REMOVE THIS, CHECK INCLUDES
 
 #endif // MODULE_DEF_HPP
 

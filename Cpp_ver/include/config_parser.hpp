@@ -1,18 +1,30 @@
 
 
+
+
+
 #ifndef CONFIG_PARSER_HPP
 # define CONFIG_PARSER_HPP
 
 # include <fstream>
 # include <vector>
+#include "config_Token.hpp"
 
-class Token;
+class	Parser {
+private:
+	Token			_token;
+	std::size_t		_wordStartPos;
 
-void	parse(std::ifstream	&file);
-void	parseBlock(Token &token);
-void	parseDirective(Token &token);
-void	handleDirective(const std::string &name, const std::vector<std::string> &args);
-void	handleDirectiveStart(const std::string &name, const std::vector<std::string> &args);
-void	handleDirectiveEnd(const std::string &name, const std::vector<std::string> &args);
+	void	parseBlock(void);
+	void	parseDirective(void);
+	void	handleDirective(std::string name, const std::vector<std::string> &args);
+	void	handleBlockStart(std::string name, const std::vector<std::string> &args);
+	void	handleBlockEnd(std::string name, const std::vector<std::string> &args);
+
+public:
+	Parser(std::ifstream &file);
+
+	void	parseConfigFile(void);
+};
 
 #endif

@@ -3,16 +3,13 @@
 #ifndef CONFIG_TOKE_HPP
 # define CONFIG_TOKE_HPP
 
-// # include <iostream>
 # include <string>
 # include <fstream>
-// # include <vector>
-// # include <cctype>
+# include "CountingStream.hpp"
 
-# include <bitset>
-# include "module_def.hpp"
+# define DIRECTIVE_LEN 64
 
-# define DIRECTIVE_LEN 64;
+typedef int	BlockType;
 
 class	Token {
 public:
@@ -26,67 +23,27 @@ public:
 	};
 
 private:
-	BlockType		_blockType;
 	tokenType_e		_tokenType;
+	BlockType		_blockType;
 	std::string		_word;
-	std::ifstream	&_file;
-	int				_pos;
-	int				_line;
+	std::size_t		_wordStartPos;
+	CountingStream	_file;
+
+	void 				skipWhiteSpaceAndComments(void);
 
 public:
-	Token(std::ifstream	&file);
-	Token(const Token &other);
+	Token(std::ifstream &file);
 
 	void				setType(tokenType_e type);
-	void				setBlock(BlockType flags);
+	void				setBlock(BlockType blockType);
 
 	tokenType_e			getType() const;
 	BlockType			getBlock() const;
 	const std::string	&getWord() const;
+	size_t				getWordStartPos(void) const;
+	size_t				getLine(void) const;
 
-	void				nextToken(void) {
-		skipWhiteSpaceAndComments();
-		_word.clear();
-		char	ch = _file.get();
-		if (ch == EOF)
-			return (setType(END_FILE));
-		else if (ch == '{')
-			return (setType(BEGIN_BLOCK));
-		else if (ch == '}')
-			return (setType(END_BLOCK));
-		else if (ch == ';')
-			return (setType(END_STATEMENT));
-
-
-		// NEED TO CHECK FOR '#' HERE !!!!
-		_word = ch;
-		ch = _file.peek();
-		while (ch != EOF && !std::isspace(ch) && ch != '{' && ch != '}' && ch != ';') {
-			_word += static_cast<char>(_file.get());
-			ch = _file.peek();
-		}
-		return (setType(WORD));
-	}
-
-private:
-	void skipWhiteSpaceAndComments(void) {
-		char	ch;
-		while ((ch = _file.peek()) != EOF) {
-			if (std::isspace(ch)) {
-				if (ch == '\n')
-					++_line;
-				_file.get();
-				continue;
-			}
-			if (ch == '#') {
-				while (ch != EOF && ch != '\n')
-					ch = _file.get();
-				++_line;
-				continue;
-			}
-			break;
-		}
-	}
+	void				nextToken(void);
 };
 
 #endif
