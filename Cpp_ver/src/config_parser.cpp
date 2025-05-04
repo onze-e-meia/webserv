@@ -12,6 +12,8 @@
 // #include "config_directives.hpp"
 #include "Http.hpp"
 
+#include "color.hpp"
+
 // =============================================================================
 // PRIVATE
 // =============================================================================
@@ -92,7 +94,7 @@ void Parser::parseDirective(void) {
 	}
 }
 
-void	Parser::handleDirective(std::string name,const std::vector<std::string> &args) {
+void	Parser::handleDirective(const std::string &name, const std::vector<std::string> &args) {
 	(void)args;
 	std::cout << "Directive: " << name;
 	for (size_t i = 0; i < args.size(); ++i) {
@@ -101,14 +103,14 @@ void	Parser::handleDirective(std::string name,const std::vector<std::string> &ar
 	std::cout << YLW " { on line: " << _token.getLine() << " : " << _wordStartPos << " }" RENDL;
 }
 
-void Parser::handleBlockStart(std::string name,const std::vector<std::string> &args) {
+void Parser::handleBlockStart(const std::string &name, const std::vector<std::string> &args) {
 		// DO SOMETHING??
 		std::cout << BOLD BLU "BEGIN BLOCK: " GRN << name << RST;
 		std::cout << YLW " { on line: " << _token.getLine() << " : " << _wordStartPos << " }" RENDL;
 		(void)args;
 }
 
-void Parser::handleBlockEnd(std::string name, const std::vector<std::string> &args) {
+void Parser::handleBlockEnd(const std::string &name, const std::vector<std::string> &args) {
 		// DO SOMETHING??
 		(void)args;
 		std::cout << RED "End Block: " << name << RENDL;
@@ -125,8 +127,6 @@ Parser::Parser(std::ifstream &file): _token(file), _wordStartPos(0) {}
 void	Parser::parseConfigFile(void) {
 	_token.nextToken();
 	if (_token.getWord() != Name::HTTP) {
-		if (_token.getType() == Token::BEGIN_BLOCK)
-			throw (Http::EmptyBlock(_token.getLine(), _token.getWordStartPos()));
 		throw (Http::FirstBlock(_token.getLine(), _token.getWordStartPos()));
 	}
 	parseBlock();

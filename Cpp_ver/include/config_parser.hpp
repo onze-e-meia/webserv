@@ -17,9 +17,9 @@ private:
 
 	void	parseBlock(void);
 	void	parseDirective(void);
-	void	handleDirective(std::string name, const std::vector<std::string> &args);
-	void	handleBlockStart(std::string name, const std::vector<std::string> &args);
-	void	handleBlockEnd(std::string name, const std::vector<std::string> &args);
+	void	handleDirective(const std::string &name, const std::vector<std::string> &args);
+	void	handleBlockStart(const std::string &name, const std::vector<std::string> &args);
+	void	handleBlockEnd(const std::string &name, const std::vector<std::string> &args);
 
 public:
 	Parser(std::ifstream &file);

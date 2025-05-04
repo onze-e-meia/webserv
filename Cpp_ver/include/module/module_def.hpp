@@ -10,8 +10,6 @@
 # include <iostream>
 # include <map>
 
-# include "color.hpp"
-
 namespace Name {
 	const std::string	UNKNOW = "unknow";
 	const std::string	EMPTY = "";

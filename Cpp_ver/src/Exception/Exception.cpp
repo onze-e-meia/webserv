@@ -3,21 +3,54 @@
 
 
 
+#include <ostream>
 #include "Http.hpp"
+#include "color.hpp"
+
+#define DIRECTIVE_LEN 64
 
 // =============================================================================
-// PRIVATE
+// PROTECTED
 // =============================================================================
 
-/* CLASS Exception */
-/* Contsructor */
-Http::Exception::Exception(const std::string &detail, std::size_t line, std::size_t pos) {
+/* Member Functions */
+void	Http::Exception::makeLinePos(ConstStr &errType) {
 	std::ostringstream	oss;
-	oss << line << ":" << pos << " In directive '" << detail << "':" ENDL;
-	_lineAndPos = oss.str();
-	// Add Unknow error or remove detail?
-	// _errMsg += _lineAndPos;
+	oss << _line << ":" << _pos << ":" TAB RED << errType << RENDL;
+	_errMsg = oss.str();
 }
+
+void	Http::Exception::buildErr(ConstStr &msg) {
+	std::ostringstream	oss;
+	oss << TAB << msg << "." ENDL ;
+	_errMsg += oss.str();
+}
+
+void	Http::Exception::build1ArgErr(ConstStr &msg, ConstStr &arg1) {
+	std::ostringstream	oss;
+	oss << TAB "| Directive '"<< arg1 << "' "
+		<< msg << "." ENDL TAB "|" ENDL;
+	_errMsg += oss.str();
+
+}
+
+void	Http::Exception::build2ArgErr(ConstStr &msg, ConstStr &arg1, ConstStr &arg2) {
+	std::ostringstream	oss;
+	oss << TAB "| Directive Block '"<< arg1 << "' "
+		<< msg << " '" << arg2 << "'." ENDL TAB "|" ENDL;
+	_errMsg += oss.str();
+}
+
+// =============================================================================
+// PUBLIC
+// =============================================================================
+
+// --------------------
+// CLASS EXCEPTION
+// --------------------
+/* Contsructor */
+Http::Exception::Exception(std::size_t line, std::size_t pos):
+_line(line), _pos(pos) {}
 
 /* Destructor */
 Http::Exception::~Exception(void)  throw() {}
@@ -27,48 +60,85 @@ const char	*Http::Exception::what(void) const throw() {
 	return (_errMsg.c_str());
 }
 
-// =============================================================================
-// PUBLIC
-// =============================================================================
-
-/* CLASS Exception::EmptyBlock */
+// ---------------------------------
+//  CLASS EXCEPTION DirectiveLength
+// ---------------------------------
 /* Contsructor */
-Http::EmptyBlock::EmptyBlock(std::size_t line, std::size_t pos): Exception("", line, pos) {
-	_errMsg.clear();
-	_errMsg = _lineAndPos + RED "Empty Block Error: " RST;
-	_errMsg += "Empty Directive Block name." ENDL;
+Http::DirectiveLength::DirectiveLength(ConstStr &directive, std::size_t line, std::size_t pos):
+Exception(line, pos) {
+	makeLinePos("Directive Length Error:");
+	std::ostringstream	oss;
+	oss << DIRECTIVE_LEN;
+	build1ArgErr(", name lenght must be of size " + oss.str() + " or less", directive);
 }
 
-/* CLASS Exception::WrongBlock */
+// ---------------------------------
+//  CLASS EXCEPTION LineLength
+// ---------------------------------
 /* Contsructor */
-Http::FirstBlock::FirstBlock(std::size_t line, std::size_t pos): Exception("http", line, pos) {
-	_errMsg.clear();
-	_errMsg = _lineAndPos + RED "First Block Error: " RST;
-	_errMsg += "The first Directive Block name must be 'http'." ENDL;
+Http::LineLength::LineLength(std::size_t line, std::size_t pos):
+Exception(line, pos) {
+	makeLinePos("Empty Block Error:");
+	buildErr("Directive '': Empty Directive Block name");
 }
 
-/* CLASS Exception::WrongBlock */
+// ---------------------------------
+//  CLASS EXCEPTION FileSize
+// ---------------------------------
 /* Contsructor */
-Http::SameBlock::SameBlock(const std::string &block, const std::string &contex,
-	std::size_t line, std::size_t pos): Exception(block, line, pos) {
-	_errMsg.clear();
-	_errMsg = _lineAndPos + RED "Same Context Block Error: " RST;
-	_errMsg += "The Directive Block '" + block + "' is inside of Directive '" + contex + "'." ENDL;
+Http::FileSize::FileSize(std::size_t line, std::size_t pos):
+Exception(line, pos) {
+	makeLinePos("Empty Block Error:");
+	buildErr("Directive '': Empty Directive Block name");
 }
 
-/* CLASS Exception::WrongBlock */
+// ---------------------------------
+//  CLASS EXCEPTION EmptyBlock
+// ---------------------------------
 /* Contsructor */
-Http::WrongBlock::WrongBlock(const std::string &block, const std::string &contex,
-	std::size_t line, std::size_t pos): Exception(block, line, pos) {
-	_errMsg.clear();
-	_errMsg = _lineAndPos + RED "Wrong Context Block Error: " RST;
-	_errMsg += "The Directive Block '" + block + "' is out of context on Block '" + contex + "'." ENDL;
+Http::EmptyBlock::EmptyBlock(std::size_t line, std::size_t pos):
+Exception(line, pos) {
+	makeLinePos("Empty Block Error:");
+	buildErr("Directive '': Empty Directive Block name");
 }
 
-/* CLASS Exception::HttpClosed */
+// --------------------------------
+// CLASS EXCEPTION HttpClosed
+// --------------------------------
 /* Contsructor */
-Http::HttpClosed::HttpClosed(std::size_t line, std::size_t pos): Exception("", line, pos) {
-	_errMsg.clear();
-	_errMsg = _lineAndPos + RED "Http Context Block Closed Error: " RST;
-	_errMsg += "The closing curly braces '}' has been set. Any further text is out of Block." ENDL;
+Http::HttpClosed::HttpClosed(std::size_t line, std::size_t pos):
+Exception(line, pos) {
+	makeLinePos("Http Context Block Closed Error:");
+	buildErr("Closing curly brackets '}' has been set. Any further text is out of the 'http' Block");
+}
+
+// --------------------------------
+// CLASS EXCEPTION FirstBlock
+// --------------------------------
+/* Contsructor */
+Http::FirstBlock::FirstBlock(std::size_t line, std::size_t pos):
+Exception(line, pos) {
+	makeLinePos("First Block Error:");
+	buildErr("First Directive Block name must be 'http'");
+}
+
+// --------------------------------
+// CLASS EXCEPTION SameBlock
+// --------------------------------
+/* Contsructor */
+Http::SameBlock::SameBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos):
+Exception(line, pos) {
+	makeLinePos("Same Context Block Error:");
+	build2ArgErr("is inside of Directive", directive, contex);
+
+}
+
+// --------------------------------
+// CLASS EXCEPTION WrongBlock
+// --------------------------------
+/* Contsructor */
+Http::WrongBlock::WrongBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos):
+Exception(line, pos) {
+	makeLinePos("Wrong Context Block Error:");
+	build2ArgErr("is out of context on Block", directive, contex);
 }

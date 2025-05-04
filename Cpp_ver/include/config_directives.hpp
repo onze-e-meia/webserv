@@ -81,7 +81,7 @@ struct	DirectivePair{
 
 namespace	DirectiveSet {
 	struct init_s	{
-		DirectivePair	http = {"http",  &Directive::http};
+		// DirectivePair	http = {"http",  &Directive::http};
 		DirectivePair	include;
 		DirectivePair	server;
 	};

@@ -29,6 +29,7 @@ EXCEPTION_DIR	:=	$(SRC_DIR)/Exception
 SRC_FILES	:=	\
 	main.cpp	\
 	path_check.cpp \
+	CountingStream.cpp \
 	config_parser.cpp \
 	config_Token.cpp \
 	config_directives.cpp
@@ -67,15 +68,14 @@ LIB_DIR		:=	lib
 # **************************************************************************** #
 
 OBJ_DIR		:=	obj
-DEP_DIR		:=	dep
 
 OBJS_FILES	:= $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(ALL_FILES))
-DEPS_FILES	:= $(patsubst %.cpp,$(DEP_DIR)/%.d,$(ALL_FILES))
+DEPS_FILES	:= $(patsubst %.cpp,$(OBJ_DIR)/%.d,$(ALL_FILES))
 
 CC			:=	c++
 # CFLAGS		:=	-Wall -Wextra -Werror -std=c++98
-# CFLAGS		:=	-std=c++98 -MMD -MP
-CFLAGS		:=	-MMD -MP
+CFLAGS		:=	-std=c++98 -MMD -MP
+# CFLAGS		:=	-MMD -MP
 INCLUDE		:=	$(addprefix -I, $(INCLUDE_DIR))
 LIB			:=	$(addprefix -I, $(LIB_DIR))
 
@@ -125,7 +125,7 @@ $(TARGET): $(OBJS_FILES)
 
 # Unified rule: Compile .cpp → .o and generate .d
 $(OBJ_DIR)/%.o: %.cpp
-	mkdir -p $(dir $@) $(dir $(subst $(OBJ_DIR), $(DEP_DIR), $@))
+	mkdir -p $(dir $@)
 	$(CC) $(SANITIZE) $(DEBUG) $(MSG) $(CFLAGS) $(INCLUDE) $(LIB) -c $< -o $@
 	$(call message,OBJECT,$@,$(GREEN))
 

@@ -38,7 +38,6 @@ namespace Block {
 		BLOCK_SPEC(HTTP),
 	};
 
-	// const SpecMap	build(void);
 	BlockType		getType(std::string name);
 	std::string		getName(BlockType block);
 	// BlockType	dispatch(std::string block);

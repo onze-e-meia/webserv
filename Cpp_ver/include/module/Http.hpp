@@ -62,11 +62,14 @@ public:
 	static void	addBlock(const BlockType &block);
 
 	class	Exception;
+	class	DirectiveLength;
+	class	LineLength;
+	class	FileSize;
 	class	EmptyBlock;
+	class	HttpClosed;
 	class	FirstBlock;
 	class	SameBlock;
 	class	WrongBlock;
-	class	HttpClosed;
 };
 
 # include "Exception.hpp"

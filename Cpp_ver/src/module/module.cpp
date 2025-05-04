@@ -21,9 +21,8 @@ BlockType	Block::getType(std::string name) {
 	SpecConst_it	it = MAP.find(name);
 	SpecConst_it	end = MAP.end();
 	if (it == end) {
-		std::ostringstream oss;
-		oss << RED " >>>>>>>>>> Unknown NEW block: " << name << RENDL;
-		throw (std::runtime_error(oss.str()));
+		std::string	str = RED " >>>>>>>>>> Unknown NEW block: " + name + RENDL;
+		throw (std::runtime_error(str.c_str()));
 		// Make this return EMPTY, Remove unknow
 	}
 	return (it->second);

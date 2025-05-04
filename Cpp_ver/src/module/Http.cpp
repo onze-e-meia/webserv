@@ -85,10 +85,8 @@ void	Http::buildConfig(std::ifstream &file) {
 	// } catch (std::exception &exception) {
 	} catch (const std::exception &exception) {
 		_status.set(FAIL);
-		std::ostringstream	oss;
-		std::cerr << RED "HHHHAAAAALLLLTTTT!!!!" RENDL;
-		std::cerr << path << ":";
-		std::cerr << exception.what();
+		std::cerr << RED " >>> HHHHAAAAALLLLTTTT!!!! <<< " RENDL;
+		std::cerr << path << ":" << exception.what();
 	}
 
 	// Http	&http = Http::instance();

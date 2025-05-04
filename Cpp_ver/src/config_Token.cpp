@@ -2,10 +2,15 @@
 
 
 
-
-#include <stdexcept>
+#include <cstdio>
+// #include <stdexcept>
 #include "config_Token.hpp"
 #include "module.hpp"
+
+// #include "color.hpp"
+// #include <sstream>
+
+# include "Http.hpp"
 
 // =============================================================================
 // PRIVATE
@@ -35,7 +40,7 @@ void Token::skipWhiteSpaceAndComments(void) {
 // =============================================================================
 
 /* Contsructor */
-Token::Token(std::ifstream &file):
+Token::Token(std::istream &file):
 	_tokenType(EMPTY), _blockType(Block::EMPTY), _wordStartPos(0),
 	_file(file) { _word.reserve(64); }
 
@@ -66,7 +71,7 @@ size_t	Token::getWordStartPos(void) const {
 }
 
 size_t	Token::getLine(void) const {
-	return (_file.getLine());
+	return (_file.cursorLine());
 }
 
 /* Member Functions */
@@ -74,7 +79,7 @@ void	Token::nextToken(void) {
 	skipWhiteSpaceAndComments();
 	_word.clear();
 	char	ch = _file.get();
-	_wordStartPos = _file.getPos();
+	_wordStartPos = _file.cursorPos();
 	if (ch == EOF)
 		return (setType(END_FILE));
 	else if (ch == '{')
@@ -90,12 +95,8 @@ void	Token::nextToken(void) {
 	while (ch != EOF && !std::isspace(ch) && ch != '{' && ch != '}' && ch != ';') {
 		_word += static_cast<char>(_file.get());
 		ch = _file.peek();
-		if (_word.length() > DIRECTIVE_LEN) {
-			std::ostringstream	oss;
-			oss << _file.getLine() << ":" << _wordStartPos << " In directive '" << _word
-				<< "' lenght must be of size " << DIRECTIVE_LEN << " or less." ENDL;
-			throw (std::length_error(oss.str().c_str()));
-		}
+		if (_word.length() > DIRECTIVE_LEN)
+			throw (Http::DirectiveLength(_word, _file.cursorLine(), _wordStartPos));
 	}
 	return (setType(WORD));
 }

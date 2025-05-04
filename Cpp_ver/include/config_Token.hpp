@@ -4,7 +4,7 @@
 # define CONFIG_TOKE_HPP
 
 # include <string>
-# include <fstream>
+// # include <fstream>
 # include "CountingStream.hpp"
 
 # define DIRECTIVE_LEN 64
@@ -32,7 +32,7 @@ private:
 	void 				skipWhiteSpaceAndComments(void);
 
 public:
-	Token(std::ifstream &file);
+	Token(std::istream &file);
 
 	void				setType(tokenType_e type);
 	void				setBlock(BlockType blockType);

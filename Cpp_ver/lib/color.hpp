@@ -13,8 +13,6 @@
 #ifndef COLOR_HPP
 # define COLOR_HPP
 
-# include <sstream>
-
 // Font Color
 // Standard
 # define BLK		"\033[38;5;0m"
@@ -106,18 +104,5 @@
 # define CURSOR_HM	"\033[H"
 # define CL_LINE	"\033[K"
 # define UP_LN		"\033[F"
-
-// Move cursor
-inline std::string C_HORZ(int n) {
-	std::ostringstream oss;
-	oss << "\033[" << std::abs(n) << (n > 0 ? "C" : "D");
-	return (oss.str());
-}
-
-inline std::string C_VERT(int n) {
-	std::ostringstream oss;
-	oss << "\033[" << std::abs(n) << (n > 0 ? "A" : "B");
-	return (oss.str());
-}
 
 #endif
