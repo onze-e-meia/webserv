@@ -3,12 +3,12 @@
 # Define a default MIME types and other general settings
 
 http {
+
  start;
   12 45 ;
    a; b;
 	include			mime.types; other test;
 	default_type	application/octet-stream;
-
 	# Fix bellow:
 	dir#;
 	directive# arg#;#

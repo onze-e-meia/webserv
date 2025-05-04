@@ -19,14 +19,12 @@
 /* Member Functions */
 void	Parser::parseBlock(void) {
 	Token::tokenType_e	tokenType = _token.getType();
-	// while (_token.getType() != Token::END_BLOCK && _token.getType() != Token::END_FILE) {
+
 	while (tokenType != Token::END_BLOCK && tokenType != Token::END_FILE) {
 		if (tokenType == Token::WORD) {
 			parseDirective();
 		} else if (tokenType == Token::BEGIN_BLOCK) {
-			std::ostringstream	oss;
-			oss << H_BLU "THE VERY GRAND NEW EMPTY DIRECTIVE!!!!!!!!!!!\n" RST;
-			throw (std::runtime_error(oss.str()));
+			throw (Http::EmptyBlock(_token.getLine(), _token.getWordStartPos()));
 		} else if (tokenType == Token::END_STATEMENT) {
 			_token.nextToken();
 		} else {
@@ -37,8 +35,7 @@ void	Parser::parseBlock(void) {
 		}
 		tokenType = _token.getType();
 	}
-	// consume the closing '}'
-	if (tokenType == Token::END_BLOCK)
+	if (tokenType == Token::END_BLOCK) // consume the closing '}'
 		_token.nextToken();
 }
 
@@ -49,25 +46,21 @@ void Parser::parseDirective(void) {
 	_wordStartPos = _token.getWordStartPos();
 	_token.nextToken();
 
-	// collect args until ';' or '{'
-	// CAN BE A FUNCTION
 	std::vector<std::string> args;
-	while (_token.getType() == Token::WORD) {
+	while (_token.getType() == Token::WORD) { // collect args until ';' or '{' // CAN BE A FUNCTION
 		args.push_back(_token.getWord());
 		_token.nextToken();
 	}
 
-	if (_token.getType() == Token::END_STATEMENT) {
-		// simple directive
+	if (_token.getType() == Token::END_STATEMENT) { // simple directive // CAN BE A FUNCTION
 		// REVIEW DISPATCH DIRECTIVE FUNC
 		// handler_t	handle = Handle::dispatch(contextToken);
 		// (void)handle;
 
 		handleDirective(directiveName, args);
 		_token.nextToken();
-	} else if (_token.getType() == Token::BEGIN_BLOCK) {
-		// directive with nested block
-		_token.setBlock(Block::getType(directiveName));
+	} else if (_token.getType() == Token::BEGIN_BLOCK) { // directive with nested block
+		_token.setBlock(Block::getType(directiveName)); // Have to check and throw here if block is unknow
 		BlockType atcualBlock = _token.getBlock();
 
 		// std::cout << TEAL "[" << directive << "] " << atcualBlock << " | " << previusBlock << RENDL;
@@ -75,13 +68,11 @@ void Parser::parseDirective(void) {
 
 		handleBlockStart(directiveName, args);
 		if (atcualBlock <= previusBlock) {
-			std::ostringstream	oss;
-			oss << atcualBlock << " | " << previusBlock <<" SAME BLOCK CONTEXTBlock!!!!!!!!!!!\n";
-			throw (std::runtime_error(oss.str()));
+			if (atcualBlock == previusBlock)
+				throw (Http::SameBlock(directiveName, Block::getName(previusBlock), _token.getLine(), _wordStartPos));
+			throw (Http::WrongBlock(directiveName, Block::getName(previusBlock), _token.getLine(), _wordStartPos));
 		} else if (atcualBlock == Block::LOCATION && previusBlock == Block::HTTP) {
-			std::ostringstream	oss;
-			oss << atcualBlock << " | " << previusBlock <<" OUT OF PALCE LOCATION CONTEXTBlock!!!!!!!!!!!\n";
-			throw (std::runtime_error(oss.str()));
+			throw (Http::WrongBlock(directiveName, Block::getName(previusBlock), _token.getLine(), _wordStartPos));
 		}
 		Http::addBlock(atcualBlock);
 
@@ -91,13 +82,8 @@ void Parser::parseDirective(void) {
 
 		_token.setBlock(previusBlock);
 
-		if (previusBlock == Block::EMPTY) {
-			if (_token.getType() != Token::END_FILE) {
-				std::ostringstream	oss;
-				oss << "HTTP IS CLOSED/n" << _token.getWord() << "\n";
-				throw (std::runtime_error(oss.str()));
-			}
-		}
+		if (previusBlock == Block::EMPTY && _token.getType() != Token::END_FILE)
+			throw (Http::HttpClosed(_token.getLine(), _wordStartPos));
 	} else {
 		std::ostringstream	oss;
 		oss << "Expected ';' or '{' after directive '"
@@ -117,7 +103,8 @@ void	Parser::handleDirective(std::string name,const std::vector<std::string> &ar
 
 void Parser::handleBlockStart(std::string name,const std::vector<std::string> &args) {
 		// DO SOMETHING??
-		std::cout << BOLD BLU "BEGIN BLOCK: " GRN << name << RENDL;
+		std::cout << BOLD BLU "BEGIN BLOCK: " GRN << name << RST;
+		std::cout << YLW " { on line: " << _token.getLine() << " : " << _wordStartPos << " }" RENDL;
 		(void)args;
 }
 
@@ -140,7 +127,7 @@ void	Parser::parseConfigFile(void) {
 	if (_token.getWord() != Name::HTTP) {
 		if (_token.getType() == Token::BEGIN_BLOCK)
 			throw (Http::EmptyBlock(_token.getLine(), _token.getWordStartPos()));
-		throw (Http::WrongBlock(_token.getWord(), _token.getLine(), _token.getWordStartPos()));
+		throw (Http::FirstBlock(_token.getLine(), _token.getWordStartPos()));
 	}
 	parseBlock();
 }

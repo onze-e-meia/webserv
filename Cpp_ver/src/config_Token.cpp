@@ -24,6 +24,8 @@ void Token::skipWhiteSpaceAndComments(void) {
 				ch = _file.get();
 			continue;
 		}
+		// Check for line size.
+		// Check for file size.
 		break;
 	}
 }
@@ -95,6 +97,5 @@ void	Token::nextToken(void) {
 			throw (std::length_error(oss.str().c_str()));
 		}
 	}
-
 	return (setType(WORD));
 }

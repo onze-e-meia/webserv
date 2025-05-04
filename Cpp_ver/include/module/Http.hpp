@@ -63,7 +63,10 @@ public:
 
 	class	Exception;
 	class	EmptyBlock;
+	class	FirstBlock;
+	class	SameBlock;
 	class	WrongBlock;
+	class	HttpClosed;
 };
 
 # include "Exception.hpp"

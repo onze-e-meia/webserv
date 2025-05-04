@@ -28,9 +28,26 @@ public:
 	EmptyBlock(std::size_t line, std::size_t pos);
 };
 
+class	Http::FirstBlock: public	Http::Exception {
+public:
+	FirstBlock(std::size_t line, std::size_t pos);
+};
+
+class	Http::SameBlock: public	Http::Exception {
+public:
+	SameBlock(const std::string& detail, const std::string &contex,
+		std::size_t line, std::size_t pos);
+};
+
 class	Http::WrongBlock: public	Http::Exception {
 public:
-	WrongBlock(const std::string& detail, std::size_t line, std::size_t pos);
+	WrongBlock(const std::string& detail, const std::string &contex,
+		std::size_t line, std::size_t pos);
+};
+
+class	Http::HttpClosed: public	Http::Exception {
+public:
+	HttpClosed(std::size_t line, std::size_t pos);
 };
 
 #endif // EXCEPTION_HPP
