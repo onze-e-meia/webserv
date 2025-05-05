@@ -2,15 +2,12 @@
 
 
 
+
 #include <cstdio>
-// #include <stdexcept>
-#include "config_Token.hpp"
+#include "Token.hpp"
+#include "Parser.hpp"
+#include "ParseLimits.hpp"
 #include "module.hpp"
-
-// #include "color.hpp"
-// #include <sstream>
-
-# include "Http.hpp"
 
 // =============================================================================
 // PRIVATE
@@ -95,8 +92,8 @@ void	Token::nextToken(void) {
 	while (ch != EOF && !std::isspace(ch) && ch != '{' && ch != '}' && ch != ';') {
 		_word += static_cast<char>(_file.get());
 		ch = _file.peek();
-		if (_word.length() > DIRECTIVE_LEN)
-			throw (Http::DirectiveLength(_word, _file.cursorLine(), _wordStartPos));
+		if (_word.length() > MAX_DIRECTIVE_LEN)
+			throw (Parser::DirectiveLength(_word, _file.cursorLine(), _wordStartPos));
 	}
 	return (setType(WORD));
 }

@@ -1,5 +1,8 @@
 
 
+
+
+
 #ifndef		CORE_HPP
 # define	CORE_HPP
 
@@ -28,4 +31,4 @@ public:
 
 
 
-#endif
+#endif		// CORE_HPP

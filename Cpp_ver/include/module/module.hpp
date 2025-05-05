@@ -3,13 +3,11 @@
 
 
 
-#ifndef MODULE_HPP
-# define MODULE_HPP
+#ifndef		MODULE_HPP
+# define	MODULE_HPP
 
-# include <bitset>
-# include <iostream>
+# include <string>
 # include <map>
-
 # include "module_def.hpp"
 
 #define BLOCK_SPEC(name) { Name::name, name }
@@ -41,6 +39,6 @@ namespace Block {
 	BlockType		getType(std::string name);
 	std::string		getName(BlockType block);
 	// BlockType	dispatch(std::string block);
-} // Block
+}
 
-#endif // MODULE_HPP
+#endif		// MODULE_HPP

@@ -1,6 +1,11 @@
 
 
 
+
+
+#ifndef		COUNTING_STREAM_HPP
+# define	COUNTING_STREAM_HPP
+
 # include <istream>
 
 class CountingStream {
@@ -20,3 +25,5 @@ public:
 	std::size_t	cursorLine(void) const;
 	std::size_t	getSize(void) const;
 };
+
+#endif		// COUNTING_STREAM_HPP

@@ -3,12 +3,10 @@
 
 
 
-#ifndef MODULE_DEF_HPP
-# define MODULE_DEF_HPP
+#ifndef		MODULE_DEF_HPP
+# define	MODULE_DEF_HPP
 
-# include <bitset>
-# include <iostream>
-# include <map>
+# include <string>
 
 namespace Name {
 	const std::string	UNKNOW = "unknow";
@@ -31,7 +29,7 @@ namespace Module {
 
 typedef int	BlockType; // REMOVE THIS, CHECK INCLUDES
 
-#endif // MODULE_DEF_HPP
+#endif		// MODULE_DEF_HPP
 
 // struct FileAccess {
 //     unsigned read    : 1;

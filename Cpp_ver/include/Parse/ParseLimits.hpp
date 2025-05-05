@@ -1,0 +1,13 @@
+
+
+
+
+
+#ifndef PARSE_LIMITS_HPP
+# define PARSE_LIMITS_HPP
+
+# define MAX_DIRECTIVE_LEN	128
+# define MAX_LINE_LEN		4096
+# define MAX_FILE_SIZE		1024 * 1024 // 1 MiB
+
+#endif // PARSE_LIMITS_HPP

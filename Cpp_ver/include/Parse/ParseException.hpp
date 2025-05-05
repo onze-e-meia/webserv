@@ -3,17 +3,17 @@
 
 
 
-#ifndef EXCEPTION_HPP
-# define EXCEPTION_HPP
+#ifndef		PARSE_EXCEPTION_HPP
+# define	PARSE_EXCEPTION_HPP
 
 # include <string>
 # include <exception>
 
-# include "Http.hpp"
+# include "Parser.hpp"
 
 typedef const std::string	ConstStr;
 
-class	Http::Exception: public	std::exception {
+class	Parser::Exception: public	std::exception {
 protected:
 	std::string	_errMsg;
 	std::size_t	_line;
@@ -31,49 +31,57 @@ public:
 	virtual const char	*what(void) const throw();
 };
 
-class	Http::DirectiveLength: public	Http::Exception {
+class	Parser::UnexpectedToken: public Parser::Exception {
+public:
+	UnexpectedToken(ConstStr &directive, std::size_t line, std::size_t pos);
+};
+
+class	Parser::ExpectedToken: public Parser::Exception {
+public:
+	ExpectedToken(ConstStr &directive, std::size_t line, std::size_t pos);
+};
+
+class	Parser::DirectiveLength: public	Parser::Exception {
 public:
 	DirectiveLength(ConstStr &directive, std::size_t line, std::size_t pos);
 };
 
-class	Http::LineLength: public	Http::Exception {
+class	Parser::LineLength: public	Parser::Exception {
 	public:
 	LineLength(std::size_t line, std::size_t pos);
 };
 
-class	Http::FileSize: public	Http::Exception {
+class	Parser::FileSize: public	Parser::Exception {
 public:
 	FileSize(std::size_t line, std::size_t pos);
 };
 
-class	Http::EmptyBlock: public	Http::Exception {
+class	Parser::EmptyBlock: public	Parser::Exception {
 public:
 	EmptyBlock(std::size_t line, std::size_t pos);
 };
 
-class	Http::HttpClosed: public	Http::Exception {
+class	Parser::HttpClosed: public	Parser::Exception {
 public:
 	HttpClosed(std::size_t line, std::size_t pos);
 };
 
-class	Http::FirstBlock: public	Http::Exception {
+class	Parser::FirstBlock: public	Parser::Exception {
 public:
 	FirstBlock(std::size_t line, std::size_t pos);
 };
 
-class	Http::SameBlock: public	Http::Exception {
+class	Parser::SameBlock: public	Parser::Exception {
 public:
 	SameBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos);
 };
 
-class	Http::WrongBlock: public	Http::Exception {
+class	Parser::WrongBlock: public	Parser::Exception {
 public:
 	WrongBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos);
 };
 
-
-
-#endif // EXCEPTION_HPP
+#endif		// EXCEPTION_HPP
 
 
 /* USE CASE ?

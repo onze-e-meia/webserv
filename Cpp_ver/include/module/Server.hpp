@@ -1,5 +1,10 @@
-#ifndef SERVER_HPP
-# define SERVER_HPP
+
+
+
+
+
+#ifndef		SERVER_HPP
+# define	SERVER_HPP
 
 #include <bitset>
 #include <map>
@@ -10,7 +15,6 @@
 
 #include "Core.hpp"
 #include "Location.hpp"
-
 
 class	Server: public	Core {
 	private:
@@ -36,4 +40,4 @@ class	Server: public	Core {
 
 // Server::Server(void): Core(Name::SERVER) {}
 
-#endif // SERVER_HPP
+#endif		// SERVER_HPP

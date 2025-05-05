@@ -1,13 +1,13 @@
 
 
-#ifndef CONFIG_TOKE_HPP
-# define CONFIG_TOKE_HPP
+
+
+
+#ifndef		TOKEN_HPP
+# define	TOKEN_HPP
 
 # include <string>
-// # include <fstream>
 # include "CountingStream.hpp"
-
-# define DIRECTIVE_LEN 64
 
 typedef int	BlockType;
 
@@ -46,4 +46,4 @@ public:
 	void				nextToken(void);
 };
 
-#endif
+#endif		// TOKEN_HPP

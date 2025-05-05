@@ -7,7 +7,7 @@
 #include <string>
 #include <sstream>
 
-#include "config_parser.hpp"
+#include "Parser.hpp"
 #include "module.hpp"
 // #include "config_directives.hpp"
 #include "Http.hpp"
@@ -26,15 +26,11 @@ void	Parser::parseBlock(void) {
 		if (tokenType == Token::WORD) {
 			parseDirective();
 		} else if (tokenType == Token::BEGIN_BLOCK) {
-			throw (Http::EmptyBlock(_token.getLine(), _token.getWordStartPos()));
+			throw (Parser::EmptyBlock(_token.getLine(), _token.getWordStartPos()));
 		} else if (tokenType == Token::END_STATEMENT) {
 			_token.nextToken();
-		} else {
-			std::ostringstream	oss;
-			oss << "Unexpected token " << tokenType << " in block: {"
-				<< _token.getWord() << "}\n";
-			throw (std::runtime_error(oss.str()));
-		}
+		} else // Does any erro get in here ?
+			throw (Parser::UnexpectedToken(_token.getWord(), _token.getLine(), _token.getWordStartPos()));
 		tokenType = _token.getType();
 	}
 	if (tokenType == Token::END_BLOCK) // consume the closing '}'
@@ -43,18 +39,18 @@ void	Parser::parseBlock(void) {
 
 void Parser::parseDirective(void) {
 	BlockType	previusBlock = _token.getBlock();
+	std::string	previusName = Block::getName(previusBlock);
 	std::string	directiveName = _token.getWord();
 
 	_wordStartPos = _token.getWordStartPos();
 	_token.nextToken();
-
 	std::vector<std::string> args;
-	while (_token.getType() == Token::WORD) { // collect args until ';' or '{' // CAN BE A FUNCTION
+	while (_token.getType() == Token::WORD) { // collect args until ';' or '{' // CAN BE A FUNCTION ?
 		args.push_back(_token.getWord());
 		_token.nextToken();
 	}
 
-	if (_token.getType() == Token::END_STATEMENT) { // simple directive // CAN BE A FUNCTION
+	if (_token.getType() == Token::END_STATEMENT) { // simple directive // CAN BE A FUNCTION ?
 		// REVIEW DISPATCH DIRECTIVE FUNC
 		// handler_t	handle = Handle::dispatch(contextToken);
 		// (void)handle;
@@ -71,11 +67,10 @@ void Parser::parseDirective(void) {
 		handleBlockStart(directiveName, args);
 		if (atcualBlock <= previusBlock) {
 			if (atcualBlock == previusBlock)
-				throw (Http::SameBlock(directiveName, Block::getName(previusBlock), _token.getLine(), _wordStartPos));
-			throw (Http::WrongBlock(directiveName, Block::getName(previusBlock), _token.getLine(), _wordStartPos));
-		} else if (atcualBlock == Block::LOCATION && previusBlock == Block::HTTP) {
-			throw (Http::WrongBlock(directiveName, Block::getName(previusBlock), _token.getLine(), _wordStartPos));
-		}
+				throw (Parser::SameBlock(directiveName, previusName, _token.getLine(), _wordStartPos));
+			throw (Parser::WrongBlock(directiveName, previusName, _token.getLine(), _wordStartPos));
+		} else if (atcualBlock == Block::LOCATION && previusBlock == Block::HTTP)
+			throw (Parser::WrongBlock(directiveName, previusName, _token.getLine(), _wordStartPos));
 		Http::addBlock(atcualBlock);
 
 		_token.nextToken();
@@ -85,13 +80,9 @@ void Parser::parseDirective(void) {
 		_token.setBlock(previusBlock);
 
 		if (previusBlock == Block::EMPTY && _token.getType() != Token::END_FILE)
-			throw (Http::HttpClosed(_token.getLine(), _wordStartPos));
-	} else {
-		std::ostringstream	oss;
-		oss << "Expected ';' or '{' after directive '"
-				  << directiveName << "'\n";
-		throw (std::runtime_error(oss.str()));
-	}
+			throw (Parser::HttpClosed(_token.getLine(), _wordStartPos));
+	} else
+		throw (Parser::ExpectedToken(directiveName, _token.getLine(), _token.getWordStartPos()));
 }
 
 void	Parser::handleDirective(const std::string &name, const std::vector<std::string> &args) {
@@ -127,7 +118,7 @@ Parser::Parser(std::ifstream &file): _token(file), _wordStartPos(0) {}
 void	Parser::parseConfigFile(void) {
 	_token.nextToken();
 	if (_token.getWord() != Name::HTTP) {
-		throw (Http::FirstBlock(_token.getLine(), _token.getWordStartPos()));
+		throw (Parser::FirstBlock(_token.getLine(), _token.getWordStartPos()));
 	}
 	parseBlock();
 }

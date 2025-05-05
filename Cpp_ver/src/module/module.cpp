@@ -2,8 +2,13 @@
 
 
 
+
 #include "module.hpp"
 #include "color.hpp"
+
+
+
+#include <iostream> // REMOCE WITH THE STD::COUT
 
 static const Block::SpecMap	build(void);
 

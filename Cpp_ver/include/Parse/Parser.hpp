@@ -3,12 +3,12 @@
 
 
 
-#ifndef CONFIG_PARSER_HPP
-# define CONFIG_PARSER_HPP
+#ifndef		CONFIG_PARSER_HPP
+# define	CONFIG_PARSER_HPP
 
 # include <fstream>
 # include <vector>
-#include "config_Token.hpp"
+# include "Token.hpp"
 
 class	Parser {
 private:
@@ -25,6 +25,21 @@ public:
 	Parser(std::ifstream &file);
 
 	void	parseConfigFile(void);
+
+	class	UnexpectedToken;
+	class	ExpectedToken;
+	class	Exception;
+	class	DirectiveLength;
+	class	LineLength;
+	class	FileSize;
+	class	EmptyBlock;
+	class	HttpClosed;
+	class	FirstBlock;
+	class	SameBlock;
+	class	WrongBlock;
 };
 
-#endif
+# include "ParseException.hpp"
+
+
+#endif		// CONFIG_PARSER_HPP

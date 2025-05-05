@@ -3,38 +3,38 @@
 
 
 
-#include <ostream>
-#include "Http.hpp"
+#include <sstream>
+#include "Parser.hpp"
+#include "ParseLimits.hpp"
 #include "color.hpp"
 
-#define DIRECTIVE_LEN 64
 
 // =============================================================================
 // PROTECTED
 // =============================================================================
 
 /* Member Functions */
-void	Http::Exception::makeLinePos(ConstStr &errType) {
+void	Parser::Exception::makeLinePos(ConstStr &errType) {
 	std::ostringstream	oss;
 	oss << _line << ":" << _pos << ":" TAB RED << errType << RENDL;
 	_errMsg = oss.str();
 }
 
-void	Http::Exception::buildErr(ConstStr &msg) {
+void	Parser::Exception::buildErr(ConstStr &msg) {
 	std::ostringstream	oss;
-	oss << TAB << msg << "." ENDL ;
+	oss << TAB "| " << msg << "." ENDL TAB "|" ENDL;
 	_errMsg += oss.str();
 }
 
-void	Http::Exception::build1ArgErr(ConstStr &msg, ConstStr &arg1) {
+void	Parser::Exception::build1ArgErr(ConstStr &msg, ConstStr &arg1) {
 	std::ostringstream	oss;
-	oss << TAB "| Directive '"<< arg1 << "' "
+	oss << TAB "| Directive '"<< arg1 << "'"
 		<< msg << "." ENDL TAB "|" ENDL;
 	_errMsg += oss.str();
 
 }
 
-void	Http::Exception::build2ArgErr(ConstStr &msg, ConstStr &arg1, ConstStr &arg2) {
+void	Parser::Exception::build2ArgErr(ConstStr &msg, ConstStr &arg1, ConstStr &arg2) {
 	std::ostringstream	oss;
 	oss << TAB "| Directive Block '"<< arg1 << "' "
 		<< msg << " '" << arg2 << "'." ENDL TAB "|" ENDL;
@@ -49,54 +49,82 @@ void	Http::Exception::build2ArgErr(ConstStr &msg, ConstStr &arg1, ConstStr &arg2
 // CLASS EXCEPTION
 // --------------------
 /* Contsructor */
-Http::Exception::Exception(std::size_t line, std::size_t pos):
+Parser::Exception::Exception(std::size_t line, std::size_t pos): // PUT makeLinePos inside constructor
 _line(line), _pos(pos) {}
 
 /* Destructor */
-Http::Exception::~Exception(void)  throw() {}
+Parser::Exception::~Exception(void)  throw() {}
 
 /* Member Functions */
-const char	*Http::Exception::what(void) const throw() {
+const char	*Parser::Exception::what(void) const throw() {
 	return (_errMsg.c_str());
+}
+
+// ---------------------------------
+//  CLASS EXCEPTION UnexpectedToken
+// ---------------------------------
+/* Contsructor */
+Parser::UnexpectedToken::UnexpectedToken(ConstStr &directive, std::size_t line, std::size_t pos):
+Exception(line, pos) {
+	makeLinePos("Unexpected Token Error:");
+	std::ostringstream	oss;
+	oss << MAX_DIRECTIVE_LEN;
+	build1ArgErr(", unexpected Token" , directive);
+}
+
+// ---------------------------------
+//  CLASS EXCEPTION ExpectedToken
+// ---------------------------------
+/* Contsructor */
+Parser::ExpectedToken::ExpectedToken(ConstStr &directive, std::size_t line, std::size_t pos):
+Exception(line, pos) {
+	makeLinePos("Expected Token Error:");
+	std::ostringstream	oss;
+	oss << MAX_DIRECTIVE_LEN;
+	build1ArgErr(", expected ';' or '{' after directive", directive);
 }
 
 // ---------------------------------
 //  CLASS EXCEPTION DirectiveLength
 // ---------------------------------
 /* Contsructor */
-Http::DirectiveLength::DirectiveLength(ConstStr &directive, std::size_t line, std::size_t pos):
+Parser::DirectiveLength::DirectiveLength(ConstStr &directive, std::size_t line, std::size_t pos):
 Exception(line, pos) {
 	makeLinePos("Directive Length Error:");
 	std::ostringstream	oss;
-	oss << DIRECTIVE_LEN;
-	build1ArgErr(", name lenght must be of size " + oss.str() + " or less", directive);
+	oss << MAX_DIRECTIVE_LEN;
+	build1ArgErr(", directive max lenght must be of size " + oss.str() + " or less", directive);
 }
 
 // ---------------------------------
 //  CLASS EXCEPTION LineLength
 // ---------------------------------
 /* Contsructor */
-Http::LineLength::LineLength(std::size_t line, std::size_t pos):
+Parser::LineLength::LineLength(std::size_t line, std::size_t pos):
 Exception(line, pos) {
-	makeLinePos("Empty Block Error:");
-	buildErr("Directive '': Empty Directive Block name");
+	makeLinePos("Parse Line Lenght Error:");
+	std::ostringstream	oss;
+	oss << MAX_LINE_LEN;
+	buildErr("Line max lenght must be of size " + oss.str() + " or less");
 }
 
 // ---------------------------------
 //  CLASS EXCEPTION FileSize
 // ---------------------------------
 /* Contsructor */
-Http::FileSize::FileSize(std::size_t line, std::size_t pos):
+Parser::FileSize::FileSize(std::size_t line, std::size_t pos):
 Exception(line, pos) {
-	makeLinePos("Empty Block Error:");
-	buildErr("Directive '': Empty Directive Block name");
+	makeLinePos("Parse File Size Error:");
+	std::ostringstream	oss;
+	oss << MAX_FILE_SIZE;
+	buildErr("File max size must be " + oss.str() + " or less");
 }
 
 // ---------------------------------
 //  CLASS EXCEPTION EmptyBlock
 // ---------------------------------
 /* Contsructor */
-Http::EmptyBlock::EmptyBlock(std::size_t line, std::size_t pos):
+Parser::EmptyBlock::EmptyBlock(std::size_t line, std::size_t pos):
 Exception(line, pos) {
 	makeLinePos("Empty Block Error:");
 	buildErr("Directive '': Empty Directive Block name");
@@ -106,7 +134,7 @@ Exception(line, pos) {
 // CLASS EXCEPTION HttpClosed
 // --------------------------------
 /* Contsructor */
-Http::HttpClosed::HttpClosed(std::size_t line, std::size_t pos):
+Parser::HttpClosed::HttpClosed(std::size_t line, std::size_t pos):
 Exception(line, pos) {
 	makeLinePos("Http Context Block Closed Error:");
 	buildErr("Closing curly brackets '}' has been set. Any further text is out of the 'http' Block");
@@ -116,7 +144,7 @@ Exception(line, pos) {
 // CLASS EXCEPTION FirstBlock
 // --------------------------------
 /* Contsructor */
-Http::FirstBlock::FirstBlock(std::size_t line, std::size_t pos):
+Parser::FirstBlock::FirstBlock(std::size_t line, std::size_t pos):
 Exception(line, pos) {
 	makeLinePos("First Block Error:");
 	buildErr("First Directive Block name must be 'http'");
@@ -126,7 +154,7 @@ Exception(line, pos) {
 // CLASS EXCEPTION SameBlock
 // --------------------------------
 /* Contsructor */
-Http::SameBlock::SameBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos):
+Parser::SameBlock::SameBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos):
 Exception(line, pos) {
 	makeLinePos("Same Context Block Error:");
 	build2ArgErr("is inside of Directive", directive, contex);
@@ -137,7 +165,7 @@ Exception(line, pos) {
 // CLASS EXCEPTION WrongBlock
 // --------------------------------
 /* Contsructor */
-Http::WrongBlock::WrongBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos):
+Parser::WrongBlock::WrongBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos):
 Exception(line, pos) {
 	makeLinePos("Wrong Context Block Error:");
 	build2ArgErr("is out of context on Block", directive, contex);

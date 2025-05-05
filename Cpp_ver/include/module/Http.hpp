@@ -2,6 +2,7 @@
 
 
 
+
 #ifndef		HTTP_HPP
 # define	HTTP_HPP
 
@@ -19,7 +20,6 @@
 # include "Server.hpp"
 // #include "config_directives.hpp"
 
-class	Token;
 class	Mime {};
 
 class	Http: public	Core {
@@ -60,22 +60,6 @@ public:
 
 	static void	buildConfig(std::ifstream &file);
 	static void	addBlock(const BlockType &block);
-
-	class	Exception;
-	class	DirectiveLength;
-	class	LineLength;
-	class	FileSize;
-	class	EmptyBlock;
-	class	HttpClosed;
-	class	FirstBlock;
-	class	SameBlock;
-	class	WrongBlock;
 };
-
-# include "Exception.hpp"
-
-// class Http::Exception {
-
-// };
 
 #endif		// HTTP_HPP

@@ -21,21 +21,24 @@ TARGET		:=	$(BIN_DIR)/webserv
 #    Sources                                                                   #
 # **************************************************************************** #
 
-SRC_DIR		:=	src
-LOGGER_DIR	:=	$(SRC_DIR)/logger
-MODULE_DIR	:=	$(SRC_DIR)/module
-EXCEPTION_DIR	:=	$(SRC_DIR)/Exception
+SRC_DIR			:=	src
+LOGGER_DIR		:=	$(SRC_DIR)/logger
+PARSER_DIR		:=	$(SRC_DIR)/Parse
+MODULE_DIR		:=	$(SRC_DIR)/module
 
 SRC_FILES	:=	\
 	main.cpp	\
 	path_check.cpp \
-	CountingStream.cpp \
-	config_parser.cpp \
-	config_Token.cpp \
 	config_directives.cpp
 
 SRC_LOGGER	:= \
 	Logger.cpp
+
+SRC_PARSER	:= \
+	CountingStream.cpp \
+	Token.cpp \
+	Parser.cpp \
+	ParseException.cpp
 
 SRC_MODULE	:= \
 	module.cpp \
@@ -43,14 +46,15 @@ SRC_MODULE	:= \
 	Http.cpp \
 	Server.cpp
 
-SRC_EXCEPTION	:= \
-	Exception.cpp
-
-SRC_FILES	:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
-LOG_FILES	:= $(addprefix $(LOGGER_DIR)/, $(SRC_LOGGER))
-MOD_FILES	:= $(addprefix $(MODULE_DIR)/, $(SRC_MODULE))
-EXP_FILES	:= $(addprefix $(EXCEPTION_DIR)/, $(SRC_EXCEPTION))
-ALL_FILES	:= $(SRC_FILES) $(LOG_FILES) $(MOD_FILES) $(EXP_FILES)
+SRC_FILES		:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
+LOGGER_FILES	:= $(addprefix $(LOGGER_DIR)/, $(SRC_LOGGER))
+PARSER_FILES	:= $(addprefix $(PARSER_DIR)/, $(SRC_PARSER))
+MODULE_FILES	:= $(addprefix $(MODULE_DIR)/, $(SRC_MODULE))
+ALL_FILES		:= \
+	$(SRC_FILES) \
+	$(LOGGER_FILES) \
+	$(PARSER_FILES) \
+	$(MODULE_FILES)
 
 # **************************************************************************** #
 #    Dependencies                                                              #
@@ -58,6 +62,7 @@ ALL_FILES	:= $(SRC_FILES) $(LOG_FILES) $(MOD_FILES) $(EXP_FILES)
 
 INCLUDE_DIR	:=	include \
 	include/logger \
+	include/Parse \
 	include/module \
 	include/Exception
 
@@ -113,7 +118,7 @@ define message
 endef
 
 # **************************************************************************** #
-#    Targets                                                                   #
+#    Target                                                                    #
 # **************************************************************************** #
 
 all: $(TARGET) ## Build the program
@@ -172,19 +177,6 @@ help:	## Show this message
 .DELETE_ON_ERROR:
 
 -include $(DEPS_FILES)
-
-# $(TARGET):			$(SRC_OBJS) | $(BIN_DIR)
-# 	$(CC) $(CFLAGS) -o $@ $^
-
-# $(OBJ_DIR)/%.o:	$(SRC_DIR)/%.c | $(OBJ_DIR)
-# 	$(CC) $(CFLAGS) -c $< -o $@
-
-# $(OBJ_DIR):
-# 	mkdir -p $(OBJ_DIR)
-
-# $(BIN_DIR):
-# 	mkdir -p $(BIN_DIR)
-
 
 
 # Concept	| Meaning
