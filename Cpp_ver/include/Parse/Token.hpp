@@ -8,8 +8,10 @@
 
 # include <string>
 # include "CountingStream.hpp"
+# include "module.hpp"
 
-typedef int	BlockType;
+
+// typedef int	BlockType;
 
 class	Token {
 public:
@@ -24,7 +26,7 @@ public:
 
 private:
 	tokenType_e		_tokenType;
-	BlockType		_blockType;
+	Block::type_e	_blockType;
 	std::string		_word;
 	std::size_t		_wordStartPos;
 	CountingStream	_file;
@@ -35,10 +37,10 @@ public:
 	Token(std::istream &file);
 
 	void				setType(tokenType_e type);
-	void				setBlock(BlockType blockType);
+	void				setBlock(Block::type_e blockType);
 
 	tokenType_e			getType() const;
-	BlockType			getBlock() const;
+	Block::type_e		getBlock() const;
 	const std::string	&getWord() const;
 	size_t				getWordStartPos(void) const;
 	size_t				getLine(void) const;

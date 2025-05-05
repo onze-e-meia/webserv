@@ -4,42 +4,44 @@
 
 
 #include "module.hpp"
-#include "color.hpp"
 
+#define BLOCK_SPEC(name) { Name::name, Block::name }
 
+typedef std::map<const std::string, Block::type_e>	SpecMap;
+typedef SpecMap::const_iterator						SpecConst_it;
 
-#include <iostream> // REMOCE WITH THE STD::COUT
+static const SpecMap	build(void);
 
-static const Block::SpecMap	build(void);
+static const SpecMap	BLOCK_MAP = build();
 
-const Block::SpecMap	Block::MAP = build();
+const SpecMap	build(void) {
+	const Block::Spec	SPECS[] = {
+		BLOCK_SPEC(HTTP),
+		BLOCK_SPEC(SERVER),
+		BLOCK_SPEC(LOCATION),
+		BLOCK_SPEC(EMPTY),
+	};
 
-const Block::SpecMap	build(void) {
-	std::cout << ">>>>>>>>>>>>>>>>>>>> BUILD MAP <<<<<<<<<<<<<<<< " << ENDL;
-	Block::SpecMap	map;
-	for (size_t i = 0; Block::SPECS[i]._type != 0; ++i)
-		map[Block::SPECS[i]._name] = Block::SPECS[i]._type;
+	SpecMap	map;
+	for (std::size_t i = 0; SPECS[i]._type != Block::EMPTY; ++i)
+		map[SPECS[i]._name] = SPECS[i]._type;
 	return (map);
 }
 
-BlockType	Block::getType(std::string name) {
-	SpecConst_it	it = MAP.find(name);
-	SpecConst_it	end = MAP.end();
-	if (it == end) {
-		std::string	str = RED " >>>>>>>>>> Unknown NEW block: " + name + RENDL;
-		throw (std::runtime_error(str.c_str()));
-		// Make this return EMPTY, Remove unknow
-	}
+Block::type_e	Block::getType(const std::string &name) {
+	SpecConst_it	it = BLOCK_MAP.find(name);
+	SpecConst_it	end = BLOCK_MAP.end();
+	if (it == end)
+		return (Block::EMPTY);
 	return (it->second);
 }
 
-std::string	Block::getName(BlockType block) {
+std::string	Block::getName(type_e block) {
 	std::string	name;
 	switch (block) {
-		case EMPTY:		return (Name::EMPTY);
 		case HTTP:		return (Name::HTTP);
 		case SERVER:	return (Name::SERVER);
 		case LOCATION:	return (Name::LOCATION);
-		default:		return (Name::UNKNOW);
+		default:		return (Name::EMPTY);
 	}
 }

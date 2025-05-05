@@ -44,8 +44,11 @@ SRC_MODULE	:= \
 	module.cpp \
 	Core.cpp \
 	Http.cpp \
-	Server.cpp
+	Server.cpp \
+	Location.cpp
 
+# Location
+# Location
 SRC_FILES		:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 LOGGER_FILES	:= $(addprefix $(LOGGER_DIR)/, $(SRC_LOGGER))
 PARSER_FILES	:= $(addprefix $(PARSER_DIR)/, $(SRC_PARSER))
@@ -80,7 +83,6 @@ DEPS_FILES	:= $(patsubst %.cpp,$(OBJ_DIR)/%.d,$(ALL_FILES))
 CC			:=	c++
 # CFLAGS		:=	-Wall -Wextra -Werror -std=c++98
 CFLAGS		:=	-std=c++98 -MMD -MP
-# CFLAGS		:=	-MMD -MP
 INCLUDE		:=	$(addprefix -I, $(INCLUDE_DIR))
 LIB			:=	$(addprefix -I, $(LIB_DIR))
 
@@ -139,7 +141,7 @@ $(OBJ_DIR)/%.o: %.cpp
 # **************************************************************************** #
 
 loose:	## Build the program ignoring warnings
-	$(MAKE) TITLE="$(TITLE_LOOSE)" FLAGS="$(filter-out -Werror,$(FLAGS))"
+	$(MAKE) TITLE="$(TITLE_LOOSE)" CFLAGS="$(filter-out -Werror,$(CFLAGS))"
 
 debug:	## Build the program with Debug symbols
 	$(MAKE) fclean

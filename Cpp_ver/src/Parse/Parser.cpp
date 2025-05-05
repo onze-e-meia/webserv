@@ -5,7 +5,7 @@
 
 #include <iostream>
 #include <string>
-#include <sstream>
+// #include <sstream>
 
 #include "Parser.hpp"
 #include "module.hpp"
@@ -29,7 +29,7 @@ void	Parser::parseBlock(void) {
 			throw (Parser::EmptyBlock(_token.getLine(), _token.getWordStartPos()));
 		} else if (tokenType == Token::END_STATEMENT) {
 			_token.nextToken();
-		} else // Does any erro get in here ?
+		} else // Does any error get in here ?
 			throw (Parser::UnexpectedToken(_token.getWord(), _token.getLine(), _token.getWordStartPos()));
 		tokenType = _token.getType();
 	}
@@ -38,11 +38,12 @@ void	Parser::parseBlock(void) {
 }
 
 void Parser::parseDirective(void) {
-	BlockType	previusBlock = _token.getBlock();
-	std::string	previusName = Block::getName(previusBlock);
-	std::string	directiveName = _token.getWord();
+	Block::type_e		previusBlock = _token.getBlock();
+	const std::string	previusName = Block::getName(previusBlock);
+	const std::string	directiveName = _token.getWord();
 
-	_wordStartPos = _token.getWordStartPos();
+	_wordStartPos = _token.getWordStartPos(); // _wordStartPos don't need to be a member
+	// should get lineStartPos to
 	_token.nextToken();
 	std::vector<std::string> args;
 	while (_token.getType() == Token::WORD) { // collect args until ';' or '{' // CAN BE A FUNCTION ?
@@ -51,31 +52,34 @@ void Parser::parseDirective(void) {
 	}
 
 	if (_token.getType() == Token::END_STATEMENT) { // simple directive // CAN BE A FUNCTION ?
-		// REVIEW DISPATCH DIRECTIVE FUNC
+		if (directiveName == Name::HTTP) // This will be solved with directives handler, ther will be no http plain directive
+			throw (std::runtime_error(" 'http' is a Block, not plain directive!/n'"));
+		// REVIEW DISPATCH DIRECTIVE FUNC // Check for args for eache individual directive
+		Http::dispatchHandler(previusBlock, directiveName);
 		// handler_t	handle = Handle::dispatch(contextToken);
 		// (void)handle;
-
 		handleDirective(directiveName, args);
 		_token.nextToken();
 	} else if (_token.getType() == Token::BEGIN_BLOCK) { // directive with nested block
-		_token.setBlock(Block::getType(directiveName)); // Have to check and throw here if block is unknow
-		BlockType atcualBlock = _token.getBlock();
+		_token.setBlock(Block::getType(directiveName));
+		Block::type_e	actualBlock = _token.getBlock();
 
-		// std::cout << TEAL "[" << directive << "] " << atcualBlock << " | " << previusBlock << RENDL;
-		// std::cout << TEAL "[" << directive << "] " << atcualBlock.to_ulong() << " | " << previusBlock.to_ulong() << RENDL;
-
-		handleBlockStart(directiveName, args);
-		if (atcualBlock <= previusBlock) {
-			if (atcualBlock == previusBlock)
+		handleBlockStart(directiveName, args); // All below can be handle block function
+		if (actualBlock == Block::EMPTY) {
+			throw (Parser::UnknownDirective(directiveName, _token.getLine(), _wordStartPos));
+		} else if (!args.empty() && (actualBlock == Block::HTTP || actualBlock == Block::SERVER)) {
+			throw (std::runtime_error(" 'http' is a Block, it dont have args!/n'")); // still need to check args for http
+		} else if (actualBlock <= previusBlock) {
+			if (actualBlock == previusBlock)
 				throw (Parser::SameBlock(directiveName, previusName, _token.getLine(), _wordStartPos));
 			throw (Parser::WrongBlock(directiveName, previusName, _token.getLine(), _wordStartPos));
-		} else if (atcualBlock == Block::LOCATION && previusBlock == Block::HTTP)
+		} else if (actualBlock == Block::LOCATION && previusBlock == Block::HTTP)
 			throw (Parser::WrongBlock(directiveName, previusName, _token.getLine(), _wordStartPos));
-		Http::addBlock(atcualBlock);
+		Http::addBlock(actualBlock);
 
 		_token.nextToken();
 		parseBlock();
-		handleBlockEnd(directiveName, args);
+		handleBlockEnd(directiveName, args); // What in here???
 
 		_token.setBlock(previusBlock);
 
@@ -118,7 +122,7 @@ Parser::Parser(std::ifstream &file): _token(file), _wordStartPos(0) {}
 void	Parser::parseConfigFile(void) {
 	_token.nextToken();
 	if (_token.getWord() != Name::HTTP) {
-		throw (Parser::FirstBlock(_token.getLine(), _token.getWordStartPos()));
+		throw (Parser::FirstBlock(_token.getWord(), _token.getLine(), _token.getWordStartPos()));
 	}
 	parseBlock();
 }

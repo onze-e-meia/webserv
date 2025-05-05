@@ -6,16 +6,14 @@
 #ifndef		HTTP_HPP
 # define	HTTP_HPP
 
-# include <bitset>
+// # include <bitset>
 # include <string>
-# include <sstream>
 
 # include <map>
 # include <set>
 # include <vector>
 # include <exception>
 
-# include "Logger.hpp"
 # include "Core.hpp"
 # include "Server.hpp"
 // #include "config_directives.hpp"
@@ -43,12 +41,10 @@ private:
 	std::string				_access_log;
 	std::string				_error_log;
 
-
 	Http(void);
 	Http(const Http &http);
 	Http	&operator=(const Http &other);
 
-	// Http		getHttp(void);
 	static Http	&instance(void);
 	std::string	getRoot() const;
 
@@ -58,8 +54,17 @@ private:
 public:
 	~Http(void);
 
+	static const DirectiveMap	buildMap(void);
+	static const handler_t		selectHandler(ConstStr &name);
+
 	static void	buildConfig(std::ifstream &file);
-	static void	addBlock(const BlockType &block);
+	static void	addBlock(Block::type_e &block);
+	static void	dispatchHandler(Block::type_e block, ConstStr &name);
+
+
+	/* Handlers */
+	void	mime_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
+	void	include_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 };
 
 #endif		// HTTP_HPP

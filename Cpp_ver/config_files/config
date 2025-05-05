@@ -1,19 +1,21 @@
 # /etc/nginx/nginx.conf or custom .conf included in nginx.conf
 
 # Define a default MIME types and other general settings
-
-http {
-
- start;
+# This need to check nb of args!!!!
+http#{
+{#http{
+# start {};
   12 45 ;
    a; b;
 	include			mime.types; other test;
 	default_type	application/octet-stream;
-	# Fix bellow:
-	dir#;
-	directive# arg#;#
-	server { wrong_synbol#; one# two#;}
 
+	dir#;jkljlk kljlk
+	;
+	directive# arg#;#
+	;
+	server { wrong_synbol#; one# two# THIS SHOULD NO SHOW!!;}
+	;}
 	# Size limit for client requests
 	client_max_body_size	10M;
 

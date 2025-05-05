@@ -26,6 +26,7 @@ public:
 
 	void	parseConfigFile(void);
 
+	/* Exception Classes */
 	class	UnexpectedToken;
 	class	ExpectedToken;
 	class	Exception;
@@ -37,6 +38,7 @@ public:
 	class	FirstBlock;
 	class	SameBlock;
 	class	WrongBlock;
+	class	UnknownDirective;
 };
 
 # include "ParseException.hpp"

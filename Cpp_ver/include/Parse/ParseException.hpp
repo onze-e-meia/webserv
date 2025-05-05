@@ -68,7 +68,7 @@ public:
 
 class	Parser::FirstBlock: public	Parser::Exception {
 public:
-	FirstBlock(std::size_t line, std::size_t pos);
+	FirstBlock(ConstStr &directive, std::size_t line, std::size_t pos);
 };
 
 class	Parser::SameBlock: public	Parser::Exception {
@@ -81,6 +81,10 @@ public:
 	WrongBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos);
 };
 
+class	Parser::UnknownDirective: public	Parser::Exception {
+public:
+	UnknownDirective(ConstStr &directive, std::size_t line, std::size_t pos);
+};
 #endif		// EXCEPTION_HPP
 
 

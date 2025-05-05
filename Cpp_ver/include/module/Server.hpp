@@ -6,36 +6,43 @@
 #ifndef		SERVER_HPP
 # define	SERVER_HPP
 
-#include <bitset>
-#include <map>
-#include <ostream>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "Core.hpp"
 #include "Location.hpp"
 
+
 class	Server: public	Core {
-	private:
-		std::string		_server_name;
-		std::string		_host;
-		std::string		_port;
-		std::string		_listen;
+private:
+	// Http					&_parentHttp;
+	Server					*_server;
+	std::vector<Location>	_locations;
+	std::string				_server_name;
+	std::string				_host;
+	std::string				_port;
+	std::string				_listen;
 
-		std::map<std::string, Location> _locations;
+	// Roger
+	// std::string _return_code;
+	// std::string _return_uri;
 
-		// Roger
-		std::string _return_code;
-		std::string _return_uri;
+public:
+	Server(void);
+	// ~Server(void);
 
+	static const DirectiveMap	buildMap(void);
+	static const handler_t		selectHandler(ConstStr &name);
 
-	public:
-		Server(void);
+	Block::type_e	getBlockType(void);
+	void		setName(const std::string &name);
+	std::string	getName(void);
 
-		BlockType	getBlockType(void);
-		void		setName(const std::string &name);
-		std::string	getName(void);
+	/* Handlers */
+	void	server_name_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
+	void	host_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
+	void	port_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
+	void	listen_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 };
 
 // Server::Server(void): Core(Name::SERVER) {}

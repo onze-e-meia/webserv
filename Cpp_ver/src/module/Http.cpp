@@ -4,33 +4,56 @@
 
 
 #include <iostream>
+#include <sstream>
 
-#include "module.hpp"
 #include "Parser.hpp"
 #include "Http.hpp"
 
 #include "color.hpp"
 
-// #include "../Exception/Exception.cpp"
+#define HTTP_NAME_HANDLER(name) { #name, static_cast<handler_t>(&Http::name##_Handler) }
 
-// Http::Exception::Exception(const std::string &msg):
-// 	_errMsg(msg) {}
+static const NameHandler	HTTP_HANDLER[] = {
+	HTTP_NAME_HANDLER(mime),
+	HTTP_NAME_HANDLER(include),
+	{ "", NULL },
+};
 
-// 	Http::Exception::~Exception(void)  throw() {}
+static const DirectiveMap	HTTP_MAP = Http::buildMap();
 
-// const char	*Http::Exception::what(void) const throw() {
-// 	return (_errMsg.c_str());
-// }
+// =============================================================================
+// PRIVATE
+// =============================================================================
 
 Http::status	Http::_status(0);
 
+/* Contsructor */
 Http::Http(void): Core(Block::HTTP) {}
+
+/* Destructor */
+Http::~Http() {}
 
 Http &Http::operator=(const Http &other) {
 	if (this != &other) {
 		_status = other._status;
 	}
 	return (*this);
+}
+
+/* Member Functions */
+const DirectiveMap	Http::buildMap(void) {
+	DirectiveMap	map;
+	for (std::size_t i = 0; HTTP_HANDLER[i]._handler != NULL; ++i)
+		map[HTTP_HANDLER[i]._name] = HTTP_HANDLER[i]._handler;
+	return (map);
+}
+
+const handler_t	Http::selectHandler(ConstStr &name) {
+	DirectiveConst_it	it = HTTP_MAP.find(name);
+	DirectiveConst_it	end = HTTP_MAP.end();
+	if (it == end)
+		return (NULL);
+	return (it->second);
 }
 
 Http	&Http::instance(void) {
@@ -46,28 +69,19 @@ Http	&Http::instance(void) {
 
 void	Http::addServer(void) {
 	_servers.push_back(Server());
-
-	// std::cout << YLW "SERVER ADDED TO HTTP " << _servers.back().getBlockType()  << RENDL;
-	// std::cout << YLW "SERVER ADDED TO HTTP " << _servers[0].getBlockType() << RENDL;
 }
 
 void	Http::addLocation(void) {
 	_servers.back();
-
 	std::cout << YLW "LOCATION ADDED TO SERVER" RENDL;
 }
 
+// =============================================================================
+// PUBLIC
+// =============================================================================
 
+/* Member Functions */
 void	Http::buildConfig(std::ifstream &file) {
-	// std::cout
-	// 	<< "TYPES" ENDL
-	// 	// << Block::getType(Name::EMPTY) << ENDL
-	// 	// << Block::getType(Name::CORE) << ENDL
-	// 	<< Block::getType(Name::HTTP) << ENDL
-	// 	<< Block::getType(Name::SERVER) << ENDL
-	// 	<< Block::getType(Name::LOCATION) << ENDL
-	// 	<< "END" ENDL;
-
 	std::string	path = "src/somefile";
 
 	try {
@@ -76,21 +90,16 @@ void	Http::buildConfig(std::ifstream &file) {
 			oss << H_BLU "Config status already build\n" RST;
 			throw (std::runtime_error(oss.str()));
 		}
-		Http	&http = Http::instance();
-		// std::cout << "DIRECTIVE NAME: " << http._root << "\n";
-		Parser	config(file);
-		config.parseConfigFile();
-		// parse(file);
+		Parser	parse(file);
+		parse.parseConfigFile();
 		_status.set(CONFING);
 		// Logger	log("some_name.txt");
 		// _status = EXIT_SUCCESS;
-	// } catch (std::exception &exception) {
 	} catch (const std::exception &exception) {
 		_status.set(FAIL);
 		std::cerr << RED " >>> HHHHAAAAALLLLTTTT!!!! <<< " RENDL;
 		std::cerr << path << ":" << exception.what();
 	}
-
 	// Http	&http = Http::instance();
 	// http._servers[0].setName("Some name! 0 ");
 	// http._servers[1].setName("Some name! 1 ");
@@ -99,12 +108,9 @@ void	Http::buildConfig(std::ifstream &file) {
 	// 	<< http._servers[0].getName() << ENDL
 	// 	<< http._servers[1].getName() << ENDL
 	// 	<< http._servers[2].getName() << ENDL;
-
-	// All InitError, LogicError, etc., inherit from MainModule::Exception, so you can:
-	// catch (const MainModule::Exception& e) { /* fallback */ }
 }
 
-void	Http::addBlock(const BlockType &block) {
+void	Http::addBlock(Block::type_e &block) {
 	Http	&http = Http::instance();
 
 	if (block == Block::SERVER) {
@@ -116,12 +122,57 @@ void	Http::addBlock(const BlockType &block) {
 	}
 }
 
-// Http		Http::getHttp(void) {
-// 	return (*this);
-// }
+template <typename M>
+handler_t	callHandler(ConstStr &name) {
+	handler_t	method = NULL;
+	if (method = Core::selectHandler(name))
+		return (method);
+	if (method = M::selectHandler(name))
+		return (method);
+	return (NULL);
+}
+
+void	Http::dispatchHandler(Block::type_e block, ConstStr &name) {
+	Http	&http = Http::instance();
+	handler_t	method;
+
+	std::vector<std::string>	args;
+	std::size_t					line = 1;
+	std::size_t					pos = 2;
+
+	if (block == Block::HTTP) {
+		method = callHandler<Http>(name);
+		if (method) {
+			std::cout << GRN TAB ">>>> Founs: " TAB << name << RENDL;
+			(http.*method)(name, args, line, pos);
+		} else
+			std::cout << RED TAB ">>>> UNKNOW DIRETIVE!!!! " TAB << name << RENDL;
+	}
+
+	// const Module::module_e modules[] = {
+	// 	Module::CORE, Module::HTTP, Module::SERVER, Module::LOCATION, Module::EMPTY,
+	// };
+
+	// for (std::size_t i = 0; modules[i] != Module::EMPTY; ++i) {
+	// 	method = Core::handleDirective(name);
+	// 	if (method)
+	// 		return (method);
+	// }
+	// return (method);
+
+	// if (name == "server_name")
+	// 	http._servers.back().server_name("asdsd", std::vector<std::string>(0), 1, 1);
+}
 
 std::string	Http::getRoot() const {
 	return (_root);
 };
 
-Http::~Http() {}
+/* Handlers */
+void	Http::mime_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
+
+}
+
+void	Http::include_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
+	std::cout << GRN TAB "CALL INCLUDE HANDLER Founs: " TAB << name << line << pos << RENDL;
+}

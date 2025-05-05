@@ -67,8 +67,6 @@ const char	*Parser::Exception::what(void) const throw() {
 Parser::UnexpectedToken::UnexpectedToken(ConstStr &directive, std::size_t line, std::size_t pos):
 Exception(line, pos) {
 	makeLinePos("Unexpected Token Error:");
-	std::ostringstream	oss;
-	oss << MAX_DIRECTIVE_LEN;
 	build1ArgErr(", unexpected Token" , directive);
 }
 
@@ -79,8 +77,6 @@ Exception(line, pos) {
 Parser::ExpectedToken::ExpectedToken(ConstStr &directive, std::size_t line, std::size_t pos):
 Exception(line, pos) {
 	makeLinePos("Expected Token Error:");
-	std::ostringstream	oss;
-	oss << MAX_DIRECTIVE_LEN;
 	build1ArgErr(", expected ';' or '{' after directive", directive);
 }
 
@@ -93,7 +89,7 @@ Exception(line, pos) {
 	makeLinePos("Directive Length Error:");
 	std::ostringstream	oss;
 	oss << MAX_DIRECTIVE_LEN;
-	build1ArgErr(", directive max lenght must be of size " + oss.str() + " or less", directive);
+	build1ArgErr(", Directive Name max lenght must be of size " + oss.str() + " or less", directive);
 }
 
 // ---------------------------------
@@ -127,7 +123,7 @@ Exception(line, pos) {
 Parser::EmptyBlock::EmptyBlock(std::size_t line, std::size_t pos):
 Exception(line, pos) {
 	makeLinePos("Empty Block Error:");
-	buildErr("Directive '': Empty Directive Block name");
+	buildErr("Directive '': Empty Directive Block Name");
 }
 
 // --------------------------------
@@ -144,10 +140,10 @@ Exception(line, pos) {
 // CLASS EXCEPTION FirstBlock
 // --------------------------------
 /* Contsructor */
-Parser::FirstBlock::FirstBlock(std::size_t line, std::size_t pos):
+Parser::FirstBlock::FirstBlock(ConstStr &directive, std::size_t line, std::size_t pos):
 Exception(line, pos) {
 	makeLinePos("First Block Error:");
-	buildErr("First Directive Block name must be 'http'");
+	build1ArgErr(", first Directive Block Name must be 'http'", directive);
 }
 
 // --------------------------------
@@ -157,7 +153,7 @@ Exception(line, pos) {
 Parser::SameBlock::SameBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos):
 Exception(line, pos) {
 	makeLinePos("Same Context Block Error:");
-	build2ArgErr("is inside of Directive", directive, contex);
+	build2ArgErr("is inside of the same type Directive", directive, contex);
 
 }
 
@@ -169,4 +165,14 @@ Parser::WrongBlock::WrongBlock(ConstStr &directive, ConstStr &contex, std::size_
 Exception(line, pos) {
 	makeLinePos("Wrong Context Block Error:");
 	build2ArgErr("is out of context on Block", directive, contex);
+}
+
+// ---------------------------------
+//  CLASS EXCEPTION UnknownDirective
+// ---------------------------------
+/* Contsructor */
+Parser::UnknownDirective::UnknownDirective(ConstStr &directive, std::size_t line, std::size_t pos):
+Exception(line, pos) {
+	makeLinePos("Unknown Block Error:");
+	build1ArgErr(", is of Unknown Name" , directive);
 }

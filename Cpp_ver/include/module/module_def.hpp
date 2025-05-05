@@ -9,12 +9,11 @@
 # include <string>
 
 namespace Name {
-	const std::string	UNKNOW = "unknow";
-	const std::string	EMPTY = "";
-	const std::string	CORE = "core";
-	const std::string	HTTP = "http";
-	const std::string	SERVER = "server";
-	const std::string	LOCATION = "location";
+	const std::string	EMPTY		= "";
+	const std::string	CORE		= "core";
+	const std::string	HTTP		= "http";
+	const std::string	SERVER		= "server";
+	const std::string	LOCATION	= "location";
 }
 
 namespace Module {
@@ -27,7 +26,7 @@ namespace Module {
 	};
 }
 
-typedef int	BlockType; // REMOVE THIS, CHECK INCLUDES
+// typedef int	BlockType; // REMOVE THIS, CHECK INCLUDES
 
 #endif		// MODULE_DEF_HPP
 
