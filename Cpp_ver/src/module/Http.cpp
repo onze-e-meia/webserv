@@ -100,14 +100,14 @@ void	Http::buildConfig(std::ifstream &file) {
 		std::cerr << RED " >>> HHHHAAAAALLLLTTTT!!!! <<< " RENDL;
 		std::cerr << path << ":" << exception.what();
 	}
-	// Http	&http = Http::instance();
+	Http	&http = Http::instance();
 	// http._servers[0].setName("Some name! 0 ");
 	// http._servers[1].setName("Some name! 1 ");
 	// http._servers[2].setName("Some name! 2 ");
-	// std::cout << "Servers Name: " ENDL
-	// 	<< http._servers[0].getName() << ENDL
-	// 	<< http._servers[1].getName() << ENDL
-	// 	<< http._servers[2].getName() << ENDL;
+	std::cout << "Servers Name: " ENDL
+		<< http._servers[0].getName() << ENDL
+		<< http._servers[1].getName() << ENDL
+		<< http._servers[2].getName() << ENDL;
 }
 
 void	Http::addBlock(Block::type_e &block) {
@@ -122,9 +122,9 @@ void	Http::addBlock(Block::type_e &block) {
 	}
 }
 
-template <typename M>
-handler_t	callHandler(ConstStr &name) {
-	handler_t	method = NULL;
+template <typename F, typename M>
+F	callHandler(ConstStr &name) {
+	F	method = NULL;
 	if (method = Core::selectHandler(name))
 		return (method);
 	if (method = M::selectHandler(name))
@@ -132,19 +132,28 @@ handler_t	callHandler(ConstStr &name) {
 	return (NULL);
 }
 
-void	Http::dispatchHandler(Block::type_e block, ConstStr &name) {
+void	Http::dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &vec) {
 	Http	&http = Http::instance();
 	handler_t	method;
 
-	std::vector<std::string>	args;
 	std::size_t					line = 1;
 	std::size_t					pos = 2;
 
 	if (block == Block::HTTP) {
-		method = callHandler<Http>(name);
+		method = callHandler<handler_t, Http>(name);
 		if (method) {
-			std::cout << GRN TAB ">>>> Founs: " TAB << name << RENDL;
-			(http.*method)(name, args, line, pos);
+			std::cout << GRN TAB ">>>> On HTTP Found: " TAB << name << RENDL;
+			(http.*method)(name, vec, line, pos);
+		} else
+			std::cout << RED TAB ">>>> UNKNOW DIRETIVE!!!! " TAB << name << RENDL;
+	}
+	if (block == Block::SERVER) {
+		// Server	&server = http._servers.back();
+		method = callHandler<handler_t, Server>(name);
+		if (method) {
+			std::cout << GRN TAB ">>>> On SERVER Found: " TAB << name << vec[0] << RENDL;
+			(http._servers.back().*method)(name, vec, line, pos);
+			std::cout << GRN TAB ">>>> SERVER NAME: " TAB << http._servers.back().getName() << RENDL;
 		} else
 			std::cout << RED TAB ">>>> UNKNOW DIRETIVE!!!! " TAB << name << RENDL;
 	}

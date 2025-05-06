@@ -8,6 +8,7 @@
 #define CORE_NAME_HANDLER(name) { #name, &Core::name##_Handler }
 
 static const NameHandler	CORE_HANDLER[] = {
+	{"root", &Core::root_Handler },
 	CORE_NAME_HANDLER(root),
 	CORE_NAME_HANDLER(index),
 	CORE_NAME_HANDLER(autoIndex),
@@ -15,6 +16,10 @@ static const NameHandler	CORE_HANDLER[] = {
 	CORE_NAME_HANDLER(client_max_body_size),
 	CORE_NAME_HANDLER(allow_methods),
 	{ "", NULL },
+};
+
+static const test_s<handler_t>	TEST[] = {
+	{"root", &Core::root_Handler},
 };
 
 static const DirectiveMap	CORE_MAP = Core::buildMap();

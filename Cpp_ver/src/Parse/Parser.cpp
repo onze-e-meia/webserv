@@ -55,7 +55,7 @@ void Parser::parseDirective(void) {
 		if (directiveName == Name::HTTP) // This will be solved with directives handler, ther will be no http plain directive
 			throw (std::runtime_error(" 'http' is a Block, not plain directive!/n'"));
 		// REVIEW DISPATCH DIRECTIVE FUNC // Check for args for eache individual directive
-		Http::dispatchHandler(previusBlock, directiveName);
+		Http::dispatchHandler(previusBlock, directiveName, args);
 		// handler_t	handle = Handle::dispatch(contextToken);
 		// (void)handle;
 		handleDirective(directiveName, args);

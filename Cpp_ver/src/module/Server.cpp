@@ -1,6 +1,6 @@
 
-
-
+#include <iostream>
+#include "color.hpp"
 
 
 #include "Server.hpp"
@@ -50,7 +50,11 @@ std::string	Server::getName(void) { return (_server_name); }
 
 /* Handlers */
 void	Server::server_name_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-
+	std::cout << TEAL "On server name handler: " << args[0] << ENDL;
+	std::cout << TEAL "On server name handler: " << args.front() << ENDL;
+	_server_name = args.front();
+	std::cout << TEAL "On server name handler: " << _server_name << ENDL;
+	std::cout << TEAL "On server name handler: " << this->getName() << ENDL;
 }
 
 void	Server::host_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {

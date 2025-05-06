@@ -59,7 +59,7 @@ public:
 
 	static void	buildConfig(std::ifstream &file);
 	static void	addBlock(Block::type_e &block);
-	static void	dispatchHandler(Block::type_e block, ConstStr &name);
+	static void	dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &vec);
 
 
 	/* Handlers */

@@ -21,9 +21,16 @@ typedef void	(Core::*handler_t)(ConstStr&, ConstVecStr&, std::size_t line, std::
 typedef	std::map<const std::string, handler_t>	DirectiveMap;
 typedef DirectiveMap::const_iterator			DirectiveConst_it;
 
+
 struct NameHandler {
 	const std::string	_name;
 	handler_t			_handler;
+};
+
+template <typename T>
+struct test_s {
+	const std::string	_name;
+	T					_handler;
 };
 
 class Core {
