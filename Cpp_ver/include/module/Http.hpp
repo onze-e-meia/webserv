@@ -41,29 +41,20 @@ private:
 	Mime				_mime;
 	std::string			_include;
 
+	static Http	&instance(void);
+
+public:
+	Http(void);
 	// Http(const Http &http);
 	Http	&operator=(const Http &other);
+	~Http(void);
 
-	static Http	&instance(void);
-	std::string	getRoot() const;
+	std::vector<Server>	&getServers(void) ;
 
 	void	addServer(void);
 	void	addLocation(void);
 
-public:
-	Http(void);
-	~Http(void);
-
-	// static const DirectiveMap	buildMap(void);
 	static const Handler	selectHandler(ConstStr &name);
-
-	std::vector<Server>	getServerS(void) { return (_servers); }
-	Server	getServer(void) { return (_servers.back()); }
-
-	static void	buildConfig(std::ifstream &file);
-	static void	addBlock(Block::type_e &block);
-	static void	dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &vec);
-
 
 	/* Handlers */
 	void	mime_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);

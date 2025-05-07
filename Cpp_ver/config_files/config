@@ -65,7 +65,7 @@ http#{
 	}
 	# server {test1 test1;} server {} server {}
 	# server { location {} location {teste2;} location {} location {}}
-	server {}
+	server { server_name LAST.ONE; }
 }
 # root	/var;
 # {}

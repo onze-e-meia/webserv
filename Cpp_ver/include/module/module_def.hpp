@@ -8,7 +8,7 @@
 
 # include <string>
 
-namespace Name {
+namespace Name { // TODO: CORE should be first!!
 	const std::string	EMPTY		= "";
 	const std::string	CORE		= "core";
 	const std::string	HTTP		= "http";

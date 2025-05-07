@@ -11,6 +11,7 @@
 #include "module.hpp"
 // #include "config_directives.hpp"
 #include "Http.hpp"
+#include "Webserv.hpp"
 
 #include "color.hpp"
 
@@ -55,7 +56,10 @@ void Parser::parseDirective(void) {
 		if (directiveName == Name::HTTP) // This will be solved with directives handler, ther will be no http plain directive
 			throw (std::runtime_error(" 'http' is a Block, not plain directive!/n'"));
 		// REVIEW DISPATCH DIRECTIVE FUNC // Check for args for eache individual directive
-		Http::dispatchHandler(previusBlock, directiveName, args);
+
+		// Http::dispatchHandler(previusBlock, directiveName, args);
+		Webserv::dispatchHandler(previusBlock, directiveName, args);
+
 		// handler_t	handle = Handle::dispatch(contextToken);
 		// (void)handle;
 		handleDirective(directiveName, args);
@@ -75,7 +79,9 @@ void Parser::parseDirective(void) {
 			throw (Parser::WrongBlock(directiveName, previusName, _token.getLine(), _wordStartPos));
 		} else if (actualBlock == Block::LOCATION && previusBlock == Block::HTTP)
 			throw (Parser::WrongBlock(directiveName, previusName, _token.getLine(), _wordStartPos));
-		Http::addBlock(actualBlock);
+
+		// Http::addBlock(actualBlock);
+		Webserv::addBlock(actualBlock);
 
 		_token.nextToken();
 		parseBlock();

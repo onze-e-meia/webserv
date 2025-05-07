@@ -17,10 +17,10 @@
 typedef const std::string				ConstStr;
 typedef const std::vector<std::string>	ConstVecStr;
 
-template <typename ClassFunc>
+template <typename ClassHandler>
 struct NameHandler {
-	ConstStr	_name;
-	ClassFunc	_handler;
+	ConstStr		_name;
+	 ClassHandler	_handler;
 };
 
 class Core {

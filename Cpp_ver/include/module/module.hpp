@@ -10,7 +10,7 @@
 # include <map>
 # include "module_def.hpp"
 
-namespace Block {
+namespace Block { // TODO: Fix BitMask to include valid blocks inside
 	enum type_e {
 		EMPTY		= ( Module::EMPTY ),
 		HTTP		= ( Module::CORE | Module::HTTP ),

@@ -28,9 +28,9 @@ public:
 	void	parseConfigFile(void);
 
 	/* Exception Classes */
+	class	Exception;
 	class	UnexpectedToken;
 	class	ExpectedToken;
-	class	Exception;
 	class	DirectiveLength;
 	class	LineLength;
 	class	FileSize;

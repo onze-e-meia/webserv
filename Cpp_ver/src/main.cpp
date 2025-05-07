@@ -13,6 +13,8 @@
 // #include "Parser.hpp"
 #include "Http.hpp"
 
+#include "Webserv.hpp"
+
 #define CONF_BUFFER	4096
 
 
@@ -47,7 +49,8 @@ int main(int argc, char **argv) {
 	// parser.parse();
 	// parse(configFile);
 	// Http::instantiate(configFile);
-	Http::buildConfig(configFile);
+	Webserv::buildConfig(configFile);
+	// Http::buildConfig(configFile);
 	// Http::buildConfig(configFile);
 
 	// std::string line;

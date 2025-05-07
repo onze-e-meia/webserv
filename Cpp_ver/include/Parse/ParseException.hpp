@@ -15,6 +15,7 @@ typedef const std::string	ConstStr;
 
 class	Parser::Exception: public	std::exception {
 protected:
+	// TODO: Include a ref to the outer class, so it can get the line e pos with less args
 	std::string	_errMsg;
 	std::size_t	_line;
 	std::size_t	_pos;

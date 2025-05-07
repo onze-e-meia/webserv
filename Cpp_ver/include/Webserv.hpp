@@ -22,29 +22,34 @@ typedef std::bitset<SIZE>	status;
 
 private:
 	static status		_status;
+	static std::string	_path;
 	Http				_http;
 	// std::string			_access_log;
 	// std::string			_error_log;
 
 	Webserv(void);
+	Webserv(ConstStr &path);
 	Webserv(const Webserv &other);
 	Webserv	&operator=(const Webserv &other);
 
+	static void		addPath(ConstStr &path);
 	static Webserv	&instance(void);
-	std::string	getRoot() const;
-
-	void	addServer(void);
-	void	addLocation(void);
 
 public:
 	~Webserv(void);
 
 	static void	buildConfig(std::ifstream &file);
 	static void	addBlock(Block::type_e &block);
+
+	/* Handlers */
+	template <typename Module, typename Handler>
+	static Handler	callHandler(ConstStr &name) {
+		Handler	method = NULL;
+		if (method = Module::selectHandler(name))
+			return (method);
+		return (NULL);
+	}
 	static void	dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &vec);
-
 };
-
-
 
 #endif		// WERSERV_HPP
