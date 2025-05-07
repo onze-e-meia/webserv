@@ -6,6 +6,9 @@
 # include "Core.hpp"
 
 class Location: public	Core {
+public:
+	typedef void	(Location::*Handler)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
+
 private:
 	// Roger
 	// std::string _uri;
@@ -22,8 +25,8 @@ public:
 	Location(void);
 	// ~Location(void);
 
-	static const DirectiveMap	buildMap(void);
-	static const handler_t		selectHandler(ConstStr &name);
+	// static const DirectiveMap	buildMap(void);
+	static const Handler		selectHandler(ConstStr &name);
 
 	/* Handlers */
 	void	some_location_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);

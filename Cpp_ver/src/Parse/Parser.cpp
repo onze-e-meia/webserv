@@ -116,6 +116,7 @@ void Parser::handleBlockEnd(const std::string &name, const std::vector<std::stri
 // =============================================================================
 
 /* Contsructor */
+// Parser::Parser(void) {}
 Parser::Parser(std::ifstream &file): _token(file), _wordStartPos(0) {}
 
 /* Member Functions */

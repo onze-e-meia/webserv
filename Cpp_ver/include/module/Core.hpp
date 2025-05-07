@@ -14,26 +14,19 @@
 # include <set>
 # include "module.hpp"
 
-class Core;
-typedef const std::string						ConstStr;
-typedef const std::vector<std::string>			ConstVecStr;
-typedef void	(Core::*handler_t)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
-typedef	std::map<const std::string, handler_t>	DirectiveMap;
-typedef DirectiveMap::const_iterator			DirectiveConst_it;
+typedef const std::string				ConstStr;
+typedef const std::vector<std::string>	ConstVecStr;
 
-
+template <typename ClassFunc>
 struct NameHandler {
-	const std::string	_name;
-	handler_t			_handler;
-};
-
-template <typename T>
-struct test_s {
-	const std::string	_name;
-	T					_handler;
+	ConstStr	_name;
+	ClassFunc	_handler;
 };
 
 class Core {
+public:
+	typedef void	(Core::*Handler)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
+
 protected:
 	const Block::type_e					_blockType;
 	std::string							_root;
@@ -47,8 +40,8 @@ public:
 	Core(const Block::type_e &block);
 	virtual ~Core(void);
 
-	static const DirectiveMap	buildMap(void);
-	static const handler_t		selectHandler(ConstStr &name);
+	// static const DirectiveMap	buildMap(void);
+	static const Handler	selectHandler(ConstStr &name);
 
 	/* Handlers */
 	void	root_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);

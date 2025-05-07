@@ -29,7 +29,8 @@ MODULE_DIR		:=	$(SRC_DIR)/module
 SRC_FILES	:=	\
 	main.cpp	\
 	path_check.cpp \
-	config_directives.cpp
+	config_directives.cpp \
+	Webserv.cpp
 
 SRC_LOGGER	:= \
 	Logger.cpp

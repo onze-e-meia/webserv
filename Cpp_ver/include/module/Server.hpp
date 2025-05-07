@@ -14,8 +14,10 @@
 
 
 class	Server: public	Core {
+public:
+	typedef void	(Server::*Handler)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
+
 private:
-	// Http					&_parentHttp;
 	Server					*_server;
 	std::vector<Location>	_locations;
 	std::string				_server_name;
@@ -31,8 +33,8 @@ public:
 	Server(void);
 	// ~Server(void);
 
-	static const DirectiveMap	buildMap(void);
-	static const handler_t		selectHandler(ConstStr &name);
+	// static const DirectiveMap	buildMap(void);
+	static const Handler	selectHandler(ConstStr &name);
 
 	Block::type_e	getBlockType(void);
 	void		setName(const std::string &name);

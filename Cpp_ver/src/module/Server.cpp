@@ -5,9 +5,12 @@
 
 #include "Server.hpp"
 
-#define SEVER_NAME_HANDLER(name) { #name, static_cast<handler_t>(&Server::name##_Handler) }
+#define SEVER_NAME_HANDLER(name) { #name, &Server::name##_Handler }
 
-static const NameHandler	SERVER_HANDLER[] = {
+typedef	std::map<ConstStr, Server::Handler>	DirectiveMap;
+typedef DirectiveMap::const_iterator		DirectiveConst_it;
+
+static const NameHandler<Server::Handler>	SERVER_HANDLER[] = {
 	SEVER_NAME_HANDLER(server_name),
 	SEVER_NAME_HANDLER(host),
 	SEVER_NAME_HANDLER(port),
@@ -15,7 +18,14 @@ static const NameHandler	SERVER_HANDLER[] = {
 	{ "", NULL },
 };
 
-static const DirectiveMap	SEVER_MAP = Server::buildMap();
+static const DirectiveMap	buildMap(void) {
+	DirectiveMap	map;
+	for (std::size_t i = 0; SERVER_HANDLER[i]._handler != NULL; ++i)
+		map[SERVER_HANDLER[i]._name] = SERVER_HANDLER[i]._handler;
+	return (map);
+}
+
+static const DirectiveMap	SEVER_MAP = buildMap();
 
 // =============================================================================
 // PUBLIC
@@ -27,14 +37,7 @@ Server::Server(void): Core(Block::SERVER) {
 }
 
 /* Member Functions */
-const DirectiveMap	Server::buildMap(void) {
-	DirectiveMap	map;
-	for (std::size_t i = 0; SERVER_HANDLER[i]._handler != NULL; ++i)
-		map[SERVER_HANDLER[i]._name] = SERVER_HANDLER[i]._handler;
-	return (map);
-}
-
-const handler_t	Server::selectHandler(ConstStr &name) {
+const Server::Handler	Server::selectHandler(ConstStr &name) {
 	DirectiveConst_it	it = SEVER_MAP.find(name);
 	DirectiveConst_it	end = SEVER_MAP.end();
 	if (it == end)

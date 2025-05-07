@@ -34,6 +34,7 @@ private:
 	void 				skipWhiteSpaceAndComments(void);
 
 public:
+	// Token(void) {};
 	Token(std::istream &file);
 
 	void				setType(tokenType_e type);

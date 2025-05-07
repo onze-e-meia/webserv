@@ -18,9 +18,12 @@
 # include "Server.hpp"
 // #include "config_directives.hpp"
 
-class	Mime {};
+class	Mime {}; // Class? Struct? What? Where?
 
 class	Http: public	Core {
+public:
+	typedef void	(Http::*Handler)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
+
 public:
 	enum	status_e {
 		INSTANCE = 0,
@@ -38,11 +41,7 @@ private:
 	Mime				_mime;
 	std::string			_include;
 
-	std::string				_access_log;
-	std::string				_error_log;
-
-	Http(void);
-	Http(const Http &http);
+	// Http(const Http &http);
 	Http	&operator=(const Http &other);
 
 	static Http	&instance(void);
@@ -52,10 +51,14 @@ private:
 	void	addLocation(void);
 
 public:
+	Http(void);
 	~Http(void);
 
-	static const DirectiveMap	buildMap(void);
-	static const handler_t		selectHandler(ConstStr &name);
+	// static const DirectiveMap	buildMap(void);
+	static const Handler	selectHandler(ConstStr &name);
+
+	std::vector<Server>	getServerS(void) { return (_servers); }
+	Server	getServer(void) { return (_servers.back()); }
 
 	static void	buildConfig(std::ifstream &file);
 	static void	addBlock(Block::type_e &block);

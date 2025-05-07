@@ -7,7 +7,10 @@
 
 #define CORE_NAME_HANDLER(name) { #name, &Core::name##_Handler }
 
-static const NameHandler	CORE_HANDLER[] = {
+typedef	std::map<ConstStr, Core::Handler>	DirectiveMap;
+typedef DirectiveMap::const_iterator		DirectiveConst_it;
+
+static const NameHandler<Core::Handler>	CORE_HANDLER[] = {
 	{"root", &Core::root_Handler },
 	CORE_NAME_HANDLER(root),
 	CORE_NAME_HANDLER(index),
@@ -18,11 +21,14 @@ static const NameHandler	CORE_HANDLER[] = {
 	{ "", NULL },
 };
 
-static const test_s<handler_t>	TEST[] = {
-	{"root", &Core::root_Handler},
-};
+static const DirectiveMap	buildMap(void) {
+	DirectiveMap	map;
+	for (std::size_t i = 0; CORE_HANDLER[i]._handler != NULL; ++i)
+		map[CORE_HANDLER[i]._name] = CORE_HANDLER[i]._handler;
+	return (map);
+}
 
-static const DirectiveMap	CORE_MAP = Core::buildMap();
+static const DirectiveMap	CORE_MAP = buildMap();
 
 // =============================================================================
 // PUBLIC
@@ -35,14 +41,7 @@ Core::Core(const Block::type_e &block): _blockType(block) {}
 Core::~Core(void) {}
 
 /* Member Functions */
-const DirectiveMap	Core::buildMap(void) {
-	DirectiveMap	map;
-	for (std::size_t i = 0; CORE_HANDLER[i]._handler != NULL; ++i)
-		map[CORE_HANDLER[i]._name] = CORE_HANDLER[i]._handler;
-	return (map);
-}
-
-const handler_t	Core::selectHandler(ConstStr &name) {
+const Core::Handler	Core::selectHandler(ConstStr &name) {
 	DirectiveConst_it	it = CORE_MAP.find(name);
 	DirectiveConst_it	end = CORE_MAP.end();
 	if (it == end)

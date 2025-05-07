@@ -22,6 +22,7 @@ private:
 	void	handleBlockEnd(const std::string &name, const std::vector<std::string> &args);
 
 public:
+	// Parser(void);
 	Parser(std::ifstream &file);
 
 	void	parseConfigFile(void);

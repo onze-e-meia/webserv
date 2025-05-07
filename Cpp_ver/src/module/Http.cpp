@@ -11,15 +11,25 @@
 
 #include "color.hpp"
 
-#define HTTP_NAME_HANDLER(name) { #name, static_cast<handler_t>(&Http::name##_Handler) }
+#define HTTP_NAME_HANDLER(name) { #name, &Http::name##_Handler }
 
-static const NameHandler	HTTP_HANDLER[] = {
+typedef	std::map<ConstStr, Http::Handler>	DirectiveMap;
+typedef DirectiveMap::const_iterator		DirectiveConst_it;
+
+static const NameHandler<Http::Handler>	HTTP_HANDLER[] = {
 	HTTP_NAME_HANDLER(mime),
 	HTTP_NAME_HANDLER(include),
 	{ "", NULL },
 };
 
-static const DirectiveMap	HTTP_MAP = Http::buildMap();
+static const DirectiveMap	buildMap(void) {
+	DirectiveMap	map;
+	for (std::size_t i = 0; HTTP_HANDLER[i]._handler != NULL; ++i)
+		map[HTTP_HANDLER[i]._name] = HTTP_HANDLER[i]._handler;
+	return (map);
+}
+
+static const DirectiveMap	HTTP_MAP = buildMap();
 
 // =============================================================================
 // PRIVATE
@@ -41,14 +51,7 @@ Http &Http::operator=(const Http &other) {
 }
 
 /* Member Functions */
-const DirectiveMap	Http::buildMap(void) {
-	DirectiveMap	map;
-	for (std::size_t i = 0; HTTP_HANDLER[i]._handler != NULL; ++i)
-		map[HTTP_HANDLER[i]._name] = HTTP_HANDLER[i]._handler;
-	return (map);
-}
-
-const handler_t	Http::selectHandler(ConstStr &name) {
+const Http::Handler	Http::selectHandler(ConstStr &name) {
 	DirectiveConst_it	it = HTTP_MAP.find(name);
 	DirectiveConst_it	end = HTTP_MAP.end();
 	if (it == end)
@@ -125,8 +128,8 @@ void	Http::addBlock(Block::type_e &block) {
 template <typename F, typename M>
 F	callHandler(ConstStr &name) {
 	F	method = NULL;
-	if (method = Core::selectHandler(name))
-		return (method);
+	// if (method = Core::selectHandler(name))
+	// 	return (method);
 	if (method = M::selectHandler(name))
 		return (method);
 	return (NULL);
@@ -134,13 +137,16 @@ F	callHandler(ConstStr &name) {
 
 void	Http::dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &vec) {
 	Http	&http = Http::instance();
-	handler_t	method;
+
+	// http._servers.back()._locations;
 
 	std::size_t					line = 1;
 	std::size_t					pos = 2;
 
 	if (block == Block::HTTP) {
-		method = callHandler<handler_t, Http>(name);
+		Http::Handler	method;
+
+		method = callHandler<Http::Handler, Http>(name);
 		if (method) {
 			std::cout << GRN TAB ">>>> On HTTP Found: " TAB << name << RENDL;
 			(http.*method)(name, vec, line, pos);
@@ -149,7 +155,9 @@ void	Http::dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &vec
 	}
 	if (block == Block::SERVER) {
 		// Server	&server = http._servers.back();
-		method = callHandler<handler_t, Server>(name);
+		Server::Handler	method;
+
+		method = callHandler<Server::Handler, Server>(name);
 		if (method) {
 			std::cout << GRN TAB ">>>> On SERVER Found: " TAB << name << vec[0] << RENDL;
 			(http._servers.back().*method)(name, vec, line, pos);
