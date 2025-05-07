@@ -36,20 +36,17 @@ public:
 	typedef std::bitset<SIZE>	status;
 
 private:
-	static status		_status;
 	std::vector<Server> _servers;
 	Mime				_mime;
 	std::string			_include;
 
-	static Http	&instance(void);
-
 public:
 	Http(void);
 	// Http(const Http &http);
-	Http	&operator=(const Http &other);
+	// Http	&operator=(const Http &other);
 	~Http(void);
 
-	std::vector<Server>	&getServers(void) ;
+	std::vector<Server>	&getServers(void);
 
 	void	addServer(void);
 	void	addLocation(void);

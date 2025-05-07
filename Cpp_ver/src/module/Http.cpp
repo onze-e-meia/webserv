@@ -35,7 +35,6 @@ static const DirectiveMap	HTTP_MAP = buildMap();
 // PRIVATE
 // =============================================================================
 
-Http::status	Http::_status(0);
 
 /* Member Functions */
 const Http::Handler	Http::selectHandler(ConstStr &name) {
@@ -46,30 +45,12 @@ const Http::Handler	Http::selectHandler(ConstStr &name) {
 	return (it->second);
 }
 
-Http	&Http::instance(void) {
-	// if (_status.test(INSTANCE)) {
-	// 	std::ostringstream	oss;
-	// 	oss << H_BLU "Web Serve already instantiated\n" RST;
-	// 	throw (std::runtime_error(oss.str()));
-	// }
-	_status.set(INSTANCE);
-	static Http	instance;
-	return (instance);
-}
-
 // =============================================================================
 // PUBLIC
 // =============================================================================
 
 /* Contsructor */
 Http::Http(void): Core(Block::HTTP) {}
-
-Http &Http::operator=(const Http &other) {
-	if (this != &other) {
-		_status = other._status;
-	}
-	return (*this);
-}
 
 /* Destructor */
 Http::~Http() {}

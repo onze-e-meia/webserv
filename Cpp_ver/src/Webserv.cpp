@@ -13,21 +13,16 @@
 // PRIVATE
 // =============================================================================
 
+Webserv			*Webserv::_webserv = NULL;
+std::string		Webserv::_path("");
 Webserv::status	Webserv::_status(0);
-
-std::string	Webserv::_path("");
 
 /* Contsructor */
 Webserv::Webserv(void): _http(Http()) {}
 
-Webserv::Webserv(ConstStr &path): _http(Http()) {
-	_path = path;
-}
-
 void	Webserv::addPath(ConstStr &path) {
 	_path = path;
 }
-
 
 /* Destructor */
 Webserv::~Webserv() {}
@@ -39,30 +34,13 @@ Webserv &Webserv::operator=(const Webserv &other) {
 	return (*this);
 }
 
-// void	Webserv::addPath(ConstStr &path) {
-// 	instance()._path = path;
-// }
-
-
 Webserv	&Webserv::instance(void) {
-	// if (_status.test(INSTANCE)) {
-	// 	std::ostringstream	oss;
-	// 	oss << H_BLU "Web Serve already instantiated\n" RST;
-	// 	throw (std::runtime_error(oss.str()));
-	// }
+	if (_status.test(INSTANCE))
+		return (*_webserv);
 	_status.set(INSTANCE);
-	static Webserv	instance;
-	return (instance);
+	_webserv = new Webserv();
+	return (*_webserv);
 }
-
-// void	Webserv::addServer(void) {
-// 	_http.getServers().push_back(Server());
-// }
-
-// void	Webserv::addLocation(void) {
-// 	_http.getServers().back();
-// 	std::cout << YLW "LOCATION ADDED TO SERVER" RENDL;
-// }
 
 // =============================================================================
 // PUBLIC
@@ -94,6 +72,8 @@ void	Webserv::buildConfig(std::ifstream &file) {
 		<< instance()._http.getServers()[0].getName() << ENDL
 		<< instance()._http.getServers()[1].getName() << ENDL
 		<< instance()._http.getServers()[2].getName() << ENDL;
+
+	delete _webserv;
 }
 
 void	Webserv::addBlock(Block::type_e &block) {
@@ -113,7 +93,7 @@ void	Webserv::dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &
 
 	if (true) { // CORE, all blocks have CORE
 		Core::Handler	method = callHandler<Core, Core::Handler>(name);
-		if (method) {
+		if (method != NULL) {
 			std::cout << GRN TAB ">>>> On CORE module Found: " TAB << name << RENDL;
 			(http.*method)(name, vec, 11, 22);
 			return ;
@@ -121,7 +101,7 @@ void	Webserv::dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &
 	}
 	if (block == Block::HTTP) {
 		Http::Handler	method = callHandler<Http, Http::Handler>(name);
-		if (method) {
+		if (method != NULL) {
 			std::cout << GRN TAB ">>>> On HTTP module Found: " TAB << name << RENDL;
 			(http.*method)(name, vec, 11, 22);
 			return ;
@@ -129,7 +109,7 @@ void	Webserv::dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &
 	}
 	if (block == Block::SERVER) {
 		Server::Handler	method = callHandler<Server, Server::Handler>(name);
-		if (method) {
+		if (method != NULL) {
 			std::cout << GRN TAB ">>>> On SERVER Found: " TAB << name << vec[0] << RENDL;
 			(http.getServers().back().*method)(name, vec, 11, 22);
 			std::cout << GRN TAB ">>>> SERVER NAME: " TAB << http.getServers().back().getName() << RENDL;

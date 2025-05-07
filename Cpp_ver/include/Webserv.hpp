@@ -21,6 +21,7 @@ public:
 typedef std::bitset<SIZE>	status;
 
 private:
+	static Webserv		*_webserv;
 	static status		_status;
 	static std::string	_path;
 	Http				_http;
@@ -28,7 +29,6 @@ private:
 	// std::string			_error_log;
 
 	Webserv(void);
-	Webserv(ConstStr &path);
 	Webserv(const Webserv &other);
 	Webserv	&operator=(const Webserv &other);
 
@@ -44,8 +44,8 @@ public:
 	/* Handlers */
 	template <typename Module, typename Handler>
 	static Handler	callHandler(ConstStr &name) {
-		Handler	method = NULL;
-		if (method = Module::selectHandler(name))
+		Handler	method = Module::selectHandler(name);
+		if (method != NULL)
 			return (method);
 		return (NULL);
 	}
