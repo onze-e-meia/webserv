@@ -3,7 +3,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <sys/stat.h>
-#include "path_check.hpp"
+#include "checkPath.hpp"
 
 bool	exists(const char *path) {
 	std::cout << access(path, F_OK) << "\n";

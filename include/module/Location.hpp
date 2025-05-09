@@ -7,7 +7,7 @@
 
 class Location: public	Core {
 public:
-	typedef void	(Location::*Handler)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
+	typedef void	(Location::*HandlerPointer)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
 
 private:
 	// Roger
@@ -25,8 +25,7 @@ public:
 	Location(void);
 	// ~Location(void);
 
-	// static const DirectiveMap	buildMap(void);
-	static const Handler		selectHandler(ConstStr &name);
+	static HandlerPointer		selectHandler(ConstStr &name);
 
 	/* Handlers */
 	void	some_location_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);

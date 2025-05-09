@@ -15,7 +15,7 @@
 
 class	Server: public	Core {
 public:
-	typedef void	(Server::*Handler)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
+	typedef void	(Server::*HandlerPointer)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
 
 private:
 	Server					*_server;
@@ -33,8 +33,7 @@ public:
 	Server(void);
 	// ~Server(void);
 
-	// static const DirectiveMap	buildMap(void);
-	static const Handler	selectHandler(ConstStr &name);
+	static HandlerPointer	selectHandler(ConstStr &name);
 
 	Block::type_e	getBlockType(void);
 	void		setName(const std::string &name);

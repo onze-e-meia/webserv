@@ -17,15 +17,15 @@
 typedef const std::string				ConstStr;
 typedef const std::vector<std::string>	ConstVecStr;
 
-template <typename ClassHandler>
+template <typename HandlerPointer>
 struct NameHandler {
 	ConstStr		_name;
-	 ClassHandler	_handler;
+	HandlerPointer	_handler;
 };
 
 class Core {
 public:
-	typedef void	(Core::*Handler)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
+	typedef void	(Core::*HandlerPointer)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
 
 protected:
 	const Block::type_e					_blockType;
@@ -40,8 +40,9 @@ public:
 	Core(const Block::type_e &block);
 	virtual ~Core(void);
 
-	// static const DirectiveMap	buildMap(void);
-	static const Handler	selectHandler(ConstStr &name);
+	Block::type_e	getBlockType(void) const { return (_blockType); }
+
+	static HandlerPointer	selectHandler(ConstStr &name);
 
 	/* Handlers */
 	void	root_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
@@ -51,11 +52,5 @@ public:
 	void	client_max_body_size_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 	void	allow_methods_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 };
-
-// struct NameHandler{
-// 	const std::string	_name;
-// 	Core::handler_t			_handler;
-// };
-
 
 #endif		// CORE_HPP

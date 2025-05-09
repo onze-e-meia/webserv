@@ -15,14 +15,14 @@
 /* Member Functions */
 void Token::skipWhiteSpaceAndComments(void) {
 	char	ch;
-	while ((ch = _file.peek()) != EOF) {
+	while ((ch = _csFile.peek()) != EOF) {
 		if (std::isspace(ch)) {
-			_file.get();
+			_csFile.get();
 			continue;
 		}
 		if (ch == '#') {
 			while (ch != EOF && ch != '\n')
-				ch = _file.get();
+				ch = _csFile.get();
 			continue;
 		}
 		break;
@@ -36,7 +36,7 @@ void Token::skipWhiteSpaceAndComments(void) {
 /* Contsructor */
 Token::Token(std::istream &file):
 	_tokenType(EMPTY), _blockType(Block::EMPTY), _wordStartPos(0),
-	_file(file) { _word.reserve(MAX_DIRECTIVE_LEN); }
+	_csFile(file) { _word.reserve(MAX_DIRECTIVE_LEN); }
 
 /* Setters */
 void	Token::setType(tokenType_e tokenType) {
@@ -65,15 +65,15 @@ size_t	Token::getWordStartPos(void) const {
 }
 
 size_t	Token::getLine(void) const {
-	return (_file.cursorLine());
+	return (_csFile.cursorLine());
 }
 
 /* Member Functions */
 void	Token::nextToken(void) {
 	skipWhiteSpaceAndComments();
 	_word.clear();
-	char	ch = _file.get();
-	_wordStartPos = _file.cursorPos();
+	char	ch = _csFile.get();
+	_wordStartPos = _csFile.cursorPos();
 	if (ch == EOF)
 		return (setType(END_FILE));
 	else if (ch == '{')
@@ -85,13 +85,13 @@ void	Token::nextToken(void) {
 
 	// NEED TO CHECK FOR '#' HERE !!!!
 	_word = static_cast<char>(ch);
-	ch = _file.peek();
+	ch = _csFile.peek();
 	// while (ch != EOF && !std::isspace(ch) && ch != '{' && ch != '}' && ch != ';') {
 	while (ch != EOF && !std::isspace(ch) && ch != '{' && ch != '}' && ch != ';' && ch != '#') {
-		_word += static_cast<char>(_file.get());
-		ch = _file.peek();
+		_word += static_cast<char>(_csFile.get());
+		ch = _csFile.peek();
 		if (_word.length() > MAX_DIRECTIVE_LEN)
-			throw (Parser::DirectiveLength(_word, _file.cursorLine(), _wordStartPos));
+			throw (Parser::DirectiveLength(_word, _csFile.cursorLine(), _wordStartPos));
 	}
 
 	return (setType(WORD));

@@ -7,10 +7,10 @@
 
 #define SEVER_NAME_HANDLER(name) { #name, &Server::name##_Handler }
 
-typedef	std::map<ConstStr, Server::Handler>	DirectiveMap;
+typedef	std::map<ConstStr, Server::HandlerPointer>	DirectiveMap;
 typedef DirectiveMap::const_iterator		DirectiveConst_it;
 
-static const NameHandler<Server::Handler>	SERVER_HANDLER[] = {
+static const NameHandler<Server::HandlerPointer>	SERVER_HANDLER[] = {
 	SEVER_NAME_HANDLER(server_name),
 	SEVER_NAME_HANDLER(host),
 	SEVER_NAME_HANDLER(port),
@@ -37,7 +37,7 @@ Server::Server(void): Core(Block::SERVER) {
 }
 
 /* Member Functions */
-const Server::Handler	Server::selectHandler(ConstStr &name) {
+Server::HandlerPointer	Server::selectHandler(ConstStr &name) {
 	DirectiveConst_it	it = SEVER_MAP.find(name);
 	DirectiveConst_it	end = SEVER_MAP.end();
 	if (it == end)
@@ -53,21 +53,18 @@ std::string	Server::getName(void) { return (_server_name); }
 
 /* Handlers */
 void	Server::server_name_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	// std::cout << TEAL "On server name handler: " << args[0] << ENDL;
-	// std::cout << TEAL "On server name handler: " << args.front() << ENDL;
+	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
 	_server_name = args.front();
-	// std::cout << TEAL "On server name handler: " << _server_name << ENDL;
-	// std::cout << TEAL "On server name handler: " << this->getName() << ENDL;
 }
 
 void	Server::host_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-
+	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
 }
 
 void	Server::port_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-
+	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
 }
 
 void	Server::listen_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-
+	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
 }

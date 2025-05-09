@@ -13,10 +13,10 @@
 
 #define HTTP_NAME_HANDLER(name) { #name, &Http::name##_Handler }
 
-typedef	std::map<ConstStr, Http::Handler>	DirectiveMap;
+typedef	std::map<ConstStr, Http::HandlerPointer>	DirectiveMap;
 typedef DirectiveMap::const_iterator		DirectiveConst_it;
 
-static const NameHandler<Http::Handler>	HTTP_HANDLER[] = {
+static const NameHandler<Http::HandlerPointer>	HTTP_HANDLER[] = {
 	HTTP_NAME_HANDLER(mime),
 	HTTP_NAME_HANDLER(include),
 	{ "", NULL },
@@ -35,9 +35,8 @@ static const DirectiveMap	HTTP_MAP = buildMap();
 // PRIVATE
 // =============================================================================
 
-
 /* Member Functions */
-const Http::Handler	Http::selectHandler(ConstStr &name) {
+Http::HandlerPointer	Http::selectHandler(ConstStr &name) {
 	DirectiveConst_it	it = HTTP_MAP.find(name);
 	DirectiveConst_it	end = HTTP_MAP.end();
 	if (it == end)
@@ -72,9 +71,10 @@ void	Http::addLocation(void) {
 
 /* Handlers */
 void	Http::mime_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-
+	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
 }
 
 void	Http::include_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
+	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
 	std::cout << GRN TAB "CALL INCLUDE HANDLER Founs: " TAB << name << line << pos << RENDL;
 }

@@ -21,21 +21,52 @@ TARGET		:=	$(BIN_DIR)/webserv
 #    Sources                                                                   #
 # **************************************************************************** #
 
-SRC_DIR		:=	src
-SRC_FILES	:=	\
-	main.c	\
-	tcp.c	\
-	http.c	\
-	route.c	\
-	filesystem.c
+SRC_DIR			:=	src
+LOGGER_DIR		:=	$(SRC_DIR)/logger
+PARSER_DIR		:=	$(SRC_DIR)/Parse
+MODULE_DIR		:=	$(SRC_DIR)/module
 
-SRC_FILES	:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
+SRC_FILES	:=	\
+	main.cpp	\
+	checkPath.cpp \
+	Webserv.cpp
+
+SRC_LOGGER	:= \
+	Logger.cpp
+
+SRC_PARSER	:= \
+	CountingStream.cpp \
+	Token.cpp \
+	Parser.cpp \
+	ParseException.cpp
+
+SRC_MODULE	:= \
+	module.cpp \
+	Core.cpp \
+	Http.cpp \
+	Server.cpp \
+	Location.cpp
+
+SRC_FILES		:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
+LOGGER_FILES	:= $(addprefix $(LOGGER_DIR)/, $(SRC_LOGGER))
+PARSER_FILES	:= $(addprefix $(PARSER_DIR)/, $(SRC_PARSER))
+MODULE_FILES	:= $(addprefix $(MODULE_DIR)/, $(SRC_MODULE))
+ALL_FILES		:= \
+	$(SRC_FILES) \
+	$(LOGGER_FILES) \
+	$(PARSER_FILES) \
+	$(MODULE_FILES)
 
 # **************************************************************************** #
 #    Dependencies                                                              #
 # **************************************************************************** #
 
-INCLUDE_DIR	:=	include
+INCLUDE_DIR	:=	include \
+	include/logger \
+	include/Parse \
+	include/module \
+	include/Exception
+
 LIB_DIR		:=	lib
 
 # **************************************************************************** #
@@ -43,12 +74,15 @@ LIB_DIR		:=	lib
 # **************************************************************************** #
 
 OBJ_DIR		:=	obj
-OBJ_FILES	:=	$(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC_FILES))
 
-CC			:=	cc
-CFLAGS		:=	-Wextra -Werror
-INCLUDE		:=	$(addprefix -I , $(INC_DIR)) -MMD -MP
-LIB			:=	$(addprefix -I , $(LIB_DIR)) -MMD -MP
+OBJS_FILES	:= $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(ALL_FILES))
+DEPS_FILES	:= $(patsubst %.cpp,$(OBJ_DIR)/%.d,$(ALL_FILES))
+
+CC			:=	c++
+# CFLAGS		:=	-Wall -Wextra -Werror -std=c++98
+CFLAGS		:=	-std=c++98 -MMD -MP
+INCLUDE		:=	$(addprefix -I, $(INCLUDE_DIR))
+LIB			:=	$(addprefix -I, $(LIB_DIR))
 
 DEBUG		:=	-O3
 MSG			:=
@@ -84,23 +118,28 @@ define message
 endef
 
 # **************************************************************************** #
-#    Targets                                                                   #
+#    Target                                                                    #
 # **************************************************************************** #
 
 all: $(TARGET) ## Build the program
 
-$(TARGET): $(OBJ_FILES)
+$(TARGET): $(OBJS_FILES)
 	mkdir -p $(dir $@)
-	$(CC) $(SANITIZE) $(DEBUG) $(MSG) $(FLAGS) $^ -o $@
+	$(CC) $(SANITIZE) $(DEBUG) $(MSG) $(CFLAGS) $^ -o $@
 	$(call message,BINARY,$@,$(BLUE))
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+# Unified rule: Compile .cpp → .o and generate .d
+$(OBJ_DIR)/%.o: %.cpp
 	mkdir -p $(dir $@)
-	$(CC) $(SANITIZE) $(DEBUG) $(MSG) $(FLAGS) $(INCLUDE) $(LIB) -c $< -o $@
+	$(CC) $(SANITIZE) $(DEBUG) $(MSG) $(CFLAGS) $(INCLUDE) $(LIB) -c $< -o $@
 	$(call message,OBJECT,$@,$(GREEN))
 
+# **************************************************************************** #
+#    Actions                                                                   #
+# **************************************************************************** #
+
 loose:	## Build the program ignoring warnings
-	$(MAKE) TITLE="$(TITLE_LOOSE)" FLAGS="$(filter-out -Werror,$(FLAGS))"
+	$(MAKE) TITLE="$(TITLE_LOOSE)" CFLAGS="$(filter-out -Werror,$(CFLAGS))"
 
 debug:	## Build the program with Debug symbols
 	$(MAKE) fclean
@@ -110,6 +149,7 @@ msg:	## Build the program with Constructor messages enabled
 	$(MAKE) TITLE="$(TITLE_MSG)" MSG="-DMSG"
 
 asan:	## Build the program with Debug and Address Sanitizer
+	$(MAKE) fclean
 	$(MAKE) TITLE="$(TITLE_ASAN)" SANITIZE="-fsanitize=address" DEBUG="-g3"
 
 clean:	## Remove all generated object files
@@ -118,8 +158,8 @@ clean:	## Remove all generated object files
 
 fclean:	## Remove all generated files
 	$(MAKE) clean
-	rm -rf $(TARGET)
-	$(call message,DELETED,$(TARGET),$(RED))
+	rm -rf $(BIN_DIR)
+	$(call message,DELETED,$(BIN_DIR),$(RED))
 
 re:		## Rebuild the program
 	$(MAKE) fclean
@@ -136,16 +176,21 @@ help:	## Show this message
 .SILENT:
 .DELETE_ON_ERROR:
 
--include $(DEP)
+-include $(DEPS_FILES)
 
-# $(TARGET):			$(OBJ_FILES) | $(BIN_DIR)
-# 	$(CC) $(CFLAGS) -o $@ $^
 
-# $(OBJ_DIR)/%.o:	$(SRC_DIR)/%.c | $(OBJ_DIR)
-# 	$(CC) $(CFLAGS) -c $< -o $@
+# Concept	| Meaning
+# -c flag	| Compile only (no linking)
+# $<		| First prerequisite (ex: the .cpp file)
+# $@		| Target name (ex: .o or executable)
+# $^		| All prerequisites (ex: all .o files)
+# mkdir -p	| Create folders if they don't exist
 
-# $(OBJ_DIR):
-# 	mkdir -p $(OBJ_DIR)
+# Part				| Means
+# $(SRC_DIR)/%.cpp	| Match something like src/main.cpp, src/hello.cpp, etc.
+# $(OBJ_DIR)/%.o	| Replace src/xxx.cpp with obj/xxx.o.
+# $(SRC_FILES)		| List of your .cpp filenames (like main.cpp hello.cpp).
 
-# $(BIN_DIR):
-# 	mkdir -p $(BIN_DIR)
+# pattern → needs %
+# replacement → needs %
+# text → your list

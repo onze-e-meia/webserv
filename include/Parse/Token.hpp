@@ -29,7 +29,7 @@ private:
 	Block::type_e	_blockType;
 	std::string		_word;
 	std::size_t		_wordStartPos;
-	CountingStream	_file;
+	CountingStream	_csFile;
 
 	void 				skipWhiteSpaceAndComments(void);
 

@@ -16,13 +16,12 @@
 
 # include "Core.hpp"
 # include "Server.hpp"
-// #include "config_directives.hpp"
 
 class	Mime {}; // Class? Struct? What? Where?
 
 class	Http: public	Core {
 public:
-	typedef void	(Http::*Handler)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
+	typedef void	(Http::*HandlerPointer)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
 
 public:
 	enum	status_e {
@@ -51,7 +50,7 @@ public:
 	void	addServer(void);
 	void	addLocation(void);
 
-	static const Handler	selectHandler(ConstStr &name);
+	static HandlerPointer	selectHandler(ConstStr &name);
 
 	/* Handlers */
 	void	mime_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
