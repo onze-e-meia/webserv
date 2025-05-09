@@ -19,11 +19,11 @@ public:
 
 private:
 	Server					*_server;
-	std::vector<Location>	_locations;
-	std::string				_server_name;
 	std::string				_host;
 	std::string				_port;
 	std::string				_listen;
+	std::string				_server_name;
+	std::vector<Location>	_locations;
 
 	// Roger
 	// std::string _return_code;

@@ -39,6 +39,9 @@ private:
 	Mime				_mime;
 	std::string			_include;
 
+	// bool				_sendfile;
+	// std::size_t			_keepalive_timeout;
+
 public:
 	Http(void);
 	// Http(const Http &http);

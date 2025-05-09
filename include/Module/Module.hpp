@@ -41,7 +41,6 @@ namespace Block { // TODO: Fix BitMask to include valid blocks inside
 
 	type_e		dispatchType(const std::string &name);
 	std::string	getName(type_e block);
-	// BlockType	dispatch(std::string block);
 }
 
 #endif		// MODULE_HPP
