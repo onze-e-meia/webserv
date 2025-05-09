@@ -28,15 +28,39 @@ static const DirectiveMap	buildMap(void) {
 static const DirectiveMap	SEVER_MAP = buildMap();
 
 // =============================================================================
+// PRIVATE
+// =============================================================================
+
+/* Member Functions */
+
+
+// =============================================================================
 // PUBLIC
 // =============================================================================
 
 /* Contsructor */
-Server::Server(void): Core(Block::SERVER) {
-	// std::cout << YLW "SERVER ADDED TO HTTP " << _blockType  << RENDL;
+Server::Server(void): Core(Block::SERVER) {}
+
+/* Destructor */
+Server::~Server() {}
+
+/* Getters */
+std::vector<Location>	&Server::getLocations(void) {
+	return (_locations);
+}
+
+/* Setters */
+void	Server::addLocation(void) {
+	_locations.push_back(Location());
+	_locations.back().setRoot("Some Location!");
+	std::cout << YLW "On server {" << _server_name << "}, added: " << _locations.back().getRoot() <<  RENDL;
 }
 
 /* Member Functions */
+void		Server::setServerName(ConstStr &name) {_server_name = name; }
+std::string	Server::getServerName(void) { return (_server_name); }
+
+/* Handlers */
 Server::HandlerPointer	Server::selectHandler(ConstStr &name) {
 	DirectiveConst_it	it = SEVER_MAP.find(name);
 	DirectiveConst_it	end = SEVER_MAP.end();
@@ -45,13 +69,6 @@ Server::HandlerPointer	Server::selectHandler(ConstStr &name) {
 	return (it->second);
 }
 
-Block::type_e	Server::getBlockType(void) { return _blockType; }
-
-void		Server::setName(const std::string &name) {_server_name = name; }
-
-std::string	Server::getName(void) { return (_server_name); }
-
-/* Handlers */
 void	Server::server_name_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
 	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
 	_server_name = args.front();

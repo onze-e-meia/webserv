@@ -42,9 +42,12 @@ public:
 
 	Block::type_e	getBlockType(void) const { return (_blockType); }
 
-	static HandlerPointer	selectHandler(ConstStr &name);
+	std::string		getRoot(void) const { return (_root); }
+	void			setRoot(ConstStr root) { _root = root; }
+
 
 	/* Handlers */
+	static HandlerPointer	selectHandler(ConstStr &name);
 	void	root_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 	void	index_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 	void	autoIndex_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);

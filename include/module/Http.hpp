@@ -45,14 +45,14 @@ public:
 	// Http	&operator=(const Http &other);
 	~Http(void);
 
+	/* Getters */
 	std::vector<Server>	&getServers(void);
 
-	void	addServer(void);
-	void	addLocation(void);
-
-	static HandlerPointer	selectHandler(ConstStr &name);
+	/* Setters */
+	void				addServer(void);
 
 	/* Handlers */
+	static HandlerPointer	selectHandler(ConstStr &name);
 	void	mime_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 	void	include_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 };

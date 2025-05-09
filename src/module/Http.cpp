@@ -36,13 +36,7 @@ static const DirectiveMap	HTTP_MAP = buildMap();
 // =============================================================================
 
 /* Member Functions */
-Http::HandlerPointer	Http::selectHandler(ConstStr &name) {
-	DirectiveConst_it	it = HTTP_MAP.find(name);
-	DirectiveConst_it	end = HTTP_MAP.end();
-	if (it == end)
-		return (NULL);
-	return (it->second);
-}
+
 
 // =============================================================================
 // PUBLIC
@@ -59,22 +53,30 @@ std::vector<Server>	&Http::getServers(void) {
 	 return (_servers);
 }
 
-/* Member Functions */
+/* Setters */
 void	Http::addServer(void) {
 	_servers.push_back(Server());
+	_servers.back().setServerName("TESTE XXX");
+	std::cout << YLW "server {" << _servers.back().getServerName() << "} added tp http" RENDL;
 }
 
-void	Http::addLocation(void) {
-	_servers.back();
-	std::cout << YLW "LOCATION ADDED TO SERVER" RENDL;
-}
+/* Member Functions */
+
 
 /* Handlers */
+Http::HandlerPointer	Http::selectHandler(ConstStr &name) {
+	DirectiveConst_it	it = HTTP_MAP.find(name);
+	DirectiveConst_it	end = HTTP_MAP.end();
+	if (it == end)
+		return (NULL);
+	return (it->second);
+}
+
 void	Http::mime_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
 	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
 }
 
 void	Http::include_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
 	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
-	std::cout << GRN TAB "CALL INCLUDE HANDLER Founs: " TAB << name << line << pos << RENDL;
+	// std::cout << GRN TAB "CALL INCLUDE HANDLER Founs: " TAB << name << line << pos << RENDL;
 }

@@ -64,14 +64,14 @@ void	Webserv::checkPath(int argc, char **argv) {
 	if (isDirectory(path)) {
 		std::cerr << "webserv Error: " << path << ": Is a directory\n";
 		if (!isRead(path))
-			std::cerr << "webserv Error: " << path << ": "<< strerror(errno) << "\n";
+			std::cerr << "webserv Error: " << path << ": "<< strerror(errno) << ENDL;
 		_status.set(FAIL);
 		return ;
 	}
 
 	std::ifstream *configFile = new std::ifstream(path);
 	if (!(*configFile).is_open()) {
-		std::cerr << "webserv Error: " << path << ": "<< strerror(errno) << "\n";
+		std::cerr << "webserv Error: " << path << ": "<< strerror(errno) << ENDL;
 		_status.set(FAIL);
 		delete configFile;
 		return ;
@@ -96,23 +96,35 @@ void	Webserv::buildConfig(void) {
 		Parser(*_file).parseConfigFile();
 		_status.set(CONFING);
 		// Logger	log("some_name.txt");
+		{
+			Http	http = instance()._http;
+			http.getServers()[1].getLocations()[1].setRoot("Other Location");
+			std::cout
+				<< "PATH: " << _path << ENDL
+				<< "First  Server Name: " << http.getServers()[0].getServerName() << ENDL
+				<< "Second Server Name: " << http.getServers()[1].getServerName() << ENDL
+				<< "Third  Server Name: " << http.getServers()[2].getServerName() << ENDL
+				<< "   Location 1 Root: " << http.getServers()[1].getLocations()[0].getRoot() << ENDL
+				<< "   Location 2 Root: " << http.getServers()[1].getLocations()[1].getRoot() << ENDL
+				<< "   Location 3 Root: " << http.getServers()[1].getLocations()[2].getRoot() << ENDL;
+		}
 	} catch (const std::exception &exception) {
 		_status.set(FAIL);
 		std::cerr << RED " >>> HHHHAAAAALLLLTTTT!!!! <<< " RENDL;
 		std::cerr << _path << ":" << exception.what();
 	}
-	// std::cout << "Servers Name: " ENDL
-	// 	<< "PATH: " << _path << ENDL
-	// 	<< instance()._http.getServers()[0].getName() << ENDL
-	// 	<< instance()._http.getServers()[1].getName() << ENDL
-	// 	<< instance()._http.getServers()[2].getName() << ENDL;
+
 }
 
 void Webserv::run(void) {
-	std::cout << ENDL
-		<< "*------------------*" ENDL
-		<< "| Webserb  Running |" ENDL
-		<< "*------------------*" ENDL;
+	if (_status.test(CONFING)) {
+		std::cout << ENDL
+			<< "*------------------*" ENDL
+			<< "| Webserb  Running |" ENDL
+			<< "*------------------*" ENDL;
+		_status.set(RUM);
+	} else
+		_status.set(FAIL);
 
 }
 
@@ -124,67 +136,40 @@ int	Webserv::close(void) {
 	if (_status.test(INSTANCE))
 		delete &instance();
 
-	std::cout << ENDL
-		<< "*------------------*" ENDL
-		<< "| Clossing Webserb |" ENDL
-		<< "*------------------*" ENDL;
-	return EXIT_SUCCESS;
+	if (_status.test(RUM)) {
+		std::cout << ENDL
+			<< "*------------------*" ENDL
+			<< "| Clossing Webserb |" ENDL
+			<< "*------------------*" ENDL;
+		return EXIT_SUCCESS;
+	}
+	return EXIT_FAILURE;
 }
 
 void	Webserv::addBlock(Block::type_e &block) {
-	if (block == Block::SERVER) {
+	if (block == Block::HTTP) {
+		return ;
+	} else if (block == Block::SERVER) {
 		instance()._http.addServer();
-	}
-	if (block == Block::LOCATION) {
-		// webserv._http.getServers().back()._locations;
-		instance()._http.addLocation();
+	} else if (block == Block::LOCATION) {
+		instance()._http.getServers().back().addLocation();
+	} else {
+		throw (std::runtime_error("Unexpected erorr on addBlock Func!!")); // TODO: Better Error Msg
 	}
 }
 
 void	Webserv::dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &args) {
-	// const Module::module_e	MODULES[] = {
-	// 	Module::CORE, Module::HTTP, Module::SERVER, Module::LOCATION, Module::EMPTY
-	// };
 	Http	&http = instance()._http;
 
-	// for (std::size_t i = 0; MODULES[i] != 1; ++i) {
-	// 	if (block & MODULES[i]) {
-
-	// 	}
-
-	// }
-	CoreHandlerTemplate<Core, Core::HandlerPointer> CoreDef;
-	tryHandle<CoreHandlerTemplate<Core, Core::HandlerPointer> >(block, name, args);
-
-	// tryHandle<CoreHandler>(block, name, args);
-
-
-	if (block & Module::CORE) { // CORE, all blocks have CORE
-		// Core::HandlerPointer	method = callHandler<Core, Core::HandlerPointer>(name);
-		// if (method != NULL) {
-		// 	std::cout << GRN TAB ">>>> On CORE module Found: " TAB << name << RENDL;
-		// 	(http.*method)(name, args, 11, 22);
-		// 	return ;
-		// }
-		// callHandlerX<Core, Core::HandlerPointer>(block, name, args);
-
-	}
 	if (block == Block::HTTP) {
-		Http::HandlerPointer	method = callHandler<Http, Http::HandlerPointer>(name);
-		if (method != NULL) {
-			std::cout << GRN TAB ">>>> On HTTP module Found: " TAB << name << RENDL;
-			(http.*method)(name, args, 11, 22);
-			return ;
-		}
+		tyrHandler<Http, Http::HandlerPointer>(block, name, args, http);
+	} else if (block == Block::SERVER) {
+		Server	&server = http.getServers().back();
+		tyrHandler<Server, Server::HandlerPointer>(block, name, args, server);
+	} else if (block == Block::LOCATION) {
+		Location	&location = http.getServers().back().getLocations().back();
+		tyrHandler<Location, Location::HandlerPointer>(block, name, args, location);
+	} else {
+		throw (std::runtime_error("Unexpected erorr on add dispatchHandler Func!!")); // TODO: Better Error Msg
 	}
-	if (block == Block::SERVER) {
-		Server::HandlerPointer	method = callHandler<Server, Server::HandlerPointer>(name);
-		if (method != NULL) {
-			std::cout << GRN TAB ">>>> On SERVER Found: " TAB << name << args[0] << RENDL;
-			(http.getServers().back().*method)(name, args, 11, 22);
-			std::cout << GRN TAB ">>>> SERVER NAME: " TAB << http.getServers().back().getName() << RENDL;
-			return ;
-		}
-	}
-	// std::cout << RED TAB ">>>> UNKNOW DIRETIVE!!!! " TAB << name << RENDL;
 }

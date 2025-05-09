@@ -41,6 +41,9 @@ Core::Core(const Block::type_e &block): _blockType(block) {}
 Core::~Core(void) {}
 
 /* Member Functions */
+
+
+/* Handlers */
 Core::HandlerPointer	Core::selectHandler(ConstStr &name) {
 	DirectiveConst_it	it = CORE_MAP.find(name);
 	DirectiveConst_it	end = CORE_MAP.end();
@@ -49,7 +52,6 @@ Core::HandlerPointer	Core::selectHandler(ConstStr &name) {
 	return (it->second);
 }
 
-/* Handlers */
 void	Core::root_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
 	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
 }

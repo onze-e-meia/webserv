@@ -25,15 +25,26 @@ const DirectiveMap	buildMap(void) {
 static const DirectiveMap	LOCATION_MAP = buildMap();
 
 // =============================================================================
+// PRIVATE
+// =============================================================================
+
+/* Member Functions */
+
+
+// =============================================================================
 // PUBLIC
 // =============================================================================
 
 /* Contsructor */
-Location::Location(void): Core(Block::LOCATION) {
-	// std::cout << YLW "Location ADDED TO HTTP " << _blockType  << RENDL;
-}
+Location::Location(void): Core(Block::LOCATION) {}
+
+/* Destructor */
+Location::~Location() {}
 
 /* Member Functions */
+
+
+/* Handlers */
 Location::HandlerPointer	Location::selectHandler(ConstStr &name) {
 	DirectiveConst_it	it = LOCATION_MAP.find(name);
 	DirectiveConst_it	end = LOCATION_MAP.end();
@@ -42,7 +53,6 @@ Location::HandlerPointer	Location::selectHandler(ConstStr &name) {
 	return (it->second);
 }
 
-/* Handlers */
 void	Location::some_location_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
 	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
 }

@@ -79,7 +79,6 @@ void Parser::parseDirective(void) {
 		} else if (actualBlock == Block::LOCATION && previusBlock == Block::HTTP)
 			throw (Parser::WrongBlock(directiveName, previusName, _token.getLine(), _wordStartPos));
 
-		// Http::addBlock(actualBlock);
 		Webserv::addBlock(actualBlock);
 
 		_token.nextToken();
@@ -96,11 +95,11 @@ void Parser::parseDirective(void) {
 
 void	Parser::handleDirective(const std::string &name, const std::vector<std::string> &args) {
 	(void)args;
-	std::cout << "Directive: " << name;
-	for (size_t i = 0; i < args.size(); ++i) {
-		std::cout << " [" << args[i] << "]";
-	}
-	std::cout << YLW " { on line: " << _token.getLine() << " : " << _wordStartPos << " }" RENDL;
+	// std::cout << "Directive: " << name;
+	// for (size_t i = 0; i < args.size(); ++i) {
+	// 	std::cout << " [" << args[i] << "]";
+	// }
+	// std::cout << YLW " { on line: " << _token.getLine() << " : " << _wordStartPos << " }" RENDL;
 }
 
 void Parser::handleBlockStart(const std::string &name, const std::vector<std::string> &args) {

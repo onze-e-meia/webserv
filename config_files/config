@@ -2,7 +2,7 @@
 
 # Define a default MIME types and other general settings
 # This need to check nb of args!!!!
-http#{
+http {#{
 {#http{
 # start {};
 
@@ -41,16 +41,17 @@ http#{
 		# server {}
 		# location {}
 
-		listen		8080;
-		server_name	default.local;
+		listen			8080;
+		server_name		default.local;
 		include			mime.types;
 
-		root		/var/www/default;
-		index		index.html;
+		root			/var/www/default;
+		index			index.html;
 
 		location	/ {
 			autoindex	on; # Enable directory listing
-			include			mime.types;
+			include		mime.types;
+			wrong		test;
 			# server {}
 			# http {}
 			# location {}

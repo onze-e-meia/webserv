@@ -23,11 +23,10 @@ private:
 
 public:
 	Location(void);
-	// ~Location(void);
-
-	static HandlerPointer		selectHandler(ConstStr &name);
+	~Location(void);
 
 	/* Handlers */
+	static HandlerPointer		selectHandler(ConstStr &name);
 	void	some_location_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 
 };

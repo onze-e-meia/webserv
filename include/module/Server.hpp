@@ -31,15 +31,19 @@ private:
 
 public:
 	Server(void);
-	// ~Server(void);
+	~Server(void);
 
-	static HandlerPointer	selectHandler(ConstStr &name);
+	/* Getters */
+	std::vector<Location>	&getLocations(void);
 
-	Block::type_e	getBlockType(void);
-	void		setName(const std::string &name);
-	std::string	getName(void);
+	/* Setters */
+	void					addLocation(void);
+
+	void		setServerName(ConstStr &name);
+	std::string	getServerName(void);
 
 	/* Handlers */
+	static HandlerPointer	selectHandler(ConstStr &name);
 	void	server_name_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 	void	host_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 	void	port_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
