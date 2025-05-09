@@ -12,7 +12,7 @@
 # include <vector>
 # include <map>
 # include <set>
-# include "module.hpp"
+# include "Module.hpp"
 
 typedef const std::string				ConstStr;
 typedef const std::vector<std::string>	ConstVecStr;

@@ -8,7 +8,7 @@
 
 # include <string>
 # include "CountingStream.hpp"
-# include "module.hpp"
+# include "Module.hpp"
 
 
 // typedef int	BlockType;

@@ -41,7 +41,7 @@ SRC_PARSER	:= \
 	ParseException.cpp
 
 SRC_MODULE	:= \
-	module.cpp \
+	Module.cpp \
 	Core.cpp \
 	Http.cpp \
 	Server.cpp \
@@ -64,7 +64,7 @@ ALL_FILES		:= \
 INCLUDE_DIR	:=	include \
 	include/logger \
 	include/Parse \
-	include/module \
+	include/Module \
 	include/Exception
 
 LIB_DIR		:=	lib

@@ -7,8 +7,24 @@
 # define	MODULE_HPP
 
 # include <string>
-# include <map>
-# include "module_def.hpp"
+
+namespace Name { // TODO: CORE should be first!!
+	const std::string	EMPTY		= "";
+	const std::string	CORE		= "core";
+	const std::string	HTTP		= "http";
+	const std::string	SERVER		= "server";
+	const std::string	LOCATION	= "location";
+}
+
+namespace Module {
+	enum module_e {
+		EMPTY		= 0x01,
+		CORE		= 0x02,
+		HTTP		= 0x04,
+		SERVER		= 0x08,
+		LOCATION	= 0x10,
+	};
+}
 
 namespace Block { // TODO: Fix BitMask to include valid blocks inside
 	enum type_e {
@@ -23,7 +39,7 @@ namespace Block { // TODO: Fix BitMask to include valid blocks inside
 		const type_e		_type;
 	};
 
-	type_e		getType(const std::string &name);
+	type_e		dispatchType(const std::string &name);
 	std::string	getName(type_e block);
 	// BlockType	dispatch(std::string block);
 }

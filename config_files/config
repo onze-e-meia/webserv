@@ -2,7 +2,7 @@
 
 # Define a default MIME types and other general settings
 # This need to check nb of args!!!!
-http {#{
+http #{
 {#http{
 # start {};
 

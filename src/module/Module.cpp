@@ -3,18 +3,15 @@
 
 
 
-#include "module.hpp"
+#include <map>
+#include "Module.hpp"
 
 #define BLOCK_SPEC(name) { Name::name, Block::name }
 
 typedef std::map<const std::string, Block::type_e>	SpecMap;
 typedef SpecMap::const_iterator						SpecConst_it;
 
-static const SpecMap	build(void);
-
-static const SpecMap	BLOCK_MAP = build();
-
-const SpecMap	build(void) {
+static const SpecMap	build(void) {
 	const Block::Spec	SPECS[] = {
 		BLOCK_SPEC(HTTP),
 		BLOCK_SPEC(SERVER),
@@ -28,7 +25,9 @@ const SpecMap	build(void) {
 	return (map);
 }
 
-Block::type_e	Block::getType(const std::string &name) {
+static const SpecMap	BLOCK_MAP = build();
+
+Block::type_e	Block::dispatchType(const std::string &name) {
 	SpecConst_it	it = BLOCK_MAP.find(name);
 	SpecConst_it	end = BLOCK_MAP.end();
 	if (it == end)

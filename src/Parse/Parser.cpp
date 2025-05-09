@@ -8,7 +8,7 @@
 // #include <sstream>
 
 #include "Parser.hpp"
-#include "module.hpp"
+#include "Module.hpp"
 #include "Http.hpp"
 #include "Webserv.hpp"
 
@@ -64,7 +64,7 @@ void Parser::parseDirective(void) {
 		handleDirective(directiveName, args);
 		_token.nextToken();
 	} else if (_token.getType() == Token::BEGIN_BLOCK) { // directive with nested block
-		_token.setBlock(Block::getType(directiveName));
+		_token.setBlock(Block::dispatchType(directiveName));
 		Block::type_e	actualBlock = _token.getBlock();
 
 		handleBlockStart(directiveName, args); // All below can be handle block function
