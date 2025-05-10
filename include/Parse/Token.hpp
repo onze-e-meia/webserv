@@ -10,9 +10,6 @@
 # include "CountingStream.hpp"
 # include "Module.hpp"
 
-
-// typedef int	BlockType;
-
 class	Token {
 public:
 	enum	tokenType_e {
@@ -34,11 +31,13 @@ private:
 	void 				skipWhiteSpaceAndComments(void);
 
 public:
-	Token(std::istream &file);
+	Token(char *const path, std::istream &file);
 
+	/* Setters */
 	void				setType(tokenType_e type);
 	void				setBlock(Block::type_e blockType);
 
+	/* Getters */
 	tokenType_e			getType() const;
 	Block::type_e		getBlock() const;
 	const std::string	&getWord() const;

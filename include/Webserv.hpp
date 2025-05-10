@@ -23,11 +23,11 @@ enum	status_e {
 typedef std::bitset<SIZE>	status;
 
 private:
-	// static Webserv		*_webserv;
 	static status			_status;
-	static std::string		_path;
+	static char				*_path;
 	static std::ifstream	*_file;
 	Http					_http;
+
 	// std::string			_access_log;
 	// std::string			_error_log;
 
@@ -35,18 +35,23 @@ private:
 	Webserv(const Webserv&);
 	Webserv	&operator=(const Webserv&);
 
-	static void		addPath(ConstStr &path);
 	static Webserv	&instance(void);
 
 public:
-	~Webserv(void);
+	~Webserv(void) {};
 
+	/* Getters */
+	static char				*getPath(void);
+	static std::ifstream	&getFile(void);
+
+	/* Setters */
+	static void	addBlock(Block::type_e &block);
+
+	/* Member Functions */
 	static void	checkPath(int argc, char **argv);
 	static void	buildConfig(void);
 	static void run(void);
 	static int	close(void);
-
-	static void	addBlock(Block::type_e &block);
 
 	/* Handlers */
 	static void	dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &vec);

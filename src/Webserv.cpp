@@ -17,19 +17,15 @@
 // =============================================================================
 
 Webserv::status	Webserv::_status(0);
-std::string		Webserv::_path("");
-std::ifstream	*Webserv::_file = NULL;
-
+char			*Webserv::_path(0);
+std::ifstream	*Webserv::_file(0);
 
 /* Contsructor */
 Webserv::Webserv(void): _http(Http()) {}
 
-void	Webserv::addPath(ConstStr &path) {
-	_path = path;
-}
-
+/* Member Functions */
 Webserv	&Webserv::instance(void) {
-	static Webserv *webserv;
+	static Webserv *webserv = 0;
 
 	if (_status.test(INSTANCE)) {
 		return (*webserv);
@@ -45,8 +41,27 @@ Webserv	&Webserv::instance(void) {
 // PUBLIC
 // =============================================================================
 
-/* Destructor */
-Webserv::~Webserv() {}
+/* Getters */
+char	*Webserv::getPath(void) {
+	return (_path);
+}
+
+std::ifstream	&Webserv::getFile(void) {
+	return (*_file);
+}
+
+/* Setters */
+void	Webserv::addBlock(Block::type_e &block) {
+	if (block == Block::HTTP) {
+		return ;
+	} else if (block == Block::SERVER) {
+		instance()._http.addServer();
+	} else if (block == Block::LOCATION) {
+		instance()._http.getServers().back().addLocation();
+	} else {
+		throw (std::runtime_error("Unexpected erorr on addBlock Func!!")); // TODO: Better Error Msg
+	}
+}
 
 /* Member Functions */
 void	Webserv::checkPath(int argc, char **argv) {
@@ -56,27 +71,22 @@ void	Webserv::checkPath(int argc, char **argv) {
 		return ;
 	}
 
-	char	*path = argv[1];
-	// if (!exists(path)) {
-	// 	std::cerr << "webserv Error: " << path << ": "<< strerror(errno) << "\n";
-	// 	return EXIT_FAILURE;
-	// }
-	if (isDirectory(path)) {
-		std::cerr << "webserv Error: " << path << ": Is a directory\n";
-		if (!isRead(path))
-			std::cerr << "webserv Error: " << path << ": "<< strerror(errno) << ENDL;
-		_status.set(FAIL);
-		return ;
+	if (isDirectory(argv[1])) {
+		std::cerr << "webserv Error: " << argv[1] << ": Is a directory\n";
+		if (!isRead(argv[1]))
+			std::cerr << "webserv Error: " << argv[1] << ": "<< strerror(errno) << ENDL;
+			_status.set(FAIL);
+			return ;
 	}
+	_path = argv[1];
 
-	std::ifstream *configFile = new std::ifstream(path);
+	std::ifstream *configFile = new std::ifstream(_path);
 	if (!(*configFile).is_open()) {
-		std::cerr << "webserv Error: " << path << ": "<< strerror(errno) << ENDL;
+		std::cerr << "webserv Error: " << _path << ": "<< strerror(errno) << ENDL;
 		_status.set(FAIL);
 		delete configFile;
 		return ;
 	}
-	addPath(path);
 	_file = configFile;
 	_status.set(PATH);
 }
@@ -93,7 +103,7 @@ void	Webserv::buildConfig(void) {
 			oss << H_BLU "Config status already build\n" RST;
 			throw (std::runtime_error(oss.str()));
 		}
-		Parser(*_file).parseConfigFile();
+		Parser().parseConfigFile();
 		_status.set(CONFING);
 		// Logger	log("some_name.txt");
 		{
@@ -113,7 +123,12 @@ void	Webserv::buildConfig(void) {
 		std::cerr << RED " >>> HHHHAAAAALLLLTTTT!!!! <<< " RENDL;
 		std::cerr << _path << ":" << exception.what();
 	}
-
+	// Webserv web;
+	// web = instance();
+	// Webserv serv(web);
+	// std::cout << "PATH: " << _path << ENDL;
+	// std::cout << "web: " << web.getPath() << ENDL;
+	// std::cout << "serv: " << serv.getPath() << ENDL;
 }
 
 void Webserv::run(void) {
@@ -146,18 +161,6 @@ int	Webserv::close(void) {
 	return EXIT_FAILURE;
 }
 
-void	Webserv::addBlock(Block::type_e &block) {
-	if (block == Block::HTTP) {
-		return ;
-	} else if (block == Block::SERVER) {
-		instance()._http.addServer();
-	} else if (block == Block::LOCATION) {
-		instance()._http.getServers().back().addLocation();
-	} else {
-		throw (std::runtime_error("Unexpected erorr on addBlock Func!!")); // TODO: Better Error Msg
-	}
-}
-
 void	Webserv::dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &args) {
 	Http	&http = instance()._http;
 
@@ -170,6 +173,6 @@ void	Webserv::dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &
 		Location	&location = http.getServers().back().getLocations().back();
 		tyrHandler<Location, Location::HandlerPointer>(block, name, args, location);
 	} else {
-		throw (std::runtime_error("Unexpected erorr on add dispatchHandler Func!!")); // TODO: Better Error Msg
+		throw (std::runtime_error("Unexpected erorr on dispatchHandler Func!!")); // TODO: Better Error Msg
 	}
 }

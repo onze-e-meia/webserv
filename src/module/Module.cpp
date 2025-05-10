@@ -35,7 +35,7 @@ Block::type_e	Block::dispatchType(const std::string &name) {
 	return (it->second);
 }
 
-std::string	Block::getName(type_e block) {
+std::string	Block::getName(type_e block) { // TODO: Use map
 	std::string	name;
 	switch (block) {
 		case HTTP:		return (Name::HTTP);

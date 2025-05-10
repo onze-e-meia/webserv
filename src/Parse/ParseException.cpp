@@ -51,9 +51,7 @@ void	Parser::Exception::build2ArgErr(ConstStr &msg, ConstStr &arg1, ConstStr &ar
 /* Contsructor */
 	// TODO: Include a ref to the outer class, so it can get the line e pos with less args
 Parser::Exception::Exception(std::size_t line, std::size_t pos): // PUT makeLinePos inside constructor
-_line(line), _pos(pos) {
-
-}
+_line(line), _pos(pos) {}
 
 /* Destructor */
 Parser::Exception::~Exception(void)  throw() {}

@@ -64,7 +64,7 @@ void Parser::parseDirective(void) {
 		handleDirective(directiveName, args);
 		_token.nextToken();
 	} else if (_token.getType() == Token::BEGIN_BLOCK) { // directive with nested block
-		_token.setBlock(Block::dispatchType(directiveName));
+		_token.setBlock(Block::dispatchType(directiveName)); // TODO: Can chack args?
 		Block::type_e	actualBlock = _token.getBlock();
 
 		handleBlockStart(directiveName, args); // All below can be handle block function
@@ -121,7 +121,7 @@ void Parser::handleBlockEnd(const std::string &name, const std::vector<std::stri
 
 /* Contsructor */
 // Parser::Parser(void) {}
-Parser::Parser(std::ifstream &file): _token(file), _wordStartPos(0) {}
+Parser::Parser(void): _token(Webserv::getPath(), Webserv::getFile()), _wordStartPos(0) {}
 
 /* Member Functions */
 void	Parser::parseConfigFile(void) {

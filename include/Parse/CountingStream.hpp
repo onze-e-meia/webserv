@@ -10,13 +10,14 @@
 
 class CountingStream {
 private:
+	char			*_path;
 	std::istream	&_is;
 	std::size_t		_pos;
 	std::size_t		_line;
 	std::size_t		_size;
 
 public:
-	CountingStream(std::istream &is);
+	CountingStream(char *const path, std::istream &is);
 
 	int	get(void);
 	int	peek(void) const;

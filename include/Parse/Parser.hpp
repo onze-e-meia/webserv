@@ -23,7 +23,7 @@ private:
 
 public:
 	// Parser(void);
-	Parser(std::ifstream &file);
+	Parser(void);
 
 	void	parseConfigFile(void);
 

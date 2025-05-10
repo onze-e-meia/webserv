@@ -13,7 +13,8 @@
 // =============================================================================
 
 /* Contsructor */
-CountingStream::CountingStream(std::istream &is): _is(is), _pos(0), _line(1), _size(0) {}
+CountingStream::CountingStream(char *const path, std::istream &is):
+_path(path), _is(is), _pos(0), _line(1), _size(0) {}
 
 /* Member Functions */
 int	CountingStream::get(void) {
