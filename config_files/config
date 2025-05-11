@@ -2,59 +2,32 @@
 
 # Define a default MIME types and other general settings
 # This need to check nb of args!!!!
-http #{
-{#http{
-# start {};
+http {
+	mime			mime.types;
+	include			other test;
 
-  12 45 ;
-   a; b;
-	include			mime.types; other test;
-	default_type	application/octet-stream;
-
-	dir#;jkljlk kljlk
-	;
-	directive# arg#;#
-	;
-	server { wrong_synbol#; one# two# THIS SHOULD NO SHOW!!;}
-	;}
-	# Size limit for client requests
-	client_max_body_size	10M;
-
-	# Default error pages
+	root						/default;
+	index						default.index.html;
+	autoindex					on; # This will set the defaalt
 	error_page 404				/custom_404.html;
 	error_page 500 502 503 504	/custom_50x.html;
-
-	sendfile			on;
-	keepalive_timeout	65;
-
-	# http {}
-	# location {}
-	# server { location {new new;} server {} }
-	# server { location {new new;} }
+	client_max_body_size		10M;
+	allow_methods				GET POST;
+	# sendfile			on;
+	# keepalive_timeout	65;
 
 	# First server on host:port acts as default for unmatched requests
 	server {
-
-		lah blah;
-
-		# http {}
-		# server {}
-		# location {}
-
+		host			h;
+		port			p;
 		listen			8080;
 		server_name		default.local;
-		include			mime.types;
 
 		root			/var/www/default;
 		index			index.html;
 
 		location	/ {
 			autoindex	on; # Enable directory listing
-			include		mime.types;
-			wrong		test;
-			# server {}
-			# http {}
-			# location {}
 		}
 
 		location	/custom_404.html {
@@ -65,10 +38,5 @@ http #{
 			root		/var/www/errors;
 		}
 	}
-	# server {test1 test1;} server {} server {}
-	# server { location {} location {teste2;} location {} location {}}
 	server { server_name LAST.ONE; }
 }
-# root	/var;
-# {}
-# http {}

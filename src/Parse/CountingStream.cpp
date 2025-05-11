@@ -14,11 +14,24 @@
 
 /* Contsructor */
 CountingStream::CountingStream(char *const path, std::istream &is):
-_path(path), _is(is), _pos(0), _line(1), _size(0) {}
+_path(path), _inputStream(is), _pos(0), _line(1), _size(0) {}
+
+/* Getters */
+std::size_t	CountingStream::cursorPos(void) const {
+	 return (_pos);
+}
+
+std::size_t	CountingStream::cursorLine(void) const {
+	return (_line);
+}
+
+std::size_t	CountingStream::getSize(void) const {
+	return (_size);
+}
 
 /* Member Functions */
 int	CountingStream::get(void) {
-	int	ch = _is.get();
+	int	ch = _inputStream.get();
 	++_pos;
 	if (_pos > MAX_LINE_LEN )
 		throw (Parser::LineLength(_line, _pos));
@@ -34,17 +47,5 @@ int	CountingStream::get(void) {
 }
 
 int	CountingStream::peek(void) const {
-	return (_is.peek());
-}
-
-std::size_t	CountingStream::cursorPos(void) const {
-	 return (_pos);
-}
-
-std::size_t	CountingStream::cursorLine(void) const {
-	return (_line);
-}
-
-std::size_t	CountingStream::getSize(void) const {
-	return (_size);
+	return (_inputStream.peek());
 }

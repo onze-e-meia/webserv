@@ -10,6 +10,8 @@ public:
 	typedef void	(Location::*HandlerPointer)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
 
 private:
+	std::string	_locationPath;
+
 	// Roger
 	// std::string _uri;
 	// std::string _fastcgi;
@@ -22,11 +24,19 @@ private:
 	// Return		_returnIndex;
 
 public:
+	/* Contsructor */
 	Location(void);
+
+	/* Destructor */
 	~Location(void);
 
+	/* Setters */
+	void	setLocationPath(ConstStr &path);
+
+	std::string getPath(void) const { return (_locationPath); }
+
 	/* Handlers */
-	static HandlerPointer		selectHandler(ConstStr &name);
+	static HandlerPointer	selectHandler(ConstStr &name);
 	void	some_location_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 
 };

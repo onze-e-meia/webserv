@@ -13,8 +13,10 @@
 class	Parser {
 private:
 	Token			_token;
+	Block::Module	_innerBlock;
 	std::size_t		_wordStartPos;
 
+	/* Member Functions */
 	void	parseBlock(void);
 	void	parseDirective(void);
 	void	handleDirective(const std::string &name, const std::vector<std::string> &args);
@@ -22,9 +24,10 @@ private:
 	void	handleBlockEnd(const std::string &name, const std::vector<std::string> &args);
 
 public:
-	// Parser(void);
+	/* Contsructor */
 	Parser(void);
 
+	/* Member Functions */
 	void	parseConfigFile(void);
 
 	/* Exception Classes */

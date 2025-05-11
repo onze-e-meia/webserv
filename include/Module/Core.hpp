@@ -28,7 +28,7 @@ public:
 	typedef void	(Core::*HandlerPointer)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
 
 protected:
-	const Block::type_e					_blockType;
+	const Block::Module					_blockType;
 	std::string							_root;
 	std::set<std::string>				_index;
 	std::bitset<1>						_autoindex;
@@ -37,10 +37,13 @@ protected:
 	std::set<std::string>				_allow_methods; // limit_except
 
 public:
-	Core(const Block::type_e &block);
+	/* Contsructor */
+	Core(const Block::Module &block);
+
+	/* Destructor */
 	virtual ~Core(void);
 
-	Block::type_e	getBlockType(void) const { return (_blockType); }
+	Block::Module	getBlockType(void) const { return (_blockType); }
 
 	std::string		getRoot(void) const { return (_root); }
 	void			setRoot(ConstStr root) { _root = root; }
@@ -50,7 +53,7 @@ public:
 	static HandlerPointer	selectHandler(ConstStr &name);
 	void	root_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 	void	index_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
-	void	autoIndex_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
+	void	autoindex_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 	void	error_page_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 	void	client_max_body_size_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 	void	allow_methods_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);

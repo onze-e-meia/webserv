@@ -51,13 +51,17 @@ std::ifstream	&Webserv::getFile(void) {
 }
 
 /* Setters */
-void	Webserv::addBlock(Block::type_e &block) {
+void	Webserv::addBlock(Block::Module &block, ConstVecStr &args) {
 	if (block == Block::HTTP) {
 		return ;
 	} else if (block == Block::SERVER) {
-		instance()._http.addServer();
+		Http	&http = instance()._http;
+		http.addServer();
 	} else if (block == Block::LOCATION) {
-		instance()._http.getServers().back().addLocation();
+		Server	&server = instance()._http.getServers().back();
+		server.addLocation();
+		server.getLocations().back().setLocationPath(args.at(0));
+		std::cout << "	Lacation PATH: " << server.getLocations().back().getPath() << "\n";
 	} else {
 		throw (std::runtime_error("Unexpected erorr on addBlock Func!!")); // TODO: Better Error Msg
 	}
@@ -108,34 +112,26 @@ void	Webserv::buildConfig(void) {
 		// Logger	log("some_name.txt");
 		{
 			Http	http = instance()._http;
-			http.getServers()[1].getLocations()[1].setRoot("Other Location");
 			std::cout
 				<< "PATH: " << _path << ENDL
 				<< "First  Server Name: " << http.getServers()[0].getServerName() << ENDL
 				<< "Second Server Name: " << http.getServers()[1].getServerName() << ENDL
-				<< "Third  Server Name: " << http.getServers()[2].getServerName() << ENDL
-				<< "   Location 1 Root: " << http.getServers()[1].getLocations()[0].getRoot() << ENDL
-				<< "   Location 2 Root: " << http.getServers()[1].getLocations()[1].getRoot() << ENDL
-				<< "   Location 3 Root: " << http.getServers()[1].getLocations()[2].getRoot() << ENDL;
+				<< "   Location 1 Root: " << http.getServers()[0].getLocations()[0].getRoot() << ENDL
+				<< "   Location 2 Root: " << http.getServers()[0].getLocations()[1].getRoot() << ENDL
+				<< "   Location 3 Root: " << http.getServers()[0].getLocations()[2].getRoot() << ENDL;
 		}
 	} catch (const std::exception &exception) {
 		_status.set(FAIL);
 		std::cerr << RED " >>> HHHHAAAAALLLLTTTT!!!! <<< " RENDL;
 		std::cerr << _path << ":" << exception.what();
 	}
-	// Webserv web;
-	// web = instance();
-	// Webserv serv(web);
-	// std::cout << "PATH: " << _path << ENDL;
-	// std::cout << "web: " << web.getPath() << ENDL;
-	// std::cout << "serv: " << serv.getPath() << ENDL;
 }
 
 void Webserv::run(void) {
 	if (_status.test(CONFING)) {
 		std::cout << ENDL
 			<< "*------------------*" ENDL
-			<< "| Webserb  Running |" ENDL
+			<< "| Webserv  Running |" ENDL
 			<< "*------------------*" ENDL;
 		_status.set(RUM);
 	} else
@@ -154,24 +150,30 @@ int	Webserv::close(void) {
 	if (_status.test(RUM)) {
 		std::cout << ENDL
 			<< "*------------------*" ENDL
-			<< "| Clossing Webserb |" ENDL
+			<< "| Clossing Webserv |" ENDL
 			<< "*------------------*" ENDL;
 		return EXIT_SUCCESS;
 	}
+	std::cout << ENDL
+		<< "*------------------*" ENDL
+		<< "| Webserv  Failure |" ENDL
+		<< "*------------------*" ENDL;
 	return EXIT_FAILURE;
 }
 
-void	Webserv::dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &args) {
-	Http	&http = instance()._http;
+void	Webserv::dispatchHandler(Block::Module outerBlock, ConstStr &name, ConstVecStr &args) {
+	Http		&http = instance()._http;
 
-	if (block == Block::HTTP) {
-		tyrHandler<Http, Http::HandlerPointer>(block, name, args, http);
-	} else if (block == Block::SERVER) {
+	if (outerBlock == Block::HTTP) {
+		(http.*handler<Http, Http::HandlerPointer>(outerBlock, name, args, http))(name, args, 11, 22);
+	} else if (outerBlock == Block::SERVER) {
 		Server	&server = http.getServers().back();
-		tyrHandler<Server, Server::HandlerPointer>(block, name, args, server);
-	} else if (block == Block::LOCATION) {
+		(server.*handler<Server, Server::HandlerPointer>(outerBlock, name, args, server))(name, args, 11, 22);
+	} else if (outerBlock == Block::LOCATION) {
 		Location	&location = http.getServers().back().getLocations().back();
-		tyrHandler<Location, Location::HandlerPointer>(block, name, args, location);
+		(location.*handler<Location, Location::HandlerPointer>(outerBlock, name, args, location))(name, args, 11, 22);
+	} else if (outerBlock == Block::EMPTY) {
+		throw (std::runtime_error(" 'http' is a Block, not plain directive!'"));
 	} else {
 		throw (std::runtime_error("Unexpected erorr on dispatchHandler Func!!")); // TODO: Better Error Msg
 	}

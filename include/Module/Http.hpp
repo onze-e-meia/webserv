@@ -35,17 +35,18 @@ public:
 	typedef std::bitset<SIZE>	status;
 
 private:
-	std::vector<Server> _servers;
 	Mime				_mime;
 	std::string			_include;
+	std::vector<Server> _servers;
 
 	// bool				_sendfile;
 	// std::size_t			_keepalive_timeout;
 
 public:
+	/* Contsructor */
 	Http(void);
-	// Http(const Http &http);
-	// Http	&operator=(const Http &other);
+
+	/* Destructor */
 	~Http(void);
 
 	/* Getters */

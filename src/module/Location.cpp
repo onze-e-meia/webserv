@@ -41,6 +41,11 @@ Location::Location(void): Core(Block::LOCATION) {}
 /* Destructor */
 Location::~Location() {}
 
+/* Setters */
+void	Location::setLocationPath(ConstStr &path) {
+	_locationPath = path;
+}
+
 /* Member Functions */
 
 

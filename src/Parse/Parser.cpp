@@ -20,7 +20,7 @@
 
 /* Member Functions */
 void	Parser::parseBlock(void) {
-	Token::tokenType_e	tokenType = _token.getType();
+	Token::type_e	tokenType = _token.getType();
 
 	while (tokenType != Token::END_BLOCK && tokenType != Token::END_FILE) {
 		if (tokenType == Token::WORD) {
@@ -38,12 +38,11 @@ void	Parser::parseBlock(void) {
 }
 
 void Parser::parseDirective(void) {
-	Block::type_e		previusBlock = _token.getBlock();
-	const std::string	previusName = Block::getName(previusBlock);
-	const std::string	directiveName = _token.getWord();
+	Block::Module		outerBlock = _innerBlock;
+	const std::string	directive = _token.getWord();
 
 	_wordStartPos = _token.getWordStartPos(); // _wordStartPos don't need to be a member
-	// should get lineStartPos to
+	// should get lineStartPos to??
 	_token.nextToken();
 	std::vector<std::string> args;
 	while (_token.getType() == Token::WORD) { // collect args until ';' or '{' // CAN BE A FUNCTION ?
@@ -52,45 +51,30 @@ void Parser::parseDirective(void) {
 	}
 
 	if (_token.getType() == Token::END_STATEMENT) { // simple directive // CAN BE A FUNCTION ?
-		if (directiveName == Name::HTTP) // This will be solved with directives handler, ther will be no http plain directive
-			throw (std::runtime_error(" 'http' is a Block, not plain directive!/n'"));
-		// REVIEW DISPATCH DIRECTIVE FUNC // Check for args for eache individual directive
-
-		// Http::dispatchHandler(previusBlock, directiveName, args);
-		Webserv::dispatchHandler(previusBlock, directiveName, args);
-
-		// handler_t	handle = Handle::dispatch(contextToken);
-		// (void)handle;
-		handleDirective(directiveName, args);
+		Webserv::dispatchHandler(outerBlock, directive, args); // TODO: Check for nb of args.
+		handleDirective(directive, args);
 		_token.nextToken();
 	} else if (_token.getType() == Token::BEGIN_BLOCK) { // directive with nested block
-		_token.setBlock(Block::dispatchType(directiveName)); // TODO: Can chack args?
-		Block::type_e	actualBlock = _token.getBlock();
+		_innerBlock = Block::dispatchType(directive);
 
-		handleBlockStart(directiveName, args); // All below can be handle block function
-		if (actualBlock == Block::EMPTY) {
-			throw (Parser::UnknownDirective(directiveName, _token.getLine(), _wordStartPos));
-		} else if (!args.empty() && (actualBlock == Block::HTTP || actualBlock == Block::SERVER)) {
-			throw (std::runtime_error(" 'http' is a Block, it dont have args!/n'")); // still need to check args for http
-		} else if (actualBlock <= previusBlock) {
-			if (actualBlock == previusBlock)
-				throw (Parser::SameBlock(directiveName, previusName, _token.getLine(), _wordStartPos));
-			throw (Parser::WrongBlock(directiveName, previusName, _token.getLine(), _wordStartPos));
-		} else if (actualBlock == Block::LOCATION && previusBlock == Block::HTTP)
-			throw (Parser::WrongBlock(directiveName, previusName, _token.getLine(), _wordStartPos));
-
-		Webserv::addBlock(actualBlock);
+		handleBlockStart(directive, args); // All bellow can be handle block function
+		if (!Block::validOrder(outerBlock, _innerBlock)) { // TODO: in error msg also show the args followed by '{'
+			throw (Parser::WrongBlock(directive, outerBlock._name, _token.getLine(), _wordStartPos));
+		} else if (!Block::validNbArgs(_innerBlock, args)) {
+			throw (std::runtime_error(" 'http' is a Block, it dont have args!/n'")); // TODO: error msg.
+		}
+		Webserv::addBlock(_innerBlock, args);
 
 		_token.nextToken();
 		parseBlock();
-		handleBlockEnd(directiveName, args); // What in here???
 
-		_token.setBlock(previusBlock);
-
-		if (previusBlock == Block::EMPTY && _token.getType() != Token::END_FILE)
+		handleBlockEnd(directive, args); // TODO: Check if all needed directives are set.
+		_innerBlock = outerBlock;
+		if (outerBlock == Block::EMPTY && _token.getType() != Token::END_FILE)
 			throw (Parser::HttpClosed(_token.getLine(), _wordStartPos));
+
 	} else
-		throw (Parser::ExpectedToken(directiveName, _token.getLine(), _token.getWordStartPos()));
+		throw (Parser::ExpectedToken(directive, _token.getLine(), _token.getWordStartPos()));
 }
 
 void	Parser::handleDirective(const std::string &name, const std::vector<std::string> &args) {
@@ -120,8 +104,8 @@ void Parser::handleBlockEnd(const std::string &name, const std::vector<std::stri
 // =============================================================================
 
 /* Contsructor */
-// Parser::Parser(void) {}
-Parser::Parser(void): _token(Webserv::getPath(), Webserv::getFile()), _wordStartPos(0) {}
+Parser::Parser(void):
+_token(Webserv::getPath(), Webserv::getFile()), _innerBlock(Block::EMPTY), _wordStartPos(0) {}
 
 /* Member Functions */
 void	Parser::parseConfigFile(void) {

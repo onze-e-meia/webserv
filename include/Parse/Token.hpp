@@ -12,7 +12,7 @@
 
 class	Token {
 public:
-	enum	tokenType_e {
+	enum	type_e {
 		EMPTY = 0,
 		WORD,			// 64 char string len
 		END_STATEMENT,	// ';'
@@ -22,29 +22,29 @@ public:
 	};
 
 private:
-	tokenType_e		_tokenType;
-	Block::type_e	_blockType;
+	type_e			_type;
 	std::string		_word;
 	std::size_t		_wordStartPos;
 	CountingStream	_csFile;
 
+	/* Member Functions */
 	void 				skipWhiteSpaceAndComments(void);
-
+	
 public:
+	/* Contsructor */
 	Token(char *const path, std::istream &file);
 
+	/* Member Functions */
+	void				nextToken(void);
+
 	/* Setters */
-	void				setType(tokenType_e type);
-	void				setBlock(Block::type_e blockType);
+	void				setType(type_e type);
 
 	/* Getters */
-	tokenType_e			getType() const;
-	Block::type_e		getBlock() const;
+	type_e				getType() const;
 	const std::string	&getWord() const;
 	size_t				getWordStartPos(void) const;
 	size_t				getLine(void) const;
-
-	void				nextToken(void);
 };
 
 #endif		// TOKEN_HPP

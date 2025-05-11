@@ -14,7 +14,7 @@ static const NameHandler<Core::HandlerPointer>	CORE_HANDLER[] = {
 	{ "root", &Core::root_Handler },
 	CORE_NAME_HANDLER(root),
 	CORE_NAME_HANDLER(index),
-	CORE_NAME_HANDLER(autoIndex),
+	CORE_NAME_HANDLER(autoindex),
 	CORE_NAME_HANDLER(error_page),
 	CORE_NAME_HANDLER(client_max_body_size),
 	CORE_NAME_HANDLER(allow_methods),
@@ -35,7 +35,7 @@ static const DirectiveMap	CORE_MAP = buildMap();
 // =============================================================================
 
 /* Contsructor */
-Core::Core(const Block::type_e &block): _blockType(block) {}
+Core::Core(const Block::Module &block): _blockType(block) {}
 
 /* Destructor */
 Core::~Core(void) {}
@@ -60,7 +60,7 @@ void	Core::index_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, st
 	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
 }
 
-void	Core::autoIndex_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
+void	Core::autoindex_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
 	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
 }
 

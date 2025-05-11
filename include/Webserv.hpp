@@ -1,6 +1,7 @@
 
 
 #include <iostream>
+#include <sstream>
 
 
 #ifndef		WEBSERV_HPP
@@ -11,16 +12,16 @@
 
 class Webserv {
 public:
-enum	status_e {
-		PATH = 0,
-		INSTANCE,
-		CONFING,
-		RUM,
-		FAIL,
-		SIZE,
-	};
+	enum	status_e {
+			PATH = 0,
+			INSTANCE,
+			CONFING,
+			RUM,
+			FAIL,
+			SIZE,
+		};
 
-typedef std::bitset<SIZE>	status;
+	typedef std::bitset<SIZE>	status;
 
 private:
 	static status			_status;
@@ -31,6 +32,7 @@ private:
 	// std::string			_access_log;
 	// std::string			_error_log;
 
+	/* Contsructor */
 	Webserv(void);
 	Webserv(const Webserv&);
 	Webserv	&operator=(const Webserv&);
@@ -38,6 +40,7 @@ private:
 	static Webserv	&instance(void);
 
 public:
+	/* Destructor */
 	~Webserv(void) {};
 
 	/* Getters */
@@ -45,7 +48,7 @@ public:
 	static std::ifstream	&getFile(void);
 
 	/* Setters */
-	static void	addBlock(Block::type_e &block);
+	static void	addBlock(Block::Module &block, ConstVecStr &args);
 
 	/* Member Functions */
 	static void	checkPath(int argc, char **argv);
@@ -54,25 +57,26 @@ public:
 	static int	close(void);
 
 	/* Handlers */
-	static void	dispatchHandler(Block::type_e block, ConstStr &name, ConstVecStr &vec);
+	static void	dispatchHandler(Block::Module outerBlock, ConstStr &name, ConstVecStr &args);
 
+	// TODO: Make handler set fail, so the exception can be handled outside the hpp
 	template <typename Class, typename HandlerPointer>
-	static void	tyrHandler(Block::type_e block, ConstStr &name, ConstVecStr &args, Class &obj) {
-		Core::HandlerPointer coreMethod = Core::selectHandler(name);
-		if (coreMethod != NULL) {
-			std::cout << GRN TAB "In " BLU << Block::getName(block) << GRN " found CORE directive: " TAB << name << RENDL;
-			(obj.*coreMethod)(name, args, 11, 22);
-			return ;
+	static HandlerPointer	handler(Block::Module outerBlock, ConstStr &name, ConstVecStr &args, Class &obj) {
+		HandlerPointer method = Core::selectHandler(name);
+		if (method != NULL) {
+			std::cout << GRN TAB "In " BLU << outerBlock._name << GRN " found CORE directive: " TAB << name << RENDL;
+			return (method);
 		}
 
-		HandlerPointer	objMethod = Class::selectHandler(name);
-		if (objMethod != NULL) {
-			std::cout << GRN TAB "In " BLU << Block::getName(block) << GRN " found OBJ directive : " TAB << name << RENDL;
-			(obj.*objMethod)(name, args, 11, 22);
-			return ;
+		method = Class::selectHandler(name);
+		if (method != NULL) {
+			std::cout << GRN TAB "In " BLU << outerBlock._name << GRN " found OBJ directive : " TAB << name << RENDL;
+			return (method);
 		}
-		std::cout << RED TAB "In " BLU << Block::getName(block) << RED " UNKNOW directive: " TAB << name << RENDL;
-		return ;
+
+		std::ostringstream	oss;
+		oss << RED TAB "In " BLU << outerBlock._name << RED " UNKNOW directive: " TAB << name << RENDL;
+		throw (std::runtime_error(oss.str()));
 	}
 };
 

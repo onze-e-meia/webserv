@@ -30,7 +30,10 @@ private:
 	// std::string _return_uri;
 
 public:
+	/* Contsructor */
 	Server(void);
+
+	/* Destructor */
 	~Server(void);
 
 	/* Getters */

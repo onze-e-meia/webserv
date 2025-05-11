@@ -35,38 +35,8 @@ void Token::skipWhiteSpaceAndComments(void) {
 
 /* Contsructor */
 Token::Token(char *const path, std::istream &file):
-_tokenType(EMPTY), _blockType(Block::EMPTY), _wordStartPos(0),_csFile(path, file) {
+_type(EMPTY), _wordStartPos(0),_csFile(path, file) {
 	_word.reserve(MAX_DIRECTIVE_LEN);
-}
-
-/* Setters */
-void	Token::setType(tokenType_e tokenType) {
-	_tokenType = tokenType;
-}
-
-void	Token::setBlock(Block::type_e blockType) {
-	_blockType = blockType;
-}
-
-/* Getters */
-Token::tokenType_e	Token::getType() const {
-	return (_tokenType);
-}
-
-Block::type_e	Token::getBlock() const {
-	return (_blockType);
-}
-
-const	std::string &Token::getWord() const {
-	return (_word);
-}
-
-size_t	Token::getWordStartPos(void) const {
-	 return (_wordStartPos);
-}
-
-size_t	Token::getLine(void) const {
-	return (_csFile.cursorLine());
 }
 
 /* Member Functions */
@@ -94,4 +64,26 @@ void	Token::nextToken(void) {
 	}
 
 	return (setType(WORD));
+}
+
+/* Setters */
+void	Token::setType(type_e type) {
+	_type = type;
+}
+
+/* Getters */
+Token::type_e	Token::getType() const {
+	return (_type);
+}
+
+const	std::string &Token::getWord() const {
+	return (_word);
+}
+
+size_t	Token::getWordStartPos(void) const {
+	 return (_wordStartPos);
+}
+
+size_t	Token::getLine(void) const {
+	return (_csFile.cursorLine());
 }
