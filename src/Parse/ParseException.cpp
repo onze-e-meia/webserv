@@ -4,6 +4,8 @@
 
 
 #include <sstream>
+#include <iomanip>
+#include "Module.hpp"
 #include "Parser.hpp"
 #include "ParseLimits.hpp"
 #include "color.hpp"
@@ -14,6 +16,18 @@
 // =============================================================================
 
 /* Member Functions */
+std::string	Parser::Exception::exceptionClass(ConstStr &str) {
+	std::ostringstream	oss;
+	oss << RED << str << RENDL;
+	return (oss.str());
+}
+
+std::string	Parser::Exception::pathLinePos(ConstStr &path, std::size_t line, std::size_t pos) {
+	std::ostringstream	oss;
+	oss << path << ":" << line << ":" << pos << ": ";
+	return (oss.str());
+}
+
 void	Parser::Exception::makeLinePos(ConstStr &errType) {
 	std::ostringstream	oss;
 	oss << _line << ":" << _pos << ":" TAB RED << errType << RENDL;
@@ -50,8 +64,17 @@ void	Parser::Exception::build2ArgErr(ConstStr &msg, ConstStr &arg1, ConstStr &ar
 // --------------------
 /* Contsructor */
 	// TODO: Include a ref to the outer class, so it can get the line e pos with less args
-Parser::Exception::Exception(std::size_t line, std::size_t pos): // PUT makeLinePos inside constructor
+
+Parser::Exception::Exception(std::size_t line, std::size_t pos):
 _line(line), _pos(pos) {}
+
+Parser::Exception::Exception(void) {}
+
+Parser::Exception::Exception(const Parser &parser):
+_path(parser._token.getPath()), _line(parser._token.cursorLine()), _pos(parser._token.cursorPos()) {}
+
+Parser::Exception::Exception(ConstStr &path, std::size_t line, std::size_t pos):
+_path(path), _line(line), _pos(pos) {}
 
 /* Destructor */
 Parser::Exception::~Exception(void)  throw() {}
@@ -61,9 +84,45 @@ const char	*Parser::Exception::what(void) const throw() {
 	return (_errMsg.c_str());
 }
 
-// ---------------------------------
-//  CLASS EXCEPTION UnexpectedToken
-// ---------------------------------
+// ---------------------------------------
+//  CLASS EXCEPTION: Parser Size Limits
+// ---------------------------------------
+/* Contsructor */
+Parser::FileSize::FileSize(ConstStr &path, std::size_t line, std::size_t pos):
+Exception(path, line, pos) {
+	std::ostringstream	oss;
+	oss << exceptionClass("Parser File Size Error:")
+		<< pathLinePos(_path, _line, _pos)
+		<< "File MAX size must be " << MAX_FILE_SIZE << " or less." << ENDL
+		<< TAB " | " ENDL;
+	_errMsg = oss.str();
+}
+
+Parser::LineLength::LineLength(ConstStr &path, std::size_t line, std::size_t pos, char *str):
+Exception(path, line, pos) {
+	std::ostringstream	oss;
+	oss << exceptionClass("Parser Line Lenght Error:")
+		<< pathLinePos(_path, _line, _pos)
+		<< "Line MAX lenght must be of size " << MAX_LINE_LEN << " or less." << ENDL
+		<< TAB " | " << str << " ..." ENDL
+		<< TAB " | " ENDL;
+	_errMsg = oss.str();
+}
+
+Parser::DirectiveLength::DirectiveLength(ConstStr &path, std::size_t line,
+std::size_t pos, ConstStr &directive): Exception(path, line, pos) {
+	std::ostringstream	oss;
+	oss << exceptionClass("Directive Length Error:")
+		<< pathLinePos(_path, _line, _pos)
+		<< "MAX lenght must be of size " << MAX_DIRECTIVE_LEN << " or less." << ENDL
+		<< TAB " | on Directive: " << directive << " ..." ENDL
+		<< TAB " | " ENDL;
+	_errMsg = oss.str();
+}
+
+// ----------------------------------
+//  CLASS EXCEPTION: Parser Tokens
+// ----------------------------------
 /* Contsructor */
 Parser::UnexpectedToken::UnexpectedToken(ConstStr &directive, std::size_t line, std::size_t pos):
 Exception(line, pos) {
@@ -71,60 +130,15 @@ Exception(line, pos) {
 	build1ArgErr(", unexpected Token" , directive);
 }
 
-// ---------------------------------
-//  CLASS EXCEPTION ExpectedToken
-// ---------------------------------
-/* Contsructor */
-Parser::ExpectedToken::ExpectedToken(ConstStr &directive, std::size_t line, std::size_t pos):
-Exception(line, pos) {
-	makeLinePos("Expected Token Error:");
-	build1ArgErr(", expected ';' or '{' after directive", directive);
-}
-
-// ---------------------------------
-//  CLASS EXCEPTION DirectiveLength
-// ---------------------------------
-/* Contsructor */
-Parser::DirectiveLength::DirectiveLength(ConstStr &directive, std::size_t line, std::size_t pos):
-Exception(line, pos) {
-	makeLinePos("Directive Length Error:");
+Parser::ExpectedToken::ExpectedToken(const Parser &parser, ConstStr &directive):
+Exception(parser) {
 	std::ostringstream	oss;
-	oss << MAX_DIRECTIVE_LEN;
-	build1ArgErr(", Directive Name max lenght must be of size " + oss.str() + " or less", directive);
-}
-
-// ---------------------------------
-//  CLASS EXCEPTION LineLength
-// ---------------------------------
-/* Contsructor */
-Parser::LineLength::LineLength(std::size_t line, std::size_t pos):
-Exception(line, pos) {
-	makeLinePos("Parse Line Lenght Error:");
-	std::ostringstream	oss;
-	oss << MAX_LINE_LEN;
-	buildErr("Line max lenght must be of size " + oss.str() + " or less");
-}
-
-// ---------------------------------
-//  CLASS EXCEPTION FileSize
-// ---------------------------------
-/* Contsructor */
-Parser::FileSize::FileSize(std::size_t line, std::size_t pos):
-Exception(line, pos) {
-	makeLinePos("Parse File Size Error:");
-	std::ostringstream	oss;
-	oss << MAX_FILE_SIZE;
-	buildErr("File max size must be " + oss.str() + " or less");
-}
-
-// ---------------------------------
-//  CLASS EXCEPTION EmptyBlock
-// ---------------------------------
-/* Contsructor */
-Parser::EmptyBlock::EmptyBlock(std::size_t line, std::size_t pos):
-Exception(line, pos) {
-	makeLinePos("Empty Block Error:");
-	buildErr("Directive '': Empty Directive Block Name");
+	oss << exceptionClass("Expected Token Error:")
+		<< pathLinePos(_path, _line, _pos)
+		<< TAB "Expected token ';' after directive" << directive << ENDL
+		<< std::setw(6) << _line << " | " << parser._innerBlock._name << " { " << directive << RED "'?'" RENDL
+		<< "       | " ;
+	_errMsg = oss.str();
 }
 
 // --------------------------------
@@ -148,32 +162,49 @@ Exception(line, pos) {
 }
 
 // --------------------------------
-// CLASS EXCEPTION SameBlock
+// CLASS EXCEPTION Block
 // --------------------------------
 /* Contsructor */
-Parser::SameBlock::SameBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos):
-Exception(line, pos) {
-	makeLinePos("Same Context Block Error:");
-	build2ArgErr("is inside of the same type Directive", directive, contex);
+Parser::WrongBlock::WrongBlock(const Parser &parser, ConstStr &directive, const Block::Module &outerBlock) {
+	std::string	errType("Block Error: ");
 
+	if (directive.empty()) {
+		errType += "Empty name.";
+	} else if (parser._innerBlock == Block::UNKNOWN) {
+		errType += "Unknown name.";
+	} else
+		errType += "Wrong context.";
+
+	std::ostringstream	oss;
+	oss << exceptionClass(errType)
+		<< pathLinePos(parser._token.getPath(), parser._token.cursorLine(), parser._wordStartPos)
+		<< TAB "Block directive '" << directive << "' is out of context on block: " << outerBlock._name << ENDL
+		<< std::setw(6) << parser._token.cursorLine() << " | " << outerBlock._name << " { '" << directive << "'" ENDL
+		<< "       | " ;
+	_errMsg = oss.str();
 }
 
-// --------------------------------
-// CLASS EXCEPTION WrongBlock
-// --------------------------------
-/* Contsructor */
-Parser::WrongBlock::WrongBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos):
-Exception(line, pos) {
-	makeLinePos("Wrong Context Block Error:");
-	build2ArgErr("is out of context on Block", directive, contex);
-}
+Parser::WrongArgs::WrongArgs(const Parser &parser, ConstStr &directive, const Block::Module &outerBlock, ConstVecStr &args) {
+	std::string	errType("Number of Arguments Error: ");
+	std::string	adjective("more");
+	std::string	argsStr;
 
-// ---------------------------------
-//  CLASS EXCEPTION UnknownDirective
-// ---------------------------------
-/* Contsructor */
-Parser::UnknownDirective::UnknownDirective(ConstStr &directive, std::size_t line, std::size_t pos):
-Exception(line, pos) {
-	makeLinePos("Unknown Block Error:");
-	build1ArgErr(", is of Unknown Name" , directive);
+	if (parser._innerBlock._module & (Block::HTTP._module | Block::SERVER._module)) {
+		errType += parser._innerBlock._name + " must have 0 args.";
+	} else if (parser._innerBlock._module & Block::LOCATION._module) {
+		errType += parser._innerBlock._name + " must have 1 args.";
+		adjective = (args.empty())? "less" : "more";
+	}
+
+	for (std::size_t i; i < args.size(); ++i)
+		argsStr += args.at(i) + " ";
+
+	std::ostringstream	oss;
+	oss << exceptionClass(errType)
+		<< pathLinePos(parser._token.getPath(), parser._token.cursorLine(), parser._wordStartPos)
+		<< TAB "Block directive '" << directive << "' have " << adjective << " arguments then it should: " ENDL
+		<< std::setw(6) << parser._token.cursorLine() << " | " << outerBlock._name
+		<< " { " << directive << " '" << argsStr << "'" ENDL
+		<< "       | " ;
+	_errMsg = oss.str();
 }

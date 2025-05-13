@@ -57,12 +57,12 @@ void	Token::nextToken(void) {
 	_word = static_cast<char>(ch);
 	ch = _csFile.peek();
 	while (ch != EOF && !std::isspace(ch) && ch != '{' && ch != '}' && ch != ';' && ch != '#') {
-		_word += static_cast<char>(_csFile.get());
+		ch = static_cast<char>(_csFile.get());
+		if (_word.length() + 1 > MAX_DIRECTIVE_LEN)
+			throw (Parser::DirectiveLength(_csFile.getPath(), _csFile.cursorLine(), _wordStartPos, _word));
+		_word += ch;
 		ch = _csFile.peek();
-		if (_word.length() > MAX_DIRECTIVE_LEN)
-			throw (Parser::DirectiveLength(_word, _csFile.cursorLine(), _wordStartPos));
 	}
-
 	return (setType(WORD));
 }
 
@@ -76,14 +76,22 @@ Token::type_e	Token::getType() const {
 	return (_type);
 }
 
-const	std::string &Token::getWord() const {
+std::string Token::getWord() const {
 	return (_word);
+}
+
+std::string	Token::getPath(void) const {
+	return (_csFile.getPath());
+}
+
+size_t	Token::cursorLine(void) const {
+	return (_csFile.cursorLine());
+}
+
+std::size_t	Token::cursorPos(void) const {
+	return(_csFile.cursorPos());
 }
 
 size_t	Token::getWordStartPos(void) const {
 	 return (_wordStartPos);
-}
-
-size_t	Token::getLine(void) const {
-	return (_csFile.cursorLine());
 }

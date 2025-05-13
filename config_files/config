@@ -5,6 +5,8 @@
 http {
 	mime			mime.types;
 	include			other test;
+	server {;;;;port;}
+	server {location /one {root root;} }
 
 	root						/default;
 	index						default.index.html;

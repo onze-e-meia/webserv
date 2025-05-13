@@ -1,5 +1,5 @@
 
-
+#include <iostream>
 
 
 
@@ -17,6 +17,10 @@ CountingStream::CountingStream(char *const path, std::istream &is):
 _path(path), _inputStream(is), _pos(0), _line(1), _size(0) {}
 
 /* Getters */
+std::string	CountingStream::getPath(void) const {
+	return(_path);
+}
+
 std::size_t	CountingStream::cursorPos(void) const {
 	 return (_pos);
 }
@@ -25,20 +29,23 @@ std::size_t	CountingStream::cursorLine(void) const {
 	return (_line);
 }
 
-std::size_t	CountingStream::getSize(void) const {
-	return (_size);
-}
+// std::size_t	CountingStream::getSize(void) const {
+// 	return (_size);
+// }
 
 /* Member Functions */
 int	CountingStream::get(void) {
 	int	ch = _inputStream.get();
 	++_pos;
-	if (_pos > MAX_LINE_LEN )
-		throw (Parser::LineLength(_line, _pos));
+	if (_pos > MAX_LINE_LEN + 1) {
+		char buffer[MAX_LINE_LEN + 1];
+		_inputStream.seekg(_size + 1 - _pos).getline(buffer, MAX_LINE_LEN + 1);
+		throw (Parser::LineLength(_path, _line, _pos, buffer));
+	}
 	if (ch != EOF)
 		++_size;
 	if (_size > MAX_FILE_SIZE )
-		throw (Parser::FileSize(_line, _pos));
+		throw (Parser::FileSize(_path, _line, _pos));
 	if (ch == '\n') {
 		++_line;
 		_pos = 0;

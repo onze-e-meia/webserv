@@ -29,7 +29,7 @@ private:
 
 	/* Member Functions */
 	void 				skipWhiteSpaceAndComments(void);
-	
+
 public:
 	/* Contsructor */
 	Token(char *const path, std::istream &file);
@@ -41,10 +41,12 @@ public:
 	void				setType(type_e type);
 
 	/* Getters */
-	type_e				getType() const;
-	const std::string	&getWord() const;
-	size_t				getWordStartPos(void) const;
-	size_t				getLine(void) const;
+	type_e			getType(void) const;
+	std::string		getWord(void) const;
+	std::string		getPath(void) const;
+	std::size_t		cursorLine(void) const;
+	std::size_t		cursorPos(void) const;
+	std::size_t		getWordStartPos(void) const;
 };
 
 #endif		// TOKEN_HPP

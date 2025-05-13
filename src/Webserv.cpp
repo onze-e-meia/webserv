@@ -98,6 +98,7 @@ void	Webserv::checkPath(int argc, char **argv) {
 void	Webserv::buildConfig(void) {
 	if (_status.test(PATH) == false) {
 		std::cerr << "webserv Error: " << _path << ": Invalid PATH" ENDL;
+		_status.set(FAIL);
 		return ;
 	}
 
@@ -110,20 +111,20 @@ void	Webserv::buildConfig(void) {
 		Parser().parseConfigFile();
 		_status.set(CONFING);
 		// Logger	log("some_name.txt");
-		{
-			Http	http = instance()._http;
-			std::cout
-				<< "PATH: " << _path << ENDL
-				<< "First  Server Name: " << http.getServers()[0].getServerName() << ENDL
-				<< "Second Server Name: " << http.getServers()[1].getServerName() << ENDL
-				<< "   Location 1 Root: " << http.getServers()[0].getLocations()[0].getRoot() << ENDL
-				<< "   Location 2 Root: " << http.getServers()[0].getLocations()[1].getRoot() << ENDL
-				<< "   Location 3 Root: " << http.getServers()[0].getLocations()[2].getRoot() << ENDL;
-		}
+		// {
+		// 	Http	http = instance()._http;
+		// 	std::cout
+		// 		<< "PATH: " << _path << ENDL
+		// 		<< "First  Server Name: " << http.getServers()[0].getServerName() << ENDL
+		// 		<< "Second Server Name: " << http.getServers()[1].getServerName() << ENDL
+		// 		<< "   Location 1 Root: " << http.getServers()[0].getLocations()[0].getRoot() << ENDL
+		// 		<< "   Location 2 Root: " << http.getServers()[0].getLocations()[1].getRoot() << ENDL
+		// 		<< "   Location 3 Root: " << http.getServers()[0].getLocations()[2].getRoot() << ENDL;
+		// }
 	} catch (const std::exception &exception) {
 		_status.set(FAIL);
-		std::cerr << RED " >>> HHHHAAAAALLLLTTTT!!!! <<< " RENDL;
-		std::cerr << _path << ":" << exception.what();
+		// std::cerr << RED " >>> HHHHAAAAALLLLTTTT!!!! <<< " RENDL;
+		std::cerr << exception.what();
 	}
 }
 

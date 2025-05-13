@@ -7,18 +7,26 @@
 # define	PARSE_EXCEPTION_HPP
 
 # include <string>
+# include <sstream>
 # include <exception>
 
 # include "Parser.hpp"
 
-typedef const std::string	ConstStr;
+typedef const std::string				ConstStr;
+typedef const std::vector<std::string>	ConstVecStr;
+struct	Module;
 
 class	Parser::Exception: public	std::exception {
 protected:
 	// TODO: Include a ref to the outer class, so it can get the line e pos with less args
 	std::string	_errMsg;
+	std::string	_path;
 	std::size_t	_line;
 	std::size_t	_pos;
+
+	std::string	exceptionClass(ConstStr &str);
+	std::string	pathLinePos(ConstStr &path, std::size_t line, std::size_t pos);
+
 
 	void	makeLinePos(ConstStr &errType);
 	void	buildErr(ConstStr &msg);
@@ -26,12 +34,38 @@ protected:
 	void	build2ArgErr(ConstStr &msg, ConstStr &arg1, ConstStr &arg2);
 
 public:
+	/* Contsructor */
 	explicit	Exception(std::size_t line, std::size_t pos);
+
+	explicit	Exception(void);
+	explicit	Exception(const Parser &parser);
+	explicit	Exception(ConstStr &path, std::size_t line, std::size_t pos);
 	~Exception(void) throw();
 
 	virtual const char	*what(void) const throw();
 };
 
+// ---------------------------------------
+//  CLASS EXCEPTION: Parser Size Limits
+// ---------------------------------------
+class	Parser::FileSize: public	Parser::Exception {
+public:
+	FileSize(ConstStr &path, std::size_t line, std::size_t pos);
+};
+
+class	Parser::LineLength: public	Parser::Exception {
+	public:
+	LineLength(ConstStr &path, std::size_t line, std::size_t pos, char *str);
+};
+
+class	Parser::DirectiveLength: public	Parser::Exception {
+public:
+	DirectiveLength(ConstStr &path, std::size_t line, std::size_t pos, ConstStr &directive);
+};
+
+// ----------------------------------
+//  CLASS EXCEPTION: Parser Tokens
+// ----------------------------------
 class	Parser::UnexpectedToken: public Parser::Exception {
 public:
 	UnexpectedToken(ConstStr &directive, std::size_t line, std::size_t pos);
@@ -39,29 +73,12 @@ public:
 
 class	Parser::ExpectedToken: public Parser::Exception {
 public:
-	ExpectedToken(ConstStr &directive, std::size_t line, std::size_t pos);
+	ExpectedToken(const Parser &Parser, ConstStr &directive);
 };
 
-class	Parser::DirectiveLength: public	Parser::Exception {
-public:
-	DirectiveLength(ConstStr &directive, std::size_t line, std::size_t pos);
-};
-
-class	Parser::LineLength: public	Parser::Exception {
-	public:
-	LineLength(std::size_t line, std::size_t pos);
-};
-
-class	Parser::FileSize: public	Parser::Exception {
-public:
-	FileSize(std::size_t line, std::size_t pos);
-};
-
-class	Parser::EmptyBlock: public	Parser::Exception {
-public:
-	EmptyBlock(std::size_t line, std::size_t pos);
-};
-
+// ----------------------------------
+//  CLASS EXCEPTION: Parser Blocks
+// ----------------------------------
 class	Parser::HttpClosed: public	Parser::Exception {
 public:
 	HttpClosed(std::size_t line, std::size_t pos);
@@ -72,21 +89,17 @@ public:
 	FirstBlock(ConstStr &directive, std::size_t line, std::size_t pos);
 };
 
-class	Parser::SameBlock: public	Parser::Exception {
-public:
-	SameBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos);
-};
-
 class	Parser::WrongBlock: public	Parser::Exception {
 public:
-	WrongBlock(ConstStr &directive, ConstStr &contex, std::size_t line, std::size_t pos);
+	WrongBlock(const Parser &parser, ConstStr &directive, const Block::Module &outerBlock);
 };
 
-class	Parser::UnknownDirective: public	Parser::Exception {
+class	Parser::WrongArgs: public	Parser::Exception {
 public:
-	UnknownDirective(ConstStr &directive, std::size_t line, std::size_t pos);
+	WrongArgs(const Parser &parser, ConstStr &directive, const Block::Module &outerBlock, ConstVecStr &args);
 };
-#endif		// EXCEPTION_HPP
+
+#endif		// PARSE_EXCEPTION_HPP
 
 
 /* USE CASE ?

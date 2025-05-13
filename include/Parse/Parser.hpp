@@ -31,18 +31,21 @@ public:
 	void	parseConfigFile(void);
 
 	/* Exception Classes */
+	class	SizeLimitError;
+
 	class	Exception;
-	class	UnexpectedToken;
-	class	ExpectedToken;
+
 	class	DirectiveLength;
 	class	LineLength;
 	class	FileSize;
-	class	EmptyBlock;
+
+	class	UnexpectedToken;
+	class	ExpectedToken;
+
 	class	HttpClosed;
 	class	FirstBlock;
-	class	SameBlock;
 	class	WrongBlock;
-	class	UnknownDirective;
+	class	WrongArgs;
 };
 
 # include "ParseException.hpp"
