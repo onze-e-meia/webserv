@@ -6,7 +6,7 @@ http {
 	mime			mime.types;
 	include			other test;
 	server {;;;;port;}
-	server {location /one {root root;} }
+	server {location /one {root root;} ;;;} ;;;
 
 	root						/default;
 	index						default.index.html;
@@ -17,6 +17,7 @@ http {
 	allow_methods				GET POST;
 	# sendfile			on;
 	# keepalive_timeout	65;
+	# http {}
 
 	# First server on host:port acts as default for unmatched requests
 	server {
@@ -40,5 +41,9 @@ http {
 			root		/var/www/errors;
 		}
 	}
-	server { server_name LAST.ONE; }
-}
+	# fhfghgh;
+	# server { server_name LAST.ONE; }
+# root;;;;;;;;;;;;;;;;
+# server{}
+# ;server{location /root{;};}
+server{};;;;;;;;;;;;;;;;;;;;;;;;;root;server{};;;;}

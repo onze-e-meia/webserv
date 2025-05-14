@@ -38,11 +38,12 @@ namespace Block {
 	}
 
 	/* Map of Blocks Types */
+	BLOCK_MODULE(EMPTY);
 	BLOCK_MODULE(UNKNOWN);
 	BLOCK_MODULE(LOCATION);
 	BLOCK_MODULE(SERVER);
 	BLOCK_MODULE(HTTP);
-	BLOCK_MODULE(EMPTY);
+	BLOCK_MODULE(WEBSERV);
 
 	static const SpecMap	build(void) {
 		const Module	BLOCKS[] = { LOCATION, SERVER, HTTP, EMPTY, };

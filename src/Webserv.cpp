@@ -50,6 +50,11 @@ std::ifstream	&Webserv::getFile(void) {
 	return (*_file);
 }
 
+bool	Webserv::checkInstance(void) {
+	return (_status.test(INSTANCE));
+}
+
+
 /* Setters */
 void	Webserv::addBlock(Block::Module &block, ConstVecStr &args) {
 	if (block == Block::HTTP) {
@@ -173,7 +178,7 @@ void	Webserv::dispatchHandler(Block::Module outerBlock, ConstStr &name, ConstVec
 	} else if (outerBlock == Block::LOCATION) {
 		Location	&location = http.getServers().back().getLocations().back();
 		(location.*handler<Location, Location::HandlerPointer>(outerBlock, name, args, location))(name, args, 11, 22);
-	} else if (outerBlock == Block::EMPTY) {
+	} else if (outerBlock == Block::WEBSERV) {
 		throw (std::runtime_error(" 'http' is a Block, not plain directive!'"));
 	} else {
 		throw (std::runtime_error("Unexpected erorr on dispatchHandler Func!!")); // TODO: Better Error Msg

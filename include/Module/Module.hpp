@@ -10,30 +10,33 @@
 # include <vector>
 
 namespace Name {
-	const std::string	UNKNOWN		= "unknown";
 	const std::string	EMPTY		= "empty";
+	const std::string	UNKNOWN		= "unknown";
 	const std::string	CORE		= "core";
 	const std::string	LOCATION	= "location";
 	const std::string	SERVER		= "server";
 	const std::string	HTTP		= "http";
+	const std::string	WEBSERV		= "config file:";
 }
 
 namespace Block {
 	enum type_e { // Block type.
-		UNKNOWN_T	= 0x00,
-		EMPTY_T		= 0x01,
+		EMPTY_T		= 0x00,
+		UNKNOWN_T	= 0x01,
 		CORE_T		= 0x02,
 		LOCATION_T	= 0x04,
 		SERVER_T	= 0x08,
 		HTTP_T		= 0x10,
+		WEBSERV_T	= 0x20,
 	};
 
 	enum bitMask_e { // BitMask for allowed block type and order.
-		UNKNOWN_BM	= ( UNKNOWN_T ),
-		EMPTY_BM	= ( HTTP_T ),
+		EMPTY_BM	= ( EMPTY_T ),
+		UNKNOWN_BM	= ( EMPTY_T ),
 		LOCATION_BM	= ( CORE_T ),
 		SERVER_BM	= ( LOCATION_T | CORE_T ),
 		HTTP_BM		= ( SERVER_T | CORE_T ),
+		WEBSERV_BM	= ( HTTP_T ),
 	};
 
 	struct Module {
@@ -51,11 +54,12 @@ namespace Block {
 	};
 
 	/* Map of Blocks Types */
-	const extern Module UNKNOWN;
 	const extern Module EMPTY;
+	const extern Module UNKNOWN;
 	const extern Module LOCATION;
 	const extern Module SERVER;
 	const extern Module HTTP;
+	const extern Module WEBSERV;
 
 	/* Helper Functions */
 	Module	dispatchType(const std::string &name);

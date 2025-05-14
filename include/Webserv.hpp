@@ -46,6 +46,7 @@ public:
 	/* Getters */
 	static char				*getPath(void);
 	static std::ifstream	&getFile(void);
+	static bool				checkInstance(void);
 
 	/* Setters */
 	static void	addBlock(Block::Module &block, ConstVecStr &args);

@@ -18,7 +18,6 @@ struct	Module;
 
 class	Parser::Exception: public	std::exception {
 protected:
-	// TODO: Include a ref to the outer class, so it can get the line e pos with less args
 	std::string	_errMsg;
 	std::string	_path;
 	std::size_t	_line;
@@ -27,19 +26,12 @@ protected:
 	std::string	exceptionClass(ConstStr &str);
 	std::string	pathLinePos(ConstStr &path, std::size_t line, std::size_t pos);
 
-
-	void	makeLinePos(ConstStr &errType);
-	void	buildErr(ConstStr &msg);
-	void	build1ArgErr(ConstStr &msg, ConstStr &arg1);
-	void	build2ArgErr(ConstStr &msg, ConstStr &arg1, ConstStr &arg2);
-
 public:
 	/* Contsructor */
-	explicit	Exception(std::size_t line, std::size_t pos);
-
 	explicit	Exception(void);
-	explicit	Exception(const Parser &parser);
-	explicit	Exception(ConstStr &path, std::size_t line, std::size_t pos);
+	explicit	Exception(const Parser &parser, const std::string &errMsg);
+
+	explicit	Exception(std::size_t line, std::size_t pos);
 	~Exception(void) throw();
 
 	virtual const char	*what(void) const throw();
@@ -66,11 +58,6 @@ public:
 // ----------------------------------
 //  CLASS EXCEPTION: Parser Tokens
 // ----------------------------------
-class	Parser::UnexpectedToken: public Parser::Exception {
-public:
-	UnexpectedToken(ConstStr &directive, std::size_t line, std::size_t pos);
-};
-
 class	Parser::ExpectedToken: public Parser::Exception {
 public:
 	ExpectedToken(const Parser &Parser, ConstStr &directive);
@@ -79,16 +66,6 @@ public:
 // ----------------------------------
 //  CLASS EXCEPTION: Parser Blocks
 // ----------------------------------
-class	Parser::HttpClosed: public	Parser::Exception {
-public:
-	HttpClosed(std::size_t line, std::size_t pos);
-};
-
-class	Parser::FirstBlock: public	Parser::Exception {
-public:
-	FirstBlock(ConstStr &directive, std::size_t line, std::size_t pos);
-};
-
 class	Parser::WrongBlock: public	Parser::Exception {
 public:
 	WrongBlock(const Parser &parser, ConstStr &directive, const Block::Module &outerBlock);

@@ -9,6 +9,7 @@
 # include <fstream>
 # include <vector>
 # include "Token.hpp"
+# include "Module.hpp"
 
 class	Parser {
 private:
@@ -19,9 +20,10 @@ private:
 	/* Member Functions */
 	void	parseBlock(void);
 	void	parseDirective(void);
-	void	handleDirective(const std::string &name, const std::vector<std::string> &args);
-	void	handleBlockStart(const std::string &name, const std::vector<std::string> &args);
-	void	handleBlockEnd(const std::string &name, const std::vector<std::string> &args);
+	void	collectArgs(std::vector<std::string> &args);
+	void	handleDirective(const Block::Module &outerBlock, const std::string &directive, const std::vector<std::string> &args);
+	void	handleBlockStart(const Block::Module &outerBlock, const std::string &directive, const std::vector<std::string> &args);
+	void	handleBlockEnd(const Block::Module &outerBlock, const std::string &directive, const std::vector<std::string> &args);
 
 public:
 	/* Contsructor */
@@ -31,19 +33,14 @@ public:
 	void	parseConfigFile(void);
 
 	/* Exception Classes */
-	class	SizeLimitError;
-
 	class	Exception;
-
+	/* Parser Size Limits */
 	class	DirectiveLength;
 	class	LineLength;
 	class	FileSize;
-
-	class	UnexpectedToken;
+	/* Parser Tokens */
 	class	ExpectedToken;
-
-	class	HttpClosed;
-	class	FirstBlock;
+	/* Block */
 	class	WrongBlock;
 	class	WrongArgs;
 };

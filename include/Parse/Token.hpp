@@ -8,7 +8,6 @@
 
 # include <string>
 # include "CountingStream.hpp"
-# include "Module.hpp"
 
 class	Token {
 public:
