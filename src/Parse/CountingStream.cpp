@@ -1,20 +1,21 @@
 
-#include <iostream>
+
 
 
 
 #include <cstdio>
 #include "CountingStream.hpp"
 #include "Parser.hpp"
-#include "ParseLimits.hpp"
 
 // =============================================================================
 // PUBLIC
 // =============================================================================
 
-/* Contsructor */
+/* Contsructor & Destructor */
 CountingStream::CountingStream(char *const path, std::istream &is):
 _path(path), _inputStream(is), _pos(0), _line(1), _size(0) {}
+
+CountingStream::~CountingStream(void) {}
 
 /* Getters */
 std::string	CountingStream::getPath(void) const {
@@ -28,10 +29,6 @@ std::size_t	CountingStream::cursorPos(void) const {
 std::size_t	CountingStream::cursorLine(void) const {
 	return (_line);
 }
-
-// std::size_t	CountingStream::getSize(void) const {
-// 	return (_size);
-// }
 
 /* Member Functions */
 int	CountingStream::get(void) {

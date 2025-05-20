@@ -5,15 +5,25 @@
 
 #include "Location.hpp"
 
-#define LOCATION_NAME_HANDLER(name) { #name, &Location::name##_Handler }
+// #define LOCATION_NAME_HANDLER(name) { #name, &Location::name##_Handler }
+
+#define LOCATION_NAME_HANDLER(structName, name, nb) \
+	const NameHandler<Location::HandlerPointer> structName(#name, &Location::name##_Handler, nb)
 
 typedef	std::map<ConstStr, Location::HandlerPointer>	DirectiveMap;
 typedef DirectiveMap::const_iterator		DirectiveConst_it;
 
+LOCATION_NAME_HANDLER(SOME, some_location, 1);
+const NameHandler<Location::HandlerPointer> EMPTY("empty", NULL, 0);
+
 static const NameHandler<Location::HandlerPointer>	LOCATION_HANDLER[] = {
-	LOCATION_NAME_HANDLER(some_location),
-	{ "", NULL },
+	SOME, EMPTY
 };
+
+// static const NameHandler<Location::HandlerPointer>	LOCATION_HANDLER[] = {
+// 	LOCATION_NAME_HANDLER(some_location),
+// 	{ "", NULL },
+// };
 
 const DirectiveMap	buildMap(void) {
 	DirectiveMap	map;

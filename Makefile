@@ -43,6 +43,7 @@ SRC_PARSER	:= \
 SRC_MODULE	:= \
 	Module.cpp \
 	Core.cpp \
+	CoreException.cpp \
 	Http.cpp \
 	Server.cpp \
 	Location.cpp
@@ -194,3 +195,10 @@ help:	## Show this message
 # pattern → needs %
 # replacement → needs %
 # text → your list
+
+
+# Inside a Makefile
+# test:
+#	@echo $(patsubst src/%.cpp,obj/%.o,src/foo.cpp)
+# Bash:
+# make test

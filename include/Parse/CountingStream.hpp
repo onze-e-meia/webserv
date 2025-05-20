@@ -17,14 +17,14 @@ private:
 	std::size_t		_size;
 
 public:
-	/* Contsructor */
+	/* Contsructor & Destructor */
 	CountingStream(char *const path, std::istream &is);
+	~CountingStream(void);
 
 	/* Getters */
 	std::string	getPath(void) const;
 	std::size_t	cursorPos(void) const;
 	std::size_t	cursorLine(void) const;
-	// std::size_t	getSize(void) const;
 
 	/* Member Functions */
 	int	get(void);

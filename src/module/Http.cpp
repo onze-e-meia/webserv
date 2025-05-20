@@ -11,16 +11,27 @@
 
 #include "color.hpp"
 
-#define HTTP_NAME_HANDLER(name) { #name, &Http::name##_Handler }
+// #define HTTP_NAME_HANDLER(name) { #name, &Http::name##_Handler }
+
+#define HTTP_NAME_HANDLER(structName, name, nb) \
+	const NameHandler<Http::HandlerPointer> structName(#name, &Http::name##_Handler, nb)
 
 typedef	std::map<ConstStr, Http::HandlerPointer>	DirectiveMap;
 typedef DirectiveMap::const_iterator		DirectiveConst_it;
 
+HTTP_NAME_HANDLER(MIME, mime, 1);
+HTTP_NAME_HANDLER(INCLUDE, include, 1);
+const NameHandler<Http::HandlerPointer> EMPTY("empty", NULL, 0);
+
 static const NameHandler<Http::HandlerPointer>	HTTP_HANDLER[] = {
-	HTTP_NAME_HANDLER(mime),
-	HTTP_NAME_HANDLER(include),
-	{ "", NULL },
+	MIME, INCLUDE, EMPTY
 };
+
+// static const NameHandler<Http::HandlerPointer>	HTTP_HANDLER[] = {
+// 	HTTP_NAME_HANDLER(mime),
+// 	HTTP_NAME_HANDLER(include),
+// 	{ "", NULL },
+// };
 
 static const DirectiveMap	buildMap(void) {
 	DirectiveMap	map;

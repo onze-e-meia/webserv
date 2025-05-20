@@ -19,7 +19,7 @@ public:
 			RUM,
 			FAIL,
 			SIZE,
-		};
+	};
 
 	typedef std::bitset<SIZE>	status;
 

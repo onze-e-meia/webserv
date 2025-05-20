@@ -30,14 +30,15 @@ private:
 	void 				skipWhiteSpaceAndComments(void);
 
 public:
-	/* Contsructor */
+	/* Contsructor & Destructor */
 	Token(char *const path, std::istream &file);
+	~Token(void);
 
 	/* Member Functions */
-	void				nextToken(void);
+	void			nextToken(void);
 
 	/* Setters */
-	void				setType(type_e type);
+	void			setType(type_e type);
 
 	/* Getters */
 	type_e			getType(void) const;

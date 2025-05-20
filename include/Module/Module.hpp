@@ -9,7 +9,7 @@
 # include <string>
 # include <vector>
 
-namespace Name {
+namespace	Name {
 	const std::string	EMPTY		= "empty";
 	const std::string	UNKNOWN		= "unknown";
 	const std::string	CORE		= "core";
@@ -19,8 +19,8 @@ namespace Name {
 	const std::string	WEBSERV		= "config file:";
 }
 
-namespace Block {
-	enum type_e { // Block type.
+namespace	Block {
+	enum	type_e { // Block type.
 		EMPTY_T		= 0x00,
 		UNKNOWN_T	= 0x01,
 		CORE_T		= 0x02,
@@ -30,7 +30,7 @@ namespace Block {
 		WEBSERV_T	= 0x20,
 	};
 
-	enum bitMask_e { // BitMask for allowed block type and order.
+	enum	bitMask_e { // BitMask for allowed block type and order.
 		EMPTY_BM	= ( EMPTY_T ),
 		UNKNOWN_BM	= ( EMPTY_T ),
 		LOCATION_BM	= ( CORE_T ),
@@ -51,6 +51,7 @@ namespace Block {
 
 		/* Operator Overload*/
 		bool	operator==(const Module &right) const;
+		bool	operator!=(const Module &right) const;
 	};
 
 	/* Map of Blocks Types */

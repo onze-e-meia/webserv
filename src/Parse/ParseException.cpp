@@ -6,9 +6,7 @@
 #include <sstream>
 #include <iomanip>
 #include "Parser.hpp"
-#include "ParseLimits.hpp"
 #include "color.hpp"
-
 
 // =============================================================================
 // PROTECTED
@@ -34,7 +32,7 @@ std::string	Parser::Exception::pathLinePos(ConstStr &path, std::size_t line, std
 // --------------------
 // CLASS EXCEPTION
 // --------------------
-/* Contsructor */
+/* Contsructor & Destructor */
 Parser::Exception::Exception(void) {}
 
 Parser::Exception::Exception(const Parser &parser, const std::string &errMsg) {
@@ -47,7 +45,6 @@ Parser::Exception::Exception(const Parser &parser, const std::string &errMsg) {
 	_errMsg = oss.str();
 }
 
-/* Destructor */
 Parser::Exception::~Exception(void)  throw() {}
 
 /* Member Functions */
@@ -101,8 +98,8 @@ Parser::ExpectedToken::ExpectedToken(const Parser &parser, ConstStr &directive) 
 
 	oss << exceptionClass("Expected Token Error:")
 		<< pathLinePos(parser._token.getPath(), parser._token.cursorLine(), parser._wordStartPos)
-		<< TAB "Expected token ';' after directive" << directive << ENDL
-		<< std::setw(6) << _line << " | " << parser._innerBlock._name << " { " << directive << RED "'?'" RENDL
+		<< TAB "Expected token ';' or '{' after directive " << directive << ENDL
+		<< std::setw(6) << parser._token.cursorLine() << " | " << parser._innerBlock._name << " { " << directive << RED "'?'" RENDL
 		<< "       | " ;
 	_errMsg = oss.str();
 }
@@ -113,23 +110,22 @@ Parser::ExpectedToken::ExpectedToken(const Parser &parser, ConstStr &directive) 
 /* Contsructor */
 Parser::WrongBlock::WrongBlock(const Parser &parser, ConstStr &directive, const Block::Module &outerBlock) {
 	std::ostringstream	oss;
-	std::string			errType("Block Error: ");
+	std::string			errType[2] = {"Block Error: ", outerBlock._name + " {"};
 
-	if (outerBlock._module & Block::WEBSERV._module) {
-		errType += "First block on webserv must be 'http'.";
-	} else if (outerBlock == Block::EMPTY) {
-		errType += "Http Block Closed.";
+	if (outerBlock == Block::WEBSERV) {
+		errType[0] += "First block on webserv must be 'http'.";
+		errType[1] = outerBlock._name;
 	} else if (directive.empty()) {
-		errType += "Empty name.";
+		errType[0] += "Empty name.";
 	} else if (parser._innerBlock._mask & Block::UNKNOWN._module) {
-		errType += "Unknown name.";
+		errType[0] += "Unknown name.";
 	} else
-		errType += "Wrong context.";
+		errType[0] += "Wrong context.";
 
-	oss << exceptionClass(errType)
+	oss << exceptionClass(errType[0])
 		<< pathLinePos(parser._token.getPath(), parser._token.cursorLine(), parser._wordStartPos)
 		<< TAB "Block directive '" << directive << "' is out of context on block: " << outerBlock._name << ENDL
-		<< "       | " << outerBlock._name << " {" ENDL
+		<< "       | " << errType[1] << ENDL
 		<< std::setw(6) << parser._token.cursorLine() << " | " TAB "'" << directive << "' {...}" ENDL
 		<< "       | " ;
 	_errMsg = oss.str();

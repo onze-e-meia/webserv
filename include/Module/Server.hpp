@@ -18,11 +18,10 @@ public:
 	typedef void	(Server::*HandlerPointer)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
 
 private:
-	Server					*_server;
+	std::string				_server_name;
 	std::string				_host;
 	std::string				_port;
 	std::string				_listen;
-	std::string				_server_name;
 	std::vector<Location>	_locations;
 
 	// Roger

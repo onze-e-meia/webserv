@@ -54,7 +54,6 @@ bool	Webserv::checkInstance(void) {
 	return (_status.test(INSTANCE));
 }
 
-
 /* Setters */
 void	Webserv::addBlock(Block::Module &block, ConstVecStr &args) {
 	if (block == Block::HTTP) {
@@ -128,7 +127,6 @@ void	Webserv::buildConfig(void) {
 		// }
 	} catch (const std::exception &exception) {
 		_status.set(FAIL);
-		// std::cerr << RED " >>> HHHHAAAAALLLLTTTT!!!! <<< " RENDL;
 		std::cerr << exception.what();
 	}
 }
@@ -179,7 +177,7 @@ void	Webserv::dispatchHandler(Block::Module outerBlock, ConstStr &name, ConstVec
 		Location	&location = http.getServers().back().getLocations().back();
 		(location.*handler<Location, Location::HandlerPointer>(outerBlock, name, args, location))(name, args, 11, 22);
 	} else if (outerBlock == Block::WEBSERV) {
-		throw (std::runtime_error(" 'http' is a Block, not plain directive!'"));
+		throw (std::runtime_error(" 'http' is a Block, not plain directive!'")); // TODO: Better Error Msg
 	} else {
 		throw (std::runtime_error("Unexpected erorr on dispatchHandler Func!!")); // TODO: Better Error Msg
 	}

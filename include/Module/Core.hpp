@@ -21,6 +21,11 @@ template <typename HandlerPointer>
 struct NameHandler {
 	ConstStr		_name;
 	HandlerPointer	_handler;
+	std::size_t		_maxArgs;
+
+	// NameHandler(void);
+	NameHandler(ConstStr &name, HandlerPointer handler, std::size_t maxArgs):
+	_name(name), _handler(handler), _maxArgs() {}
 };
 
 class Core {
@@ -36,6 +41,8 @@ protected:
 	std::size_t							_client_max_body_size;
 	std::set<std::string>				_allow_methods; // limit_except
 
+	static bool	validArgs(std::size_t nbArgs, std::size_t maxArgs);
+
 public:
 	/* Contsructor */
 	Core(const Block::Module &block);
@@ -48,7 +55,6 @@ public:
 	std::string		getRoot(void) const { return (_root); }
 	void			setRoot(ConstStr root) { _root = root; }
 
-
 	/* Handlers */
 	static HandlerPointer	selectHandler(ConstStr &name);
 	void	root_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
@@ -57,6 +63,15 @@ public:
 	void	error_page_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 	void	client_max_body_size_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
 	void	allow_methods_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
+
+	/* Exception Classes */
+	class	Exception;
+	/* Parser Size Limits */
+	class	NunmbersArgs;
+	class	InvalidType;
+
 };
+
+# include "CoreExceptio.hpp"
 
 #endif		// CORE_HPP

@@ -7,32 +7,25 @@
 # define	PARSE_EXCEPTION_HPP
 
 # include <string>
-# include <sstream>
 # include <exception>
 
 # include "Parser.hpp"
 
-typedef const std::string				ConstStr;
-typedef const std::vector<std::string>	ConstVecStr;
-struct	Module;
-
 class	Parser::Exception: public	std::exception {
 protected:
 	std::string	_errMsg;
-	std::string	_path;
-	std::size_t	_line;
-	std::size_t	_pos;
+	// std::string	_path;
+	// std::size_t	_line;
+	// std::size_t	_pos;
 
 	std::string	exceptionClass(ConstStr &str);
 	std::string	pathLinePos(ConstStr &path, std::size_t line, std::size_t pos);
 
 public:
-	/* Contsructor */
+	/* Contsructor & Destructor */
 	explicit	Exception(void);
 	explicit	Exception(const Parser &parser, const std::string &errMsg);
-
-	explicit	Exception(std::size_t line, std::size_t pos);
-	~Exception(void) throw();
+	virtual		~Exception(void) throw();
 
 	virtual const char	*what(void) const throw();
 };

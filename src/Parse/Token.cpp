@@ -6,7 +6,6 @@
 #include <cstdio>
 #include "Token.hpp"
 #include "Parser.hpp"
-#include "ParseLimits.hpp"
 
 // =============================================================================
 // PRIVATE
@@ -33,11 +32,13 @@ void Token::skipWhiteSpaceAndComments(void) {
 // PUBLIC
 // =============================================================================
 
-/* Contsructor */
+/* Contsructor & Destructor */
 Token::Token(char *const path, std::istream &file):
 _type(EMPTY), _wordStartPos(0),_csFile(path, file) {
 	_word.reserve(MAX_DIRECTIVE_LEN);
 }
+
+Token::~Token(void) {}
 
 /* Member Functions */
 void	Token::nextToken(void) {

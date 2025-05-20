@@ -37,6 +37,13 @@ namespace Block {
 				(_mask == right._mask));
 	}
 
+	bool	Block::Module::operator!=(const Module &right) const {
+		return ((_name != right._name) &&
+				(_module != right._module) &&
+				(_mask != right._mask));
+	}
+
+
 	/* Map of Blocks Types */
 	BLOCK_MODULE(EMPTY);
 	BLOCK_MODULE(UNKNOWN);
