@@ -16,7 +16,7 @@ namespace	Name {
 	const std::string	LOCATION	= "location";
 	const std::string	SERVER		= "server";
 	const std::string	HTTP		= "http";
-	const std::string	WEBSERV		= "config file:";
+	const std::string	WEBSERV		= "config file";
 }
 
 namespace	Block {

@@ -11,8 +11,6 @@
 
 # include "Core.hpp"
 
-class	Parser;
-
 class	Core::Exception: public	std::exception {
 protected:
 	std::string	_errMsg;
@@ -20,8 +18,8 @@ protected:
 	// std::size_t	_line;
 	// std::size_t	_pos;
 
-	std::string	exceptionClass(ConstStr &str);
-	std::string	pathLinePos(ConstStr &path, std::size_t line, std::size_t pos);
+	std::string	exceptionClass(C_Str &str);
+	std::string	pathLinePos(C_Str &path, std::size_t line, std::size_t pos);
 
 public:
 	/* Contsructor & Destructor */
@@ -32,20 +30,28 @@ public:
 	virtual const char	*what(void) const throw();
 };
 
-// ---------------------------------------
-//  CLASS EXCEPTION: Number of Arguments
-// ---------------------------------------
-class	Core::NunmbersArgs: public	Core::Exception {
+// --------------------------------------
+//  CLASS EXCEPTION: Unknown Directive
+// --------------------------------------
+class	Core::UnknownDirective: public	Core::Exception {
 public:
-	NunmbersArgs(const Parser &parser, ConstStr &directive, const Block::Module &outerBlock, ConstVecStr &args);
+	UnknownDirective(const Parser &parser, C_Str &directive, const Block::Module &outerBlock, C_VecStr &args);
 };
 
-// ---------------------------------------
+// ----------------------------------------
+//  CLASS EXCEPTION: Number of Arguments
+// ----------------------------------------
+class	Core::NumberArgs: public	Core::Exception {
+public:
+	NumberArgs(const Parser &parser, C_Str &directive, const Block::Module &outerBlock, C_VecStr &args);
+};
+
+// ---------------------------------
 //  CLASS EXCEPTION: Inavild Type
-// ---------------------------------------
+// ---------------------------------
 class	Core::InvalidType: public	Core::Exception {
 	public:
-	InvalidType(const Parser &parser, ConstStr &directive, const Block::Module &outerBlock, ConstVecStr &args);
+	InvalidType(const Parser &parser, C_Str &directive, const Block::Module &outerBlock, C_VecStr &args);
 };
 
 #endif		//CORE_EXCEPTION_HPP

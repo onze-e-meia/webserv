@@ -39,7 +39,7 @@ void	Parser::parseBlock(void) {
 
 void Parser::parseDirective(void) {
 	Block::Module				outerBlock = _innerBlock;
-	ConstStr					directive = _token.getWord();
+	C_Str						directive = _token.getWord();
 	std::vector<std::string>	args;
 
 	_wordStartPos = _token.getWordStartPos();
@@ -62,12 +62,12 @@ void	Parser::collectArgs(std::vector<std::string> &args) {
 	}
 }
 
-void	Parser::handleDirective(const Block::Module &outerBlock, ConstStr &directive, ConstVecStr &args) {
-	Webserv::dispatchHandler(outerBlock, directive, args); // TODO: Check for nb of args.
+void	Parser::handleDirective(const Block::Module &outerBlock, C_Str &directive, C_VecStr &args) {
+	Webserv::dispatchHandler(*this, directive, outerBlock, args); // TODO: Check for nb of args.
 	_token.nextToken();
 }
 
-void Parser::handleBlockStart(const Block::Module &outerBlock, ConstStr &directive, ConstVecStr &args) {
+void Parser::handleBlockStart(const Block::Module &outerBlock, C_Str &directive, C_VecStr &args) {
 	std::cout << BOLD BLU "BEGIN BLOCK: " GRN << directive << RST;
 	std::cout << YLW " { on line: " << _token.cursorLine() << " : " << _wordStartPos << " }" RENDL;
 
@@ -80,7 +80,8 @@ void Parser::handleBlockStart(const Block::Module &outerBlock, ConstStr &directi
 	_token.nextToken();
 }
 
-void Parser::handleBlockEnd(const Block::Module &outerBlock, ConstStr &directive, ConstVecStr &args) {
+void Parser::handleBlockEnd(const Block::Module &outerBlock, C_Str &directive, C_VecStr &args) {
+	(void)args; // TODO: FIX this, need it here??
 	std::cout << RED ">> End Block: " << directive << RENDL;
 
 	_innerBlock = outerBlock;

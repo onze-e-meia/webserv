@@ -6,32 +6,26 @@
 #include <iostream>
 #include <sstream>
 
-#include "Parser.hpp"
+// #include "Parser.hpp"
 #include "Http.hpp"
 
 #include "color.hpp"
 
-// #define HTTP_NAME_HANDLER(name) { #name, &Http::name##_Handler }
-
 #define HTTP_NAME_HANDLER(structName, name, nb) \
-	const NameHandler<Http::HandlerPointer> structName(#name, &Http::name##_Handler, nb)
+	static Http::C_HttpSpec	structName(#name, &Http::name##_Handler, nb)
 
-typedef	std::map<ConstStr, Http::HandlerPointer>	DirectiveMap;
+// const HandlerSpec<Http::HandlerPointer>	structName(#name, &Http::name##_Handler, nb)
+
+typedef	std::map<C_Str, Http::HandlerPointer>	DirectiveMap;
 typedef DirectiveMap::const_iterator		DirectiveConst_it;
 
 HTTP_NAME_HANDLER(MIME, mime, 1);
 HTTP_NAME_HANDLER(INCLUDE, include, 1);
-const NameHandler<Http::HandlerPointer> EMPTY("empty", NULL, 0);
+static Http::C_HttpSpec EMPTY("empty", NULL, 0);
 
-static const NameHandler<Http::HandlerPointer>	HTTP_HANDLER[] = {
+static Http::C_HttpSpec	HTTP_HANDLER[] = {
 	MIME, INCLUDE, EMPTY
 };
-
-// static const NameHandler<Http::HandlerPointer>	HTTP_HANDLER[] = {
-// 	HTTP_NAME_HANDLER(mime),
-// 	HTTP_NAME_HANDLER(include),
-// 	{ "", NULL },
-// };
 
 static const DirectiveMap	buildMap(void) {
 	DirectiveMap	map;
@@ -75,7 +69,7 @@ void	Http::addServer(void) {
 
 
 /* Handlers */
-Http::HandlerPointer	Http::selectHandler(ConstStr &name) {
+Http::HandlerPointer	Http::selectHandler(C_Str &name) {
 	DirectiveConst_it	it = HTTP_MAP.find(name);
 	DirectiveConst_it	end = HTTP_MAP.end();
 	if (it == end)
@@ -83,11 +77,13 @@ Http::HandlerPointer	Http::selectHandler(ConstStr &name) {
 	return (it->second);
 }
 
-void	Http::mime_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
+void	Http::mime_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+	(void)parser; (void)directive; (void)outerBlock; (void)args; // TODO: Fix, complete delete.
+	checkArgs(parser, MIME, outerBlock, args);
 }
 
-void	Http::include_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
+void	Http::include_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+	(void)parser; (void)directive; (void)outerBlock; (void)args; // TODO: Fix, complete delete.
+	checkArgs(parser, INCLUDE, outerBlock, args);
 	// std::cout << GRN TAB "CALL INCLUDE HANDLER Founs: " TAB << name << line << pos << RENDL;
 }

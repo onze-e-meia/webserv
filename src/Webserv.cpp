@@ -55,7 +55,7 @@ bool	Webserv::checkInstance(void) {
 }
 
 /* Setters */
-void	Webserv::addBlock(Block::Module &block, ConstVecStr &args) {
+void	Webserv::addBlock(Block::Module &block, C_VecStr &args) {
 	if (block == Block::HTTP) {
 		return ;
 	} else if (block == Block::SERVER) {
@@ -81,10 +81,11 @@ void	Webserv::checkPath(int argc, char **argv) {
 
 	if (isDirectory(argv[1])) {
 		std::cerr << "webserv Error: " << argv[1] << ": Is a directory\n";
-		if (!isRead(argv[1]))
+		if (!isRead(argv[1])) {
 			std::cerr << "webserv Error: " << argv[1] << ": "<< strerror(errno) << ENDL;
 			_status.set(FAIL);
 			return ;
+		}
 	}
 	_path = argv[1];
 
@@ -165,20 +166,21 @@ int	Webserv::close(void) {
 	return EXIT_FAILURE;
 }
 
-void	Webserv::dispatchHandler(Block::Module outerBlock, ConstStr &name, ConstVecStr &args) {
+void	Webserv::dispatchHandler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
 	Http		&http = instance()._http;
 
 	if (outerBlock == Block::HTTP) {
-		(http.*handler<Http, Http::HandlerPointer>(outerBlock, name, args, http))(name, args, 11, 22);
+		(http.*handler<Http>(parser, directive, outerBlock, args))(parser, directive, outerBlock, args);
 	} else if (outerBlock == Block::SERVER) {
 		Server	&server = http.getServers().back();
-		(server.*handler<Server, Server::HandlerPointer>(outerBlock, name, args, server))(name, args, 11, 22);
+		(server.*handler<Server>(parser, directive, outerBlock, args))(parser, directive, outerBlock, args);
 	} else if (outerBlock == Block::LOCATION) {
 		Location	&location = http.getServers().back().getLocations().back();
-		(location.*handler<Location, Location::HandlerPointer>(outerBlock, name, args, location))(name, args, 11, 22);
-	} else if (outerBlock == Block::WEBSERV) {
-		throw (std::runtime_error(" 'http' is a Block, not plain directive!'")); // TODO: Better Error Msg
+		(location.*handler<Location>(parser, directive, outerBlock, args))(parser, directive, outerBlock, args);
+	} else if (outerBlock == Block::WEBSERV) { // TODO: Change name WEBSERV to CONFIG_FILE
+		std::string errName(directive + " ;");
+		throw (Parser::WrongBlock(parser, errName, outerBlock));
 	} else {
-		throw (std::runtime_error("Unexpected erorr on dispatchHandler Func!!")); // TODO: Better Error Msg
+		throw (std::runtime_error("Unexpected error on dispatchHandler Func!!")); // TODO: Better Error Msg
 	}
 }

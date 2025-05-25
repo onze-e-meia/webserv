@@ -21,7 +21,9 @@ class	Mime {}; // Class? Struct? What? Where?
 
 class	Http: public	Core {
 public:
-	typedef void	(Http::*HandlerPointer)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
+	// typedef void	(Http::*HandlerPointer)(C_Str&, C_VecStr&, std::size_t line, std::size_t pos);
+	typedef void	(Http::*HandlerPointer)(C_Parser&, C_Str&, C_Block&, C_VecStr&);
+	typedef const HandlerSpec<Http::HandlerPointer>	C_HttpSpec;
 
 public:
 	enum	status_e {
@@ -56,9 +58,9 @@ public:
 	void				addServer(void);
 
 	/* Handlers */
-	static HandlerPointer	selectHandler(ConstStr &name);
-	void	mime_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
-	void	include_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
+	static HandlerPointer	selectHandler(C_Str &name);
+	void	mime_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args);
+	void	include_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args);
 };
 
 #endif		// HTTP_HPP

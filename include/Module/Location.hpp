@@ -7,7 +7,9 @@
 
 class Location: public	Core {
 public:
-	typedef void	(Location::*HandlerPointer)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
+	// typedef void	(Location::*HandlerPointer)(C_Str&, C_VecStr&, std::size_t line, std::size_t pos);
+	typedef void	(Location::*HandlerPointer)(C_Parser&, C_Str&, C_Block&, C_VecStr&);
+	typedef const HandlerSpec<Location::HandlerPointer>	C_LocationSpec;
 
 private:
 	std::string	_locationPath;
@@ -31,13 +33,13 @@ public:
 	~Location(void);
 
 	/* Setters */
-	void	setLocationPath(ConstStr &path);
+	void	setLocationPath(C_Str &path);
 
 	std::string getPath(void) const { return (_locationPath); }
 
 	/* Handlers */
-	static HandlerPointer	selectHandler(ConstStr &name);
-	void	some_location_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
+	static HandlerPointer	selectHandler(C_Str &name);
+	void	location_directive_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args);
 
 };
 

@@ -5,31 +5,21 @@
 
 #include "Server.hpp"
 
-// #define SEVER_NAME_HANDLER(name) { #name, &Server::name##_Handler }
-
 #define SEVER_NAME_HANDLER(structName, name, nb) \
-	const NameHandler<Server::HandlerPointer> structName(#name, &Server::name##_Handler, nb)
+	static Server::C_ServerSpec	structName(#name, &Server::name##_Handler, nb)
 
-typedef	std::map<ConstStr, Server::HandlerPointer>	DirectiveMap;
+typedef	std::map<C_Str, Server::HandlerPointer>	DirectiveMap;
 typedef DirectiveMap::const_iterator		DirectiveConst_it;
 
 SEVER_NAME_HANDLER(NAME, server_name, 1);
 SEVER_NAME_HANDLER(HOST, host, 1);
 SEVER_NAME_HANDLER(PORT, port, 1);
 SEVER_NAME_HANDLER(LISTEN, listen, 1);
-const NameHandler<Server::HandlerPointer> EMPTY("empty", NULL, 0);
+static Server::C_ServerSpec EMPTY("empty", NULL, 0);
 
-static const NameHandler<Server::HandlerPointer>	SERVER_HANDLER[] = {
+static Server::C_ServerSpec	SERVER_HANDLER[] = {
 	NAME, HOST, PORT, LISTEN, EMPTY
 };
-
-// static const NameHandler<Server::HandlerPointer>	SERVER_HANDLER[] = {
-// 	SEVER_NAME_HANDLER(server_name),
-// 	SEVER_NAME_HANDLER(host),
-// 	SEVER_NAME_HANDLER(port),
-// 	SEVER_NAME_HANDLER(listen),
-// 	{ "", NULL },
-// };
 
 static const DirectiveMap	buildMap(void) {
 	DirectiveMap	map;
@@ -70,11 +60,11 @@ void	Server::addLocation(void) {
 }
 
 /* Member Functions */
-void		Server::setServerName(ConstStr &name) {_server_name = name; }
+void		Server::setServerName(C_Str &name) {_server_name = name; }
 std::string	Server::getServerName(void) { return (_server_name); }
 
 /* Handlers */
-Server::HandlerPointer	Server::selectHandler(ConstStr &name) {
+Server::HandlerPointer	Server::selectHandler(C_Str &name) {
 	DirectiveConst_it	it = SEVER_MAP.find(name);
 	DirectiveConst_it	end = SEVER_MAP.end();
 	if (it == end)
@@ -82,19 +72,24 @@ Server::HandlerPointer	Server::selectHandler(ConstStr &name) {
 	return (it->second);
 }
 
-void	Server::server_name_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
+void	Server::server_name_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+	(void)parser; (void)directive; (void)outerBlock; (void)args; // TODO: Fix, complete delete.
 	_server_name = args.front();
+	checkArgs(parser, NAME, outerBlock, args);
+
 }
 
-void	Server::host_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
+void	Server::host_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+	(void)parser; (void)directive; (void)outerBlock; (void)args; // TODO: Fix, complete delete.
+	checkArgs(parser, HOST, outerBlock, args);
 }
 
-void	Server::port_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
+void	Server::port_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+	(void)parser; (void)directive; (void)outerBlock; (void)args; // TODO: Fix, complete delete.
+	checkArgs(parser, PORT, outerBlock, args);
 }
 
-void	Server::listen_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
+void	Server::listen_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+	(void)parser; (void)directive; (void)outerBlock; (void)args; // TODO: Fix, complete delete.
+	checkArgs(parser, LISTEN, outerBlock, args);
 }

@@ -12,25 +12,24 @@
 # include <vector>
 # include <map>
 # include <set>
+# include "typedef.hpp"
 # include "Module.hpp"
 
-typedef const std::string				ConstStr;
-typedef const std::vector<std::string>	ConstVecStr;
-
 template <typename HandlerPointer>
-struct NameHandler {
-	ConstStr		_name;
+struct	HandlerSpec {
+	C_Str			_name;
 	HandlerPointer	_handler;
 	std::size_t		_maxArgs;
 
-	// NameHandler(void);
-	NameHandler(ConstStr &name, HandlerPointer handler, std::size_t maxArgs):
-	_name(name), _handler(handler), _maxArgs() {}
+	// HandlerSpec(void);
+	HandlerSpec(C_Str &name, HandlerPointer handler, std::size_t maxArgs):
+	_name(name), _handler(handler), _maxArgs(maxArgs) {}
 };
 
-class Core {
+class	Core {
 public:
-	typedef void	(Core::*HandlerPointer)(ConstStr&, ConstVecStr&, std::size_t line, std::size_t pos);
+	typedef void	(Core::*HandlerPointer)(C_Parser&, C_Str&, C_Block&, C_VecStr&);
+	typedef const HandlerSpec<Core::HandlerPointer>	C_CoreSpec;
 
 protected:
 	const Block::Module					_blockType;
@@ -39,9 +38,14 @@ protected:
 	std::bitset<1>						_autoindex;
 	std::map<std::string, std::string>	_error_page;
 	std::size_t							_client_max_body_size;
-	std::set<std::string>				_allow_methods; // limit_except
+	std::set<std::string>				_allow_methods; // limit_except from nginx
 
-	static bool	validArgs(std::size_t nbArgs, std::size_t maxArgs);
+	template<typename SpecStruct>
+	static void checkArgs(C_Parser &parser, const SpecStruct &spec, C_Block &outerBlock, C_VecStr &args) {
+		std::size_t nbArgs = args.size();
+		if ((nbArgs == 0 || nbArgs > spec._maxArgs) ? true : false)
+			throw (NumberArgs(parser, spec._name, outerBlock, args));
+	}
 
 public:
 	/* Contsructor */
@@ -53,21 +57,22 @@ public:
 	Block::Module	getBlockType(void) const { return (_blockType); }
 
 	std::string		getRoot(void) const { return (_root); }
-	void			setRoot(ConstStr root) { _root = root; }
+	void			setRoot(C_Str root) { _root = root; }
 
 	/* Handlers */
-	static HandlerPointer	selectHandler(ConstStr &name);
-	void	root_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
-	void	index_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
-	void	autoindex_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
-	void	error_page_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
-	void	client_max_body_size_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
-	void	allow_methods_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos);
+	static HandlerPointer	selectHandler(C_Str &name);
+	void	root_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args);
+	void	index_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args);
+	void	autoindex_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args);
+	void	error_page_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args);
+	void	client_max_body_size_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args);
+	void	allow_methods_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args);
 
 	/* Exception Classes */
 	class	Exception;
 	/* Parser Size Limits */
-	class	NunmbersArgs;
+	class	UnknownDirective;
+	class	NumberArgs;
 	class	InvalidType;
 
 };

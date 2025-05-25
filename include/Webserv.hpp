@@ -10,15 +10,17 @@
 # include "Http.hpp"
 # include "color.hpp"
 
-class Webserv {
+class	Parser;
+
+class	Webserv {
 public:
 	enum	status_e {
-			PATH = 0,
-			INSTANCE,
-			CONFING,
-			RUM,
-			FAIL,
-			SIZE,
+		PATH = 0,
+		INSTANCE,
+		CONFING,
+		RUM,
+		FAIL,
+		SIZE,
 	};
 
 	typedef std::bitset<SIZE>	status;
@@ -49,35 +51,31 @@ public:
 	static bool				checkInstance(void);
 
 	/* Setters */
-	static void	addBlock(Block::Module &block, ConstVecStr &args);
+	static void	addBlock(Block::Module &block, C_VecStr &args);
 
 	/* Member Functions */
 	static void	checkPath(int argc, char **argv);
 	static void	buildConfig(void);
-	static void run(void);
+	static void	run(void);
 	static int	close(void);
 
 	/* Handlers */
-	static void	dispatchHandler(Block::Module outerBlock, ConstStr &name, ConstVecStr &args);
+	static void	dispatchHandler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args);
 
-	// TODO: Make handler set fail, so the exception can be handled outside the hpp
-	template <typename Class, typename HandlerPointer>
-	static HandlerPointer	handler(Block::Module outerBlock, ConstStr &name, ConstVecStr &args, Class &obj) {
-		HandlerPointer method = Core::selectHandler(name);
+	template <typename Class>
+	static typename Class::HandlerPointer	handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+		typename Class::HandlerPointer method = Core::selectHandler(directive);
 		if (method != NULL) {
-			std::cout << GRN TAB "In " BLU << outerBlock._name << GRN " found CORE directive: " TAB << name << RENDL;
+			std::cout << GRN TAB "In " BLU << outerBlock._name << GRN " found CORE directive: " TAB << directive << RENDL;
 			return (method);
 		}
 
-		method = Class::selectHandler(name);
+		method = Class::selectHandler(directive);
 		if (method != NULL) {
-			std::cout << GRN TAB "In " BLU << outerBlock._name << GRN " found OBJ directive : " TAB << name << RENDL;
+			std::cout << GRN TAB "In " BLU << outerBlock._name << GRN " found OBJ directive : " TAB << directive << RENDL;
 			return (method);
 		}
-
-		std::ostringstream	oss;
-		oss << RED TAB "In " BLU << outerBlock._name << RED " UNKNOW directive: " TAB << name << RENDL;
-		throw (std::runtime_error(oss.str()));
+		throw (Core::UnknownDirective(parser, directive, outerBlock, args));
 	}
 };
 

@@ -1,14 +1,13 @@
 
 
+#include <iostream>
 
 
-
+// #include "Parser.hpp"
 #include "Core.hpp"
 
-// #define CORE_NAME_HANDLER(name, nb) { #name, &Core::name##_Handler, nb }
-
 #define CORE_NAME(structName, name, nb) \
-	const NameHandler<Core::HandlerPointer> structName(#name, &Core::name##_Handler, nb)
+	static Core::C_CoreSpec	structName(#name, &Core::name##_Handler, nb)
 
 typedef	std::map<std::string, Core::HandlerPointer>	DirectiveMap;
 typedef DirectiveMap::const_iterator				DirectiveConst_it;
@@ -16,24 +15,14 @@ typedef DirectiveMap::const_iterator				DirectiveConst_it;
 CORE_NAME(ROOT, root, 1);
 CORE_NAME(INDEX, index, 1);
 CORE_NAME(AUTO_INDEX, autoindex, 1);
-CORE_NAME(ERRO_PAGE, error_page, 99);
-CORE_NAME(MAX_BODY, client_max_body_size, 1);
-CORE_NAME(METHODS, allow_methods, 9);
-const NameHandler<Core::HandlerPointer> EMPTY("empty", NULL, 0);
+CORE_NAME(ERRO_PAGE, error_page, 16);
+CORE_NAME(CLIENT_MAX_BODY, client_max_body_size, 1);
+CORE_NAME(METHODS, allow_methods, 8);
+static Core::C_CoreSpec EMPTY("empty", NULL, 0);
 
-static const NameHandler<Core::HandlerPointer>	CORE_HANDLER[] = {
-	ROOT, INDEX, AUTO_INDEX, ERRO_PAGE, MAX_BODY, METHODS
+static Core::C_CoreSpec	CORE_HANDLER[] = {
+	ROOT, INDEX, AUTO_INDEX, ERRO_PAGE, CLIENT_MAX_BODY, METHODS
 };
-
-// static const NameHandler<Core::HandlerPointer>	CORE_HANDLER[] = {
-// 	CORE_NAME_HANDLER(root, 1),
-// 	CORE_NAME_HANDLER(index, 1),
-// 	CORE_NAME_HANDLER(autoindex, 1),
-// 	CORE_NAME_HANDLER(error_page, 99),
-// 	CORE_NAME_HANDLER(client_max_body_size, 1),
-// 	CORE_NAME_HANDLER(allow_methods, 9),
-// 	{ "", NULL },
-// };
 
 static const DirectiveMap	buildMap(void) {
 	DirectiveMap	map;
@@ -49,9 +38,6 @@ static const DirectiveMap	CORE_MAP = buildMap();
 // =============================================================================
 
 /* Member Functions */
-bool	Core::validArgs(std::size_t nbArgs, std::size_t maxArgs) {
-	return ((nbArgs > 0 && nbArgs <= maxArgs)? true : false );
-}
 
 
 // =============================================================================
@@ -68,7 +54,7 @@ Core::~Core(void) {}
 
 
 /* Handlers */
-Core::HandlerPointer	Core::selectHandler(ConstStr &name) {
+Core::HandlerPointer	Core::selectHandler(C_Str &name) {
 	DirectiveConst_it	it = CORE_MAP.find(name);
 	DirectiveConst_it	end = CORE_MAP.end();
 	if (it == end)
@@ -76,29 +62,35 @@ Core::HandlerPointer	Core::selectHandler(ConstStr &name) {
 	return (it->second);
 }
 
-void	Core::root_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	if (!validArgs(args.size(), ROOT._maxArgs))
-		
-
-	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
+void	Core::root_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+	(void)directive; // TODO: Need this var here?
+	checkArgs(parser, ROOT, outerBlock, args);
+	// std::cerr <<
+	if (args.at(0).at(0) != '/')
+		throw (InvalidType(parser, ROOT._name, outerBlock, args));
 }
 
-void	Core::index_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
+void	Core::index_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+	(void)directive; // TODO: Need this var here?
+	checkArgs(parser, INDEX, outerBlock, args);
 }
 
-void	Core::autoindex_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
+void	Core::autoindex_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+	(void)directive; // TODO: Need this var here?
+	checkArgs(parser, AUTO_INDEX, outerBlock, args);
 }
 
-void	Core::error_page_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
+void	Core::error_page_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+	(void)directive; // TODO: Need this var here?
+	checkArgs(parser, ERRO_PAGE, outerBlock, args);
 }
 
-void	Core::client_max_body_size_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
+void	Core::client_max_body_size_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+	(void)directive; // TODO: Need this var here?
+	checkArgs(parser, CLIENT_MAX_BODY, outerBlock, args);
 }
 
-void	Core::allow_methods_Handler(ConstStr &name, ConstVecStr &args, std::size_t line, std::size_t pos) {
-	(void)name; (void)args; (void)line; (void)pos; // TODO: Fix, complete delete.
+void	Core::allow_methods_Handler(C_Parser &parser, C_Str &directive, C_Block &outerBlock, C_VecStr &args) {
+	(void)directive; // TODO: Need this var here?
+	checkArgs(parser, METHODS, outerBlock, args);
 }

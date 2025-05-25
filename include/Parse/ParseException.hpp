@@ -18,8 +18,8 @@ protected:
 	// std::size_t	_line;
 	// std::size_t	_pos;
 
-	std::string	exceptionClass(ConstStr &str);
-	std::string	pathLinePos(ConstStr &path, std::size_t line, std::size_t pos);
+	std::string	exceptionClass(C_Str &str);
+	std::string	pathLinePos(C_Str &path, std::size_t line, std::size_t pos);
 
 public:
 	/* Contsructor & Destructor */
@@ -35,17 +35,17 @@ public:
 // ---------------------------------------
 class	Parser::FileSize: public	Parser::Exception {
 public:
-	FileSize(ConstStr &path, std::size_t line, std::size_t pos);
+	FileSize(C_Str &path, std::size_t line, std::size_t pos);
 };
 
 class	Parser::LineLength: public	Parser::Exception {
 	public:
-	LineLength(ConstStr &path, std::size_t line, std::size_t pos, char *str);
+	LineLength(C_Str &path, std::size_t line, std::size_t pos, char *str);
 };
 
 class	Parser::DirectiveLength: public	Parser::Exception {
 public:
-	DirectiveLength(ConstStr &path, std::size_t line, std::size_t pos, ConstStr &directive);
+	DirectiveLength(C_Str &path, std::size_t line, std::size_t pos, C_Str &directive);
 };
 
 // ----------------------------------
@@ -53,7 +53,7 @@ public:
 // ----------------------------------
 class	Parser::ExpectedToken: public Parser::Exception {
 public:
-	ExpectedToken(const Parser &Parser, ConstStr &directive);
+	ExpectedToken(const Parser &Parser, C_Str &directive);
 };
 
 // ----------------------------------
@@ -61,12 +61,12 @@ public:
 // ----------------------------------
 class	Parser::WrongBlock: public	Parser::Exception {
 public:
-	WrongBlock(const Parser &parser, ConstStr &directive, const Block::Module &outerBlock);
+	WrongBlock(const Parser &parser, C_Str &directive, const Block::Module &outerBlock);
 };
 
 class	Parser::WrongArgs: public	Parser::Exception {
 public:
-	WrongArgs(const Parser &parser, ConstStr &directive, const Block::Module &outerBlock, ConstVecStr &args);
+	WrongArgs(const Parser &parser, C_Str &directive, const Block::Module &outerBlock, C_VecStr &args);
 };
 
 #endif		// PARSE_EXCEPTION_HPP

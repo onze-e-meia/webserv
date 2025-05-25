@@ -80,8 +80,8 @@ OBJS_FILES	:= $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(ALL_FILES))
 DEPS_FILES	:= $(patsubst %.cpp,$(OBJ_DIR)/%.d,$(ALL_FILES))
 
 CC			:=	c++
-# CFLAGS		:=	-Wall -Wextra -Werror -std=c++98
-CFLAGS		:=	-std=c++98 -MMD -MP
+CFLAGS		:=	-Wall -Wextra -Werror -std=c++98
+# CFLAGS		:=	-std=c++98 -MMD -MP
 INCLUDE		:=	$(addprefix -I, $(INCLUDE_DIR))
 LIB			:=	$(addprefix -I, $(LIB_DIR))
 

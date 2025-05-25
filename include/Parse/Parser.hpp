@@ -16,8 +16,8 @@
 # define MAX_LINE_LEN		4096
 # define MAX_FILE_SIZE		1024 * 1024 // 1 MiB
 
-typedef const std::string				ConstStr;
-typedef const std::vector<std::string>	ConstVecStr;
+typedef const std::string				C_Str;
+typedef const std::vector<std::string>	C_VecStr;
 
 class	Parser {
 private:
@@ -29,9 +29,9 @@ private:
 	void	parseBlock(void);
 	void	parseDirective(void);
 	void	collectArgs(std::vector<std::string> &args);
-	void	handleDirective(const Block::Module &outerBlock, ConstStr &directive, ConstVecStr &args);
-	void	handleBlockStart(const Block::Module &outerBlock, ConstStr &directive, ConstVecStr &args);
-	void	handleBlockEnd(const Block::Module &outerBlock, ConstStr &directive, ConstVecStr &args);
+	void	handleDirective(const Block::Module &outerBlock, C_Str &directive, C_VecStr &args);
+	void	handleBlockStart(const Block::Module &outerBlock, C_Str &directive, C_VecStr &args);
+	void	handleBlockEnd(const Block::Module &outerBlock, C_Str &directive, C_VecStr &args);
 
 public:
 	/* Contsructor & Destructor */

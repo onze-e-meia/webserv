@@ -4,11 +4,13 @@
 # This need to check nb of args!!!!
 http {
 	mime			mime.types;
-	include			other test;
+	include			other;
+	# server };
+	# root };
 	# server {;;;;port;}
 	# server {location /one {root root;} ;;;} ;;;
 
-	root						/default;
+	root						default;
 	index						default.index.html;
 	autoindex					on; # This will set the defaalt
 	error_page 404				/custom_404.html;
@@ -29,6 +31,7 @@ http {
 		index			index.html;
 
 		location	/ {
+			location_directive	for_test;
 			autoindex	on; # Enable directory listing
 		}
 
@@ -47,8 +50,8 @@ http {
 # ;server{location /root{;};
 # server{};;;;;;;;;;;;;;;;;;;;;;;;;root;
 	server {;;
-		root root;
-		location /r {root root;};;
+		root /root;
+		location /r {root /root;};;
 		};;;
 
 }
